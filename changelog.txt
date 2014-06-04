@@ -1,0 +1,8 @@
+=== ALPHA 1, revision 1 ===
+
+Fixed (?) the lifecycle of the module with proper initialization when the flight starts (and detecting a revert to launch).
+Fixed the part's glow not turning off.
+
+=== ALPHA 1 ===
+
+Initial release
