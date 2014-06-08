@@ -11,7 +11,7 @@ namespace DangIt
     /// <summary>
     /// Module that causes failures in reaction wheels
     /// </summary>
-    public class ModuleReactionWheelReliability : ModuleBaseFailure
+    public class ModuleReactionWheelReliability : FailureModule
     {
         ModuleReactionWheel torqueModule;
 
@@ -20,7 +20,6 @@ namespace DangIt
         public override string RepairMessage { get { return "Reaction wheel repaired."; } }
         public override string FailGuiName { get { return "Fail reaction wheel"; } }
         public override string EvaRepairGuiName { get { return "Fix reaction wheel"; } }
-        public override bool AgeOnlyWhenActive { get { return true; } }
 
 
         public override bool PartIsActive()
@@ -31,21 +30,23 @@ namespace DangIt
         }
 
 
-        public override void DI_OnStart(StartState state)
+        protected override void DI_OnStart(StartState state)
         {
-            if (state == StartState.Editor || state == StartState.None) return;
-
-            this.torqueModule = part.Modules.OfType<ModuleReactionWheel>().First();
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                this.torqueModule = part.Modules.OfType<ModuleReactionWheel>().First();
+                
+            }
         }
 
 
-        public override void DI_Fail()
+        protected override void DI_Fail()
         {
             this.torqueModule.enabled = false; 
         }
 
 
-        public override void DI_EvaRepair()
+        protected override void DI_EvaRepair()
         {
             this.torqueModule.enabled = true;
         }

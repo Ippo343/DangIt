@@ -10,7 +10,7 @@ namespace DangIt
     /// <summary>
     /// Module that causes failures in the power generator of engines
     /// </summary>
-    public class ModuleAlternatorReliability : ModuleBaseFailure
+    public class ModuleAlternatorReliability : FailureModule
     {
         // The alternator is tied to an engine
         // The engine module also allows to check when the alternator is active
@@ -23,33 +23,32 @@ namespace DangIt
         public override string RepairMessage { get { return "Alternator repaired."; } }
         public override string FailGuiName { get { return "Fail alternator"; } }
         public override string EvaRepairGuiName { get { return "Repair alternator"; } }
-        public override bool AgeOnlyWhenActive { get { return true; } }
 
 
         // The alternator is only active when the engine is actually firing
         public override bool PartIsActive()
         {
-            return (this.engineModule.enabled && 
-                    this.engineModule.EngineIgnited && 
-                   (this.engineModule.currentThrottle > 0));
+            return DangIt.EngineIsActive(this.engineModule);
         }
 
-        public override void DI_OnStart(StartState state)
+
+        protected override void DI_OnStart(StartState state)
         {
-            if (state == StartState.Editor || state == StartState.None) return;
-
-            this.alternatorModule = part.Modules.OfType<ModuleAlternator>().First();
-            this.engineModule = part.Modules.OfType<ModuleEngines>().First();
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                this.alternatorModule = part.Modules.OfType<ModuleAlternator>().First();
+                this.engineModule = part.Modules.OfType<ModuleEngines>().First(); 
+            }
         }
 
 
-        public override void DI_Fail()
+        protected override void DI_Fail()
         {
             this.alternatorModule.enabled = false;
         }
 
 
-        public override void DI_EvaRepair()
+        protected override void DI_EvaRepair()
         {
             this.alternatorModule.enabled = true; 
         }

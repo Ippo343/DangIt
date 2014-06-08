@@ -1,7 +1,19 @@
-=== ALPHA 1, revision 1 ===
+=== ALPHA 2 ===
 
-Fixed (?) the lifecycle of the module with proper initialization when the flight starts (and detecting a revert to launch).
-Fixed the part's glow not turning off.
+Big stuff:
+    - Completely redone how the persistence and update logic is handled: now it should actually do what it is supposed to!*
+    - Kerbals now receive a random discount on the cost of repairing a failed part: the lower the stupidity, the higher the possible discount.
+    - Introduced silent failures: if a failure is silent, you will get no notification when it happens and the part won't light up.
+    - You now have the possibility to initiate the failures manually: this of course won't be in the final version, but this way you can test it and give me feedback.
+    
+Small stuff:
+    - Control surfaces now only age in atmosphere.
+    - Removed the AgeOnlyWhenActive flag
+    - Fixed the bug that caused parts not updating unless they were in the active stage
+    - Drastic changes in the cfgs' values
+    - various bug-fixes and a lot of logging changes that don't really matter to you
+
+*... probably
 
 === ALPHA 1 ===
 

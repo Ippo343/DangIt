@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DangIt
 {
-    class ModuleRCSReliability : ModuleBaseFailure
+    class ModuleRCSReliability : FailureModule
     {
         ModuleRCS rcsModule;
 
@@ -15,7 +15,6 @@ namespace DangIt
         public override string RepairMessage { get { return "Thruster back online."; } }
         public override string FailGuiName { get { return "Fail thruster"; } }
         public override string EvaRepairGuiName { get { return "Repair thruster"; } }
-        public override bool AgeOnlyWhenActive { get { return true; } }
 
 
         public override bool PartIsActive()
@@ -29,20 +28,22 @@ namespace DangIt
         }
 
 
-        public override void DI_OnStart(StartState state)
+        protected override void DI_OnStart(StartState state)
         {
-            if (state == StartState.Editor || state == StartState.None) return;
-
-            rcsModule = this.part.Modules.OfType<ModuleRCS>().First();
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                rcsModule = this.part.Modules.OfType<ModuleRCS>().First();                
+            }
         }
 
-        public override void DI_Fail()
+
+        protected override void DI_Fail()
         {
             rcsModule.enabled = false;
         }
 
 
-        public override void DI_EvaRepair()
+        protected override void DI_EvaRepair()
         {
             rcsModule.enabled = true;           
         }

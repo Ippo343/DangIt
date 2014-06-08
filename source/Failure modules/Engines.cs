@@ -10,7 +10,7 @@ namespace DangIt
     /// <summary>
     /// Module that causes engines failures.
     /// </summary>
-    public class ModuleEngineReliability : ModuleBaseFailure
+    public class ModuleEngineReliability : FailureModule
     {
         ModuleEngines engineModule;
 
@@ -19,35 +19,33 @@ namespace DangIt
         public override string RepairMessage { get { return "Engine repaired."; } }
         public override string FailGuiName { get { return "Fail engine"; } }
         public override string EvaRepairGuiName { get { return "Repair engine"; } }
-        public override bool AgeOnlyWhenActive { get { return true; } }
 
 
-        public override float LambdaMultiplier()
+        protected override float LambdaMultiplier()
         {
             float x = this.engineModule.currentThrottle;
-            return (x + (float)(0.5 * Math.Pow(x, 5)));
+            return (2*x*x - 2 * x + 1.25f);
         }
 
 
         // Returns true when the engine is actually in use
         public override bool PartIsActive()
         {
-            return (this.enabled && 
-                    this.engineModule.EngineIgnited && 
-                   (this.engineModule.currentThrottle > 0));
+            return DangIt.EngineIsActive(this.engineModule);
         }
 
 
 
-        public override void DI_OnStart(StartState state)
+        protected override void DI_OnStart(StartState state)
         {
-            if (state == StartState.Editor || state == StartState.None) return;
-
-            this.engineModule = part.Modules.OfType<ModuleEngines>().First<ModuleEngines>();
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                this.engineModule = part.Modules.OfType<ModuleEngines>().First(); 
+            }
         }
 
 
-        public override void DI_Fail()
+        protected override void DI_Fail()
         {
             // Shutdown the engine and disable the module
             this.engineModule.Shutdown();
@@ -59,7 +57,7 @@ namespace DangIt
         }
 
 
-        public override void DI_EvaRepair()
+        protected override void DI_EvaRepair()
         {
             this.engineModule.enabled = true;
         }

@@ -7,14 +7,20 @@ using UnityEngine;
 
 namespace DangIt
 {
-
     public class ModuleSparesContainer : PartModule
     {
-
         private bool eventAdded = false;
 
+        public override void OnStart(PartModule.StartState state)
+        {
+            Debug.Log("DangIt: Spares Container [" + this.GetInstanceID() + "]: OnStart, state is " + state);
+            
+            this.Events["TakeParts"].active = true;
+        }
 
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Take spares", active = true)]
+       
+        //[KSPEvent(active = true, guiActive = true, guiActiveEditor = false, guiActiveUnfocused = true, guiName = "Take spares", unfocusedRange = 20f)]
+        [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange=DangIt.EvaRepairDistance)]
         public void TakeParts()
         {
             Part evaPart = DangIt.FindEVA();
@@ -65,8 +71,8 @@ namespace DangIt
             double deposit = Math.Min(evaPart.Resources[DangIt.Spares.Name].amount, capacity);
 
             // Add it to the spares container and drain it from the EVA part
-            container.Resources[DangIt.Spares.Name].amount += deposit;
-            evaPart.Resources[DangIt.Spares.Name].amount -= deposit;
+            container.RequestResource(DangIt.Spares.Name, -deposit);
+            evaPart.RequestResource(DangIt.Spares.Name, deposit);
 
             // GUI acknowledge
             DangIt.Broadcast(evaPart.name + " has left " + deposit + " spares", 1f);
@@ -96,8 +102,8 @@ namespace DangIt
             double amountTaken = Math.Min(desired, container.Resources[DangIt.Spares.Name].amount);
 
             // Take it from the container and add it to the EVA
-            container.Resources[DangIt.Spares.Name].amount -= amountTaken;
-            evaPart.Resources[DangIt.Spares.Name].amount += amountTaken;
+            container.RequestResource(DangIt.Spares.Name, amountTaken);
+            evaPart.RequestResource(DangIt.Spares.Name, -amountTaken);
 
             // GUI stuff
             DangIt.Broadcast(evaPart.name + " has taken " + amountTaken + " spares", 1f);
