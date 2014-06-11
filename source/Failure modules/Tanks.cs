@@ -14,7 +14,7 @@ namespace DangIt
     public class ModuleTankReliability : FailureModule
     {
         public override string DebugName { get { return "DangItTank"; } }
-        public override string FailureMessage { get { return "A tank of " + leakables[leakIndex].resourceName + "is leaking!"; } }
+        public override string FailureMessage { get { return "A tank of " + leakables[leakIndex].resourceName + " is leaking!"; } }
         public override string RepairMessage { get { return "Duct tape applied."; } }
         public override string FailGuiName { get { return "Puncture tank"; } }
         public override string EvaRepairGuiName { get { return "Apply duct tape"; } }
@@ -48,10 +48,6 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                if (!blackList.Contains("ElectricCharge")) blackList.Add("ElectricCharge");
-                if (!blackList.Contains("SolidFuel")) blackList.Add("SolidFuel");
-                if (!blackList.Contains("SpareParts")) blackList.Add("SpareParts");
-
                 // Get the leakable resources
                 leakables = part.Resources.list.FindAll(r => !blackList.Contains(r.resourceName));
                 if (leakables.Count < 1)
@@ -77,10 +73,20 @@ namespace DangIt
         }
 
 
+
         protected override void DI_OnLoad(ConfigNode node)
         {
             this.leakName = node.GetValue("leakName");
             this.pole = DangIt.Parse<float>("leakName", 0.01f);
+
+            this.blackList = node.GetValues("ignore").ToList<string>();
+
+#if DEBUG
+            foreach (string s in blackList)
+            {
+                this.Log("Blacklisted: " + s);
+            }
+#endif
         }
 
 

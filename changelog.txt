@@ -1,3 +1,11 @@
+=== ALPHA 2.1 ===
+
+Added the black list for leaking tanks. Now you can prevent a resource from leaking by adding a field in the cfg file as:
+    ignore = <resourcename>
+    
+Huge buff for all the reliability values.
+
+
 === ALPHA 2 ===
 
 Big stuff:
@@ -14,6 +22,18 @@ Small stuff:
     - various bug-fixes and a lot of logging changes that don't really matter to you
 
 *... probably
+
+
+
+=== ALPHA 1, revision 3 ===
+
+The control surfaces now age when the ship is in atmosphere instead of always.
+Fixed the tanks not leaking correctly
+
+=== ALPHA 1, revision 2 ===
+
+Fixed (?) the lifecycle of the module with proper initialization when the flight starts (and detecting a revert to launch).
+Fixed the part's glow not turning off.
 
 === ALPHA 1 ===
 
