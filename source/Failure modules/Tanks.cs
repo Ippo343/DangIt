@@ -14,7 +14,7 @@ namespace DangIt
     public class ModuleTankReliability : FailureModule
     {
         public override string DebugName { get { return "DangItTank"; } }
-        public override string FailureMessage { get { return "A tank of " + leakables[leakIndex].resourceName + " is leaking!"; } }
+        public override string FailureMessage { get { return "A tank of " + leakName + " is leaking!"; } }
         public override string RepairMessage { get { return "Duct tape applied."; } }
         public override string FailGuiName { get { return "Puncture tank"; } }
         public override string EvaRepairGuiName { get { return "Apply duct tape"; } }
@@ -31,41 +31,54 @@ namespace DangIt
         public float MinTC = 10f;
 
         [KSPField(isPersistant = true, guiActive = false)]
-        public int leakIndex = 0;
-
-        [KSPField(isPersistant = true, guiActive = false)]
-        public string leakName = "";
+        public string leakName = null;
 
         protected List<PartResource> leakables;
 
-        /// <summary>
-        /// Blacklist of resources that will be ignored by the module.
-        /// </summary>
-        protected List<string> blackList = new List<string>();
+
+        protected List<PartResource> FindLeakables()
+        {
+            List<PartResource> result;
+
+            // Find the runtime and check the resource blacklist
+            DangItRuntime runtime = DangItRuntime.Instance;
+            if (runtime != null)
+                result = part.Resources.list.FindAll(r => !runtime.LeakBlackList.Contains(r.resourceName));
+            else
+                result = null;
+
+            // Didn't find the runtime
+            if (result == null)
+                this.Log("ERROR: couldn't find the Runtime instance!");
+
+            // Found zero eligible resources (this happens on liquid engines for example)
+            if (result.Count == 0)
+            {
+                this.Log("The part " + this.part.name + " does not contain any leakable!");
+                this.Events["Fail"].active = false;
+                this.leakName = null;
+            }
+
+            return result;
+        }
 
 
-        protected override void DI_OnStart(StartState state)
+
+        protected override void DI_Start(StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                // Get the leakable resources
-                leakables = part.Resources.list.FindAll(r => !blackList.Contains(r.resourceName));
-                if (leakables.Count < 1)
-                {
-                    throw new Exception("No leakables found!");
-                }
+                // Ask the runtime for the resources that can be leaked
+                this.leakables = FindLeakables();
 
-
+                // The part was already failed when loaded:
+                // check if the resource is still in the tank
                 if (this.HasFailed)
                 {
-                    if (string.IsNullOrEmpty(leakName))
+                    if (string.IsNullOrEmpty(leakName) || !part.Resources.Contains(leakName))
                     {
-                        this.Log("ERROR: the part has failed but there is no valid resource name leak!");
+                        this.Log("ERROR: the part was started as failed but the leakName isn't valid!"); ;
                         this.SetFailureState(false);
-                    }
-                    else
-                    {
-                        leakIndex = part.Resources.list.FindIndex(r => r.resourceName == leakName);
                     }
                 }
 
@@ -77,23 +90,19 @@ namespace DangIt
         protected override void DI_OnLoad(ConfigNode node)
         {
             this.leakName = node.GetValue("leakName");
-            this.pole = DangIt.Parse<float>("leakName", 0.01f);
-
-            this.blackList = node.GetValues("ignore").ToList<string>();
-
+            if (string.IsNullOrEmpty(leakName)) leakName = null;
 #if DEBUG
-            foreach (string s in blackList)
-            {
-                this.Log("Blacklisted: " + s);
-            }
+            this.Log("OnLoad: loaded leakName " + ((leakName == null) ? "null" : leakName));
 #endif
+
+            this.pole = DangIt.Parse<float>("leakName", 0.01f);
         }
 
 
 
         protected override void DI_OnSave(ConfigNode node)
         {
-            node.SetValue("leakName", this.leakName);
+            node.SetValue("leakName", (leakName == null) ? string.Empty : leakName);
             node.SetValue("pole", this.pole.ToString());
         }
 
@@ -105,51 +114,93 @@ namespace DangIt
             {
                 if (!this.isEnabled) return;
 
-                if (this.HasFailed && (leakIndex >= 0) && (leakables[leakIndex].amount > 0))
+                if (this.HasFailed && 
+                   (!string.IsNullOrEmpty(leakName) && 
+                   (part.Resources[leakName].amount > 0)))
                 {
-                    double amount = pole * leakables[leakIndex].amount * TimeWarp.fixedDeltaTime;
-                    part.RequestResource(leakables[leakIndex].resourceName, amount);
+                    double amount = pole * part.Resources[leakName].amount * TimeWarp.fixedDeltaTime;
+                    part.RequestResource(leakName, amount);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                ExceptionBoilerPlate(e);
                 this.isEnabled = false;
-                throw;
+                this.SetFailureState(false);
             }
         }
 
 
 
-        protected override void DI_Fail()
+        protected override void DI_FailBegin()
         {
-            // Choose a random severity of the leak
-            float TC = UnityEngine.Random.Range(MinTC, MaxTC);
-            this.pole = 1 / TC;
-            this.Log("Chosen TC = " + TC + " (min = " + MinTC + ", max = " + MaxTC + ")");
+            try
+            {
+                leakables = FindLeakables();
+#if DEBUG
+                this.Log("FailBegin: scanned for leakables, returned " + ((leakables == null) ? "null" : leakables.Count.ToString()));
+#endif
 
-            if (leakables.Count > 0)
-            {
-                // Pick a random index to leak.
-                this.leakIndex = UnityEngine.Random.Range(0, leakables.Count);
-                this.leakName = leakables[leakIndex].resourceName; 
+                if ((leakables != null) && (leakables.Count > 0))
+                {
+                    // Choose a random severity of the leak
+                    float TC = UnityEngine.Random.Range(MinTC, MaxTC);
+                    this.pole = 1 / TC;
+                    this.Log("Chosen TC = " + TC + " (min = " + MinTC + ", max = " + MaxTC + ")");
+
+                    // Pick a random index to leak.
+                    int idx = (leakables.Count == 1) ? 0 : UnityEngine.Random.Range(0, leakables.Count);
+#if DEBUG
+                    this.Log("Chosen index " + idx);
+#endif
+                    this.leakName = leakables[idx].resourceName;
+#if DEBUG
+                    this.Log("Chosen resource " + leakName);
+#endif
+
+                }
+                else
+                {
+                    leakName = null;
+                    throw new Exception("Couldn't find any leakable resources!");
+                }
             }
-            else
+            catch (Exception e)
             {
-                leakIndex = -1;
-                leakName = "";
+                ExceptionBoilerPlate(e);
+                this.isEnabled = false;
                 this.SetFailureState(false);
             }
+        }
+
+
+
+        protected override void DI_Disable()
+        {
+            // nothing to do for tanks
+            return;
         }
 
 
         
         protected override void DI_EvaRepair()
         {
-            this.leakIndex = -1;
-            this.leakName = "";
-
-            return;
+            this.leakName = null;
         }
+
+
+#if DEBUG
+        [KSPEvent(active = true, guiActive=true)]
+        public void PrintBlackList()
+        {
+            this.Log("Printing blacklist");
+            foreach (string item in DangItRuntime.Instance.LeakBlackList)
+            {
+                this.Log("Blacklisted: " + item);
+            }
+            this.Log("Done");
+        }
+#endif
 
     }
 }

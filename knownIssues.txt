@@ -1,5 +1,1 @@
-The control surfaces age continuously because I couldn't find a way to tell when they are being used. Yet. -- UPDATE: I need to find out how to check if the ship is in atmosphere.
-
-There is the need for a run-time blacklist of resources that must not leak.
-
-The FixedUpdate is not run until the ship activates the first stage?
+Docking two ships fixes all failures?

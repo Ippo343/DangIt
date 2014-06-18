@@ -28,7 +28,7 @@ namespace DangIt
         }
 
 
-        protected override void DI_OnStart(StartState state)
+        protected override void DI_Start(StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
@@ -37,9 +37,14 @@ namespace DangIt
         }
 
 
-        protected override void DI_Fail()
+        protected override void DI_FailBegin()
         {
-            this.lightModule.isOn = false;
+            return;
+        }
+
+        protected override void DI_Disable()
+        {
+            this.lightModule.LightsOff();
             this.part.Modules.Remove(this.lightModule);
 
         }

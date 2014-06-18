@@ -29,9 +29,10 @@ namespace DangIt
 
         protected virtual void DI_Reset() { }
         protected virtual void DI_OnLoad(ConfigNode node) { }
-        protected virtual void DI_OnStart(StartState state) { }
+        protected virtual void DI_Start(StartState state) { }
         protected virtual void DI_Update() { }
-        protected abstract void DI_Fail();
+        protected abstract void DI_FailBegin();
+        protected abstract void DI_Disable();
         protected abstract void DI_EvaRepair();
         protected virtual void DI_OnSave(ConfigNode node) { }
         public virtual bool PartIsActive() { return true; }
@@ -108,6 +109,12 @@ namespace DangIt
 
 
 
+        /// <summary>
+        /// Resets the failure state and age tracker.
+        /// This must be called only at the beginning of the flight to initialize
+        /// the age tracking.
+        /// Put your reset logic in DI_Reset()
+        /// </summary>
         protected void Reset()
         {
             try
@@ -119,7 +126,7 @@ namespace DangIt
                 #region Internal state
 
                 this.Age = 0;
-                this.TimeOfLastReset = now + 1; // + 1 second for safety
+                this.TimeOfLastReset = now;
                 this.LastFixedUpdate = now;
 
                 this.CurrentMTBF = this.MTBF;
@@ -147,6 +154,10 @@ namespace DangIt
 
 
 
+        /// <summary>
+        /// Load the values from the config node of the persistence file.
+        /// Put your loading logic in DI_OnLoad()
+        /// </summary>
         public override void OnLoad(ConfigNode node)
         {
 #if DEBUG
@@ -154,6 +165,7 @@ namespace DangIt
             this.Log(node.ToString());
 #endif
 
+            // Load all the internal state variables
             this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
             this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
             this.TimeOfLastReset = DangIt.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
@@ -165,15 +177,27 @@ namespace DangIt
             // Run the subclass' custom onload
             this.DI_OnLoad(node);
 
-            this.Log("OnLoad complete, age is " + this.Age);
+            // If OnLoad is called during flight, call the start again
+            // so that modules can be rescanned
+            if (HighLogic.LoadedSceneIsFlight)
+                this.DI_Start(StartState.Flying);
+
+#if DEBUG
+            this.Log("OnLoad complete, age is " + this.Age); 
+#endif
 
             base.OnLoad(node);
         }
 
 
 
+        /// <summary>
+        /// Saves the internal state of the failure module to the persistence file.
+        /// Put your custom save logic in DI_OnSave()
+        /// </summary>
         public override void OnSave(ConfigNode node)
         {
+            // Save the internal state
             node.SetValue("HasInitted", this.HasInitted.ToString());
             node.SetValue("Age", Age.ToString());
             node.SetValue("TimeOfLastReset", TimeOfLastReset.ToString());
@@ -190,27 +214,37 @@ namespace DangIt
 
 
 
-
+        /// <summary>
+        /// Module re-start logic. OnStart will be called usually once for each scene,
+        /// editor included.
+        /// Put your custom start logic in DI_Start(): if you need to act on other part's
+        /// variable, this is the place to do it, not DI_Reset()
+        /// </summary>
         public override void OnStart(PartModule.StartState state)
         {
             try
             {
-                if (HighLogic.LoadedSceneIsFlight)
+                if (HighLogic.LoadedSceneIsFlight) // nothing to do in editor
                 {
 #if DEBUG
                     this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
 #endif
-                    // Reset the internal state at the beginning of the flight (catching a revert to launch)
-                    if (DangIt.Now() < TimeOfLastReset)
+                    // Reset the internal state at the beginning of the flight
+                    // this condition also catches a revert to launch (+1 second for safety)
+                    if (DangIt.Now() < (this.TimeOfLastReset + 1))
                         this.Reset();
 
-                    DangIt.ResetShipGlow(this.part.vessel);
-
+                    // If the part was saved when it was failed,
+                    // re-run the failure logic to disable it
+                    // ONLY THE DISABLING PART IS RUN!
                     if (this.HasFailed)
-                        this.Fail();
-                }                        
+                        this.DI_Disable();
 
-                this.DI_OnStart(state);
+                    DangIt.ResetShipGlow(this.part.vessel);
+                }
+
+
+                this.DI_Start(state);
 
             }
             catch (Exception e)
@@ -221,12 +255,16 @@ namespace DangIt
         }
 
 
-
+        /// <summary>
+        /// Update logic on every physics frame update.
+        /// Place your custom update logic in DI_Update()
+        /// </summary>
         public void FixedUpdate()
         {
             try
             {
-                if (this.HasInitted)
+                // Only update the module during flight and after the re-initialization has run
+                if (HighLogic.LoadedSceneIsFlight && this.HasInitted)
                 {
                     float now = DangIt.Now();
 
@@ -249,6 +287,7 @@ namespace DangIt
                         }
                     }
 
+                    // Run custom update logic
                     this.DI_Update();
 
                     this.LastFixedUpdate = now; 
@@ -263,14 +302,24 @@ namespace DangIt
 
 
 
+        /// <summary>
+        /// Initiates the part's failure.
+        /// Put your custom failure code in DI_Fail()
+        /// </summary>
         [KSPEvent(guiActive = DangIt.EnableGuiFailure)]
         public void Fail()
         {
             try
             {
                 this.Log("FAIL!");
+                DangIt.FlightLog(this.FailureMessage);
+
+                // Sets the failure state and resets the glow
                 this.SetFailureState(true);
-                this.DI_Fail();
+
+                // Custom failure logic
+                this.DI_FailBegin();
+                this.DI_Disable();
 
                 if (!this.Silent)
                     DangIt.Broadcast(this.FailureMessage);
@@ -283,7 +332,10 @@ namespace DangIt
         }
 
 
-
+        /// <summary>
+        /// Sets / resets the failure of the part.
+        /// Also resets the ship's glow and sets the event's visibility
+        /// </summary>
         protected void SetFailureState(bool state)
         {
             this.HasFailed = state;
@@ -295,7 +347,11 @@ namespace DangIt
 
 
 
-
+        /// <summary>
+        /// Initiates the part's EVA repair.
+        /// The repair won't be executed if the kerbonaut doesn't have enough spare parts.
+        /// Put your custom repair code in DI_Repair()
+        /// </summary>
         [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
         public void EvaRepair()
         {
@@ -303,8 +359,8 @@ namespace DangIt
             {
                 this.Log("Initiating EVA repair");
 
-                // Get the EVA kerbal
-                Part evaPart = DangIt.FindEVA();
+                // Get the EVA part (parts can hold resources)
+                Part evaPart = DangIt.FindEVAPart();
                 if (evaPart == null)
                 {
                     DangIt.Broadcast("DangIt ERROR: couldn't find an active EVA!");
@@ -320,6 +376,8 @@ namespace DangIt
 
                     this.DI_EvaRepair();
                     this.SetFailureState(false);
+
+                    DangIt.FlightLog(this.RepairMessage);
 
                     float intelligence = 1 - evaPart.protoModuleCrew[0].stupidity;
                     float discountedCost = (float)Math.Round( RepairCost * (1 - UnityEngine.Random.Range(0f, intelligence)) );
@@ -391,7 +449,7 @@ namespace DangIt
             this.Log("ERROR: " + e.Message + "; " + e.StackTrace);
         }
 
-        private void ExceptionBoilerPlate(Exception e)
+        protected void ExceptionBoilerPlate(Exception e)
         {
             LogException(e);
             return;

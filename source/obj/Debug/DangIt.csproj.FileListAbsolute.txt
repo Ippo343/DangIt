@@ -19,4 +19,3 @@ C:\Users\Michele\Documents\KSP Modding\DangIt\source\bin\Debug\TDx.TDxInput.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\bin\Debug\Mono.Security.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\obj\Debug\DangIt.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\obj\Debug\DangIt.pdb
-C:\Users\Michele\Documents\KSP Modding\DangIt\source\obj\Debug\DangIt.csprojResolveAssemblyReference.cache

@@ -36,7 +36,7 @@ namespace DangIt
 
 
 
-        protected override void DI_OnStart(StartState state)
+        protected override void DI_Start(StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
@@ -45,7 +45,12 @@ namespace DangIt
         }
 
 
-        protected override void DI_Fail()
+        protected override void DI_FailBegin()
+        {
+            return;
+        }
+
+        protected override void DI_Disable()
         {
             // Shutdown the engine and disable the module
             this.engineModule.Shutdown();

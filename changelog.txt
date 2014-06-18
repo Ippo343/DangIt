@@ -1,10 +1,25 @@
+=== ALPHA 2.2 ===
+
+Added:
+- Now failures are repairs are listed in the Flight Events log
+- Master settings file: located in DangIt\PluginData\DangIt\DangIt.cfg (don't move it). Contains the leak blacklist and also 3 master switches to enable / disable messages and the red glow (and a placeholder for sounds). This file is reloaded at each flight scene. Silent failures will not display any notification even when the master is enabled. 
+
+Fixed:
+- the persistency of failures: now they should be loaded correctly between saves.
+- the leak blacklist. Now it actually works.
+- the lights on landing gear now fail correctly.
+- the GUI of reaction wheels is now hidden when the wheel fails.
+- new reliability buff for everything (+100% MTBF: I laughed at 343 for buffing the warthog by 30%)
+
+Changed:
+- small changed in the API regarding how failures are handled. I guess it doesn't really matter since I'm the only one using the API anyway.
+
 === ALPHA 2.1 ===
 
 Added the black list for leaking tanks. Now you can prevent a resource from leaking by adding a field in the cfg file as:
     ignore = <resourcename>
     
 Huge buff for all the reliability values.
-
 
 === ALPHA 2 ===
 
@@ -22,6 +37,7 @@ Small stuff:
     - various bug-fixes and a lot of logging changes that don't really matter to you
 
 *... probably
+
 
 
 

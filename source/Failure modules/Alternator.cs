@@ -17,7 +17,6 @@ namespace DangIt
         ModuleEngines engineModule;
         ModuleAlternator alternatorModule;
 
-
         public override string DebugName { get { return "DangItAlternator"; } }
         public override string FailureMessage { get { return "Alternator failure!"; } }
         public override string RepairMessage { get { return "Alternator repaired."; } }
@@ -32,7 +31,7 @@ namespace DangIt
         }
 
 
-        protected override void DI_OnStart(StartState state)
+        protected override void DI_Start(StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
@@ -42,7 +41,13 @@ namespace DangIt
         }
 
 
-        protected override void DI_Fail()
+        protected override void DI_FailBegin()
+        {
+            return;
+        }
+
+
+        protected override void DI_Disable()
         {
             this.alternatorModule.enabled = false;
         }

@@ -21,7 +21,7 @@ namespace DangIt
         public override string EvaRepairGuiName { get { return "Repair battery"; } }
 
 
-        protected override void DI_OnStart(StartState state)
+        protected override void DI_Start(StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
@@ -38,7 +38,12 @@ namespace DangIt
         }
 
 
-        protected override void DI_Fail()
+        protected override void DI_FailBegin()
+        {
+            return;
+        }
+
+        protected override void DI_Disable()
         {
             battery.amount = 0;
             battery.flowMode = PartResource.FlowMode.None;

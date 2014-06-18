@@ -55,28 +55,31 @@
     <Compile Include="FailureModule.cs" />
     <Compile Include="Failure modules\ModuleRCSReliability.cs" />
     <Compile Include="ModuleSparesContainer.cs" />
+    <Compile Include="PerkGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Failure modules\ReactionWheel.cs" />
     <Compile Include="Failure modules\Tanks.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cfgs\DangItAlternator.cfg" />
-    <None Include="cfgs\DangItBattery.cfg" />
-    <None Include="cfgs\DangItControlSurface.cfg" />
-    <None Include="cfgs\DangItEngines.cfg" />
-    <None Include="cfgs\DangItGimbal.cfg" />
-    <None Include="cfgs\DangItLights.cfg" />
-    <None Include="cfgs\DangItRCS.cfg" />
-    <None Include="cfgs\DangItReactionWheel.cfg" />
-    <None Include="cfgs\DangItSpareParts.cfg" />
-    <None Include="cfgs\DangItTanks.cfg" />
+    <None Include="cfgs\modules\DangItAlternator.cfg" />
+    <None Include="cfgs\modules\DangItBattery.cfg" />
+    <None Include="cfgs\modules\DangItControlSurface.cfg" />
+    <None Include="cfgs\modules\DangItEngines.cfg" />
+    <None Include="cfgs\modules\DangItGimbal.cfg" />
+    <None Include="cfgs\modules\DangItLights.cfg" />
+    <None Include="cfgs\modules\DangItRCS.cfg" />
+    <None Include="cfgs\modules\DangItReactionWheel.cfg" />
+    <None Include="cfgs\modules\DangItSpareParts.cfg" />
+    <None Include="cfgs\modules\DangItTanks.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cfgs\DangIt.cfg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd "D:\KSPModCopy\GameData\DangIt"
-del "*.cfg"
-copy "$(TargetPath)" "D:\KSPModCopy\GameData\DangIt"
-copy "$(ProjectDir)\cfgs\*.cfg" "D:\KSPModCopy\GameData\DangIt"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "D:\KSPModCopy\GameData\DangIt\"
+copy "$(ProjectDir)\cfgs\DangIt.cfg" "D:\KSPModCopy\GameData\DangIt\PluginData\DangIt"
+copy "$(ProjectDir)\cfgs\modules\*" "D:\KSPModCopy\GameData\DangIt"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

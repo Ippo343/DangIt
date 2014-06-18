@@ -8,3 +8,5 @@ C:\Users\Michele\Documents\KSP Modding\DangIt\source\bin\Release\TDx.TDxInput.dl
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\bin\Release\Mono.Security.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\obj\Release\DangIt.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\obj\Release\DangIt.pdb
+C:\Users\Michele\Documents\KSP Modding\DangIt\source\bin\Release\DangIt.dll.CodeAnalysisLog.xml
+C:\Users\Michele\Documents\KSP Modding\DangIt\source\bin\Release\DangIt.dll.lastcodeanalysissucceeded

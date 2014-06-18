@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+//using CrewFiles;
 
 namespace DangIt
 {
@@ -23,7 +24,7 @@ namespace DangIt
         [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange=DangIt.EvaRepairDistance)]
         public void TakeParts()
         {
-            Part evaPart = DangIt.FindEVA();
+            Part evaPart = DangIt.FindEVAPart();
             if (evaPart == null)
                 Debug.Log("ERROR: Spares Container couldn't find an active EVA!");
             else
@@ -46,7 +47,7 @@ namespace DangIt
         [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Deposit spares", active = false)]
         public void DepositParts()
         {
-            Part evaPart = DangIt.FindEVA();
+            Part evaPart = DangIt.FindEVAPart();
             if (evaPart == null)
                 Debug.Log("ERROR: Spares Container couldn't find an active EVA!");
             else
@@ -58,7 +59,30 @@ namespace DangIt
             eventAdded = false;
         }
 
+        /*
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Show perks", active = true)]
+        public void ShowPerks()
+        {
+            this.Log("ShowPerks activated");
+            ProtoCrewMember kerbal;
 
+            try { kerbal = DangIt.FindEVAProtoCrewMember(); }
+            catch (Exception e)
+            {
+                this.Log(e.Message);
+                return;
+            }
+
+            if (kerbal == null)
+                this.Log("ERROR: EVA kerbal not found!");
+            else
+            {
+                ConfigNode kerbalFile = CrewFiles.CrewFiles.Instance.GetKerbalFile(kerbal);
+                DangIt.Broadcast(kerbalFile.GetNode("PERKS").ToString());
+            }
+
+        }
+        */
 
 
         protected void EmptyEvaSuit(Part evaPart, Part container)
@@ -125,6 +149,21 @@ namespace DangIt
             if (evaPart.Resources.Contains(DangIt.Spares.Name))
                 EmptyEvaSuit(evaPart, container);
         }
+
+
+        public void Log(string msg)
+        {
+            Vessel v = this.part.vessel;
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("[DangIt]: ");
+            sb.Append("SparesContainer");
+            sb.Append("[" + this.GetInstanceID() + "]");
+            sb.Append(": " + msg);
+
+            Debug.Log(sb.ToString());
+        }
+
 
     }
 }

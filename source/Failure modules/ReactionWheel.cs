@@ -24,31 +24,40 @@ namespace DangIt
 
         public override bool PartIsActive()
         {
-            return (torqueModule.PitchTorque > 0 ||
-                    torqueModule.RollTorque > 0 ||
-                    torqueModule.YawTorque > 0);
+            return (torqueModule.isEnabled &&
+                torqueModule.wheelState == ModuleReactionWheel.WheelState.Active);
         }
 
 
-        protected override void DI_OnStart(StartState state)
+        protected override void DI_Start(StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.torqueModule = part.Modules.OfType<ModuleReactionWheel>().First();
-                
+                this.torqueModule = part.Modules.OfType<ModuleReactionWheel>().First();                
             }
         }
 
 
-        protected override void DI_Fail()
+        protected override void DI_FailBegin()
         {
-            this.torqueModule.enabled = false; 
+            return;
+        }
+
+
+        protected override void DI_Disable()
+        {
+            this.torqueModule.OnToggle();
+            this.torqueModule.isEnabled = false;
+            this.torqueModule.Events["OnToggle"].active = false;
+            this.torqueModule.wheelState = ModuleReactionWheel.WheelState.Broken;
         }
 
 
         protected override void DI_EvaRepair()
         {
-            this.torqueModule.enabled = true;
+            this.torqueModule.isEnabled = true;
+            this.torqueModule.Events["OnToggle"].active = true;
+            this.torqueModule.wheelState = ModuleReactionWheel.WheelState.Active;
         }
 
     }
