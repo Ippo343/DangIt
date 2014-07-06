@@ -59,7 +59,8 @@
     <Compile Include="Failure modules\ModuleRCSReliability.cs" />
     <Compile Include="PartModuleException.cs" />
     <Compile Include="ModuleSparesContainer.cs" />
-    <Compile Include="CrewFiles\PerkGenerator.cs" />
+    <Compile Include="Perks\Generator.cs" />
+    <Compile Include="Perks\Perk.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Failure modules\ReactionWheel.cs" />
     <Compile Include="Failure modules\Tanks.cs" />
@@ -78,6 +79,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cfgs\DangIt.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CrewFiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

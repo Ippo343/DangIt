@@ -1,7 +1,10 @@
 === ALPHA 3 ===
 
+Timewarp now stops when a failure occurs.
+
 Fixed the bug where the leak message was logged incorrectly in the flight log.
 Fixed the formatting of the flight log messages.
+
 
 
 

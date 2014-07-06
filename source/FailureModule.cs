@@ -329,6 +329,9 @@ namespace DangIt
             {
                 this.Log("FAIL!");
 
+                // Stop the timewarp instantly
+                TimeWarp.SetRate(0, true);
+
                 // Sets the failure state and resets the glow
                 this.SetFailureState(true);
 

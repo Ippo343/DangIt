@@ -116,9 +116,6 @@ namespace DangIt
     }
 
 
-
-
-
     /// <summary>
     /// Contains shared functions and project constants
     /// </summary>
