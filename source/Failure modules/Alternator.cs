@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DangIt
@@ -35,8 +34,8 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.alternatorModule = part.Modules.OfType<ModuleAlternator>().First();
-                this.engineModule = part.Modules.OfType<ModuleEngines>().First(); 
+                this.alternatorModule = this.GetModule<ModuleAlternator>();
+                this.engineModule = this.GetModule<ModuleEngines>();
             }
         }
 

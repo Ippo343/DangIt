@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DangIt
 {
@@ -32,7 +31,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                rcsModule = this.part.Modules.OfType<ModuleRCS>().First();                
+                rcsModule = this.GetModule<ModuleRCS>();             
             }
         }
 

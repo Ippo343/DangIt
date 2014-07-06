@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DangIt
@@ -87,6 +86,10 @@ namespace DangIt
 
         #region Lambda
 
+        /// <summary>
+        /// Istantenous chance of failure.
+        /// Already considers the LambdaMultiplier
+        /// </summary>
         public float Lambda
         {
             get { return LambdaFromMTBF() * LambdaMultiplier(); }
@@ -100,7 +103,7 @@ namespace DangIt
             }
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
                 return 0f;
             }
         } 
@@ -148,7 +151,7 @@ namespace DangIt
             }
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
             }
         }
 
@@ -160,33 +163,39 @@ namespace DangIt
         /// </summary>
         public override void OnLoad(ConfigNode node)
         {
+            try
+            {
 #if DEBUG
-            this.Log("OnLoad");
-            this.Log(node.ToString());
+                this.Log("OnLoad");
+                this.Log(node.ToString());
 #endif
+                // Load all the internal state variables
+                this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
+                this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
+                this.TimeOfLastReset = DangIt.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
+                this.LastFixedUpdate = DangIt.Parse<float>(node.GetValue("LastFixedUpdate"), defaultTo: 0f);
+                this.CurrentMTBF = DangIt.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
+                this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
+                this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
-            // Load all the internal state variables
-            this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
-            this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
-            this.TimeOfLastReset = DangIt.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
-            this.LastFixedUpdate = DangIt.Parse<float>(node.GetValue("LastFixedUpdate"), defaultTo: 0f);
-            this.CurrentMTBF = DangIt.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
-            this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
-            this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
+                // Run the subclass' custom onload
+                this.DI_OnLoad(node);
 
-            // Run the subclass' custom onload
-            this.DI_OnLoad(node);
-
-            // If OnLoad is called during flight, call the start again
-            // so that modules can be rescanned
-            if (HighLogic.LoadedSceneIsFlight)
-                this.DI_Start(StartState.Flying);
-
+                // If OnLoad is called during flight, call the start again
+                // so that modules can be rescanned
+                if (HighLogic.LoadedSceneIsFlight)
+                    this.DI_Start(StartState.Flying);
 #if DEBUG
-            this.Log("OnLoad complete, age is " + this.Age); 
+                this.Log("OnLoad complete, age is " + this.Age); 
 #endif
+                base.OnLoad(node);
 
-            base.OnLoad(node);
+            }
+            catch (Exception e)
+            {
+                this.OnError(e);
+                throw;
+            }
         }
 
 
@@ -197,19 +206,26 @@ namespace DangIt
         /// </summary>
         public override void OnSave(ConfigNode node)
         {
-            // Save the internal state
-            node.SetValue("HasInitted", this.HasInitted.ToString());
-            node.SetValue("Age", Age.ToString());
-            node.SetValue("TimeOfLastReset", TimeOfLastReset.ToString());
-            node.SetValue("LastFixedUpdate", LastFixedUpdate.ToString());
-            node.SetValue("CurrentMTBF", CurrentMTBF.ToString());
-            node.SetValue("LifeTimeSecs", LifeTimeSecs.ToString());
-            node.SetValue("HasFailed", HasFailed.ToString());
+            try
+            {
+                // Save the internal state
+                node.SetValue("HasInitted", this.HasInitted.ToString());
+                node.SetValue("Age", Age.ToString());
+                node.SetValue("TimeOfLastReset", TimeOfLastReset.ToString());
+                node.SetValue("LastFixedUpdate", LastFixedUpdate.ToString());
+                node.SetValue("CurrentMTBF", CurrentMTBF.ToString());
+                node.SetValue("LifeTimeSecs", LifeTimeSecs.ToString());
+                node.SetValue("HasFailed", HasFailed.ToString());
 
-            // Run the subclass' custom onsave
-            this.DI_OnSave(node);
+                // Run the subclass' custom onsave
+                this.DI_OnSave(node);
 
-            base.OnSave(node);
+                base.OnSave(node);
+            }
+            catch (Exception e)
+            {
+                this.OnError(e);
+            }
         }
 
 
@@ -249,7 +265,7 @@ namespace DangIt
             }
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
             }
 
         }
@@ -296,7 +312,7 @@ namespace DangIt
 
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
             }
         }
 
@@ -312,7 +328,6 @@ namespace DangIt
             try
             {
                 this.Log("FAIL!");
-                DangIt.FlightLog(this.FailureMessage);
 
                 // Sets the failure state and resets the glow
                 this.SetFailureState(true);
@@ -324,10 +339,12 @@ namespace DangIt
                 if (!this.Silent)
                     DangIt.Broadcast(this.FailureMessage);
 
+                DangIt.FlightLog(this.FailureMessage);
+
             }
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
             }
         }
 
@@ -338,11 +355,18 @@ namespace DangIt
         /// </summary>
         protected void SetFailureState(bool state)
         {
-            this.HasFailed = state;
-            DangIt.ResetShipGlow(this.part.vessel);
+            try
+            {
+                this.HasFailed = state;
+                DangIt.ResetShipGlow(this.part.vessel);
 
-            Events["Fail"].active = ((state) ? false : DangIt.EnableGuiFailure);
-            Events["EvaRepair"].active = state;
+                Events["Fail"].active = ((state) ? false : DangIt.EnableGuiFailure);
+                Events["EvaRepair"].active = state;
+            }
+            catch (Exception e)
+            {
+                this.OnError(e);
+            }
         }
 
 
@@ -407,7 +431,7 @@ namespace DangIt
             }
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
             }
 
         }
@@ -417,13 +441,47 @@ namespace DangIt
 
         public override string GetInfo()
         {
-            // This is the time (in hours) that it takes for the MTBF to drop to 1 hour
-            double EOL = Math.Round(Math.Max(-LifeTime * Math.Log(1 / this.MTBF), 0));
+            try
+            {
+                // This is the time (in hours) that it takes for the MTBF to drop to 1 hour
+                double EOL = Math.Round(Math.Max(-LifeTime * Math.Log(1 / this.MTBF), 0));
 
-            return ("MTBF: " + this.MTBF + " h"
-                + "\nLifetime: " + this.LifeTime + " h"
-                + "\nEOL: " + EOL + " h"
-                + "\nRepair cost: " + this.RepairCost);
+                return ("MTBF: " + this.MTBF + " h"
+                    + "\nLifetime: " + this.LifeTime + " h"
+                    + "\nEOL: " + EOL + " h"
+                    + "\nRepair cost: " + this.RepairCost);
+            }
+            catch (Exception e)
+            {
+                this.OnError(e);
+                return string.Empty;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Tries to find the single module of the specified type.
+        /// If no module is found, or more than one is found,
+        /// a ModuleException is thrown.
+        /// </summary>
+        public T GetModule<T>()
+        {
+            try
+            {
+                List<T> modules = this.part.Modules.OfType<T>().ToList();
+
+                if (modules.Count < 1)
+                    throw new PartModuleException("No suitable module found!");
+                if (modules.Count > 1)
+                    throw new PartModuleException("Multiple suitable modules found!");
+
+                return modules.FirstOrDefault<T>();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
 
@@ -432,26 +490,40 @@ namespace DangIt
 
         public void Log(string msg)
         {
-            Vessel v = this.part.vessel;
-            StringBuilder sb = new StringBuilder();
+            try
+            {
+                StringBuilder sb = new StringBuilder();
 
-            sb.Append("[DangIt]: ");
-            sb.Append(this.DebugName);
-            sb.Append("[" + this.GetInstanceID() + "]");
-            if (part.vessel != null) sb.Append("[Ship: " + part.vessel.vesselName + "]");
-            sb.Append(": " + msg);
+                sb.Append("[DangIt]: ");
+                sb.Append(this.DebugName);
+                sb.Append("[" + this.GetInstanceID() + "]");
+                if (part.vessel != null) sb.Append("[Ship: " + part.vessel.vesselName + "]");
+                sb.Append(": " + msg);
 
-            Debug.Log(sb.ToString());
+                Debug.Log(sb.ToString());
+            }
+            catch (Exception e)
+            {
+                this.OnError(e);
+            }
         }
+
+
 
         public void LogException(Exception e)
         {
-            this.Log("ERROR: " + e.Message + "; " + e.StackTrace);
+            this.Log("ERROR: " + e.Message + "\n" + e.StackTrace);
         }
 
-        protected void ExceptionBoilerPlate(Exception e)
+
+        /// <summary>
+        /// Exception handling code: logs the exception message and then disables the module.
+        /// Disabled modules are not updated.
+        /// </summary>
+        protected void OnError(Exception e)
         {
             LogException(e);
+            this.enabled = false;   // prevent the module from updating
             return;
         } 
 

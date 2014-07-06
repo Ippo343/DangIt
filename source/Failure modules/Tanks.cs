@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DangIt
@@ -124,7 +123,7 @@ namespace DangIt
             }
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
                 this.isEnabled = false;
                 this.SetFailureState(false);
             }
@@ -167,7 +166,7 @@ namespace DangIt
             }
             catch (Exception e)
             {
-                ExceptionBoilerPlate(e);
+                OnError(e);
                 this.isEnabled = false;
                 this.SetFailureState(false);
             }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DangIt
@@ -32,7 +31,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.lightModule = part.Modules.OfType<ModuleLight>().First();    
+                this.lightModule = this.GetModule<ModuleLight>(); 
             }
         }
 

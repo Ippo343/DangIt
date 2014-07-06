@@ -117,6 +117,8 @@ namespace DangIt
 
 
 
+
+
     /// <summary>
     /// Contains shared functions and project constants
     /// </summary>
@@ -124,9 +126,9 @@ namespace DangIt
     {
 
 #if DEBUG
-        public static readonly float EvaRepairDistance = 20f;
-        public static readonly bool DEBUG = true;
-        public static readonly bool EnableGuiFailure = true;
+        public const float EvaRepairDistance = 20f;
+        public const bool DEBUG = true;
+        public const bool EnableGuiFailure = true;
 #else
         public const float EvaRepairDistance = 1.5f;
         public const bool DEBUG = false;
@@ -174,11 +176,18 @@ namespace DangIt
         /// </summary>
         public static void FlightLog(string msg)
         {
+            string fmt = "00";
             StringBuilder sb = new StringBuilder();
+
             sb.Append("[");
-            if (FlightLogger.met_years > 0) sb.Append(FlightLogger.met_years + ":");
-            if (FlightLogger.met_days > 0) sb.Append(FlightLogger.met_days + ":");
-            sb.Append(FlightLogger.met_hours + ":" + FlightLogger.met_mins + ":" + FlightLogger.met_secs);
+
+            if (FlightLogger.met_years > 0) sb.Append(FlightLogger.met_years.ToString(fmt) + ":");
+            if (FlightLogger.met_days > 0) sb.Append(FlightLogger.met_days.ToString(fmt) + ":");
+
+            sb.Append(FlightLogger.met_hours.ToString(fmt) + ":" + 
+                      FlightLogger.met_mins.ToString(fmt) + ":" +
+                      FlightLogger.met_secs.ToString(fmt));
+
             sb.Append("] ");
 
             FlightLogger.eventLog.Add(sb.ToString() + msg);

@@ -1,3 +1,0 @@
-Decaying performances (for examples, RTGs, or engines becoming less efficient).
-
-The difficulty of the repair should depend on the intelligence of the crew and on the ability to communicate with the KSC. What about courage?

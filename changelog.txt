@@ -1,3 +1,10 @@
+=== ALPHA 3 ===
+
+Fixed the bug where the leak message was logged incorrectly in the flight log.
+Fixed the formatting of the flight log messages.
+
+
+
 === ALPHA 2.2 ===
 
 Added:

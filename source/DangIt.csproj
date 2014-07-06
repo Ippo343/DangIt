@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DangIt</RootNamespace>
     <AssemblyName>DangIt</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,11 +34,13 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>D:\KSPModCopy\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="CrewFilesInterface">
+      <HintPath>CrewFiles\CrewFilesInterface.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
@@ -54,8 +57,9 @@
     <Compile Include="Failure modules\Lights.cs" />
     <Compile Include="FailureModule.cs" />
     <Compile Include="Failure modules\ModuleRCSReliability.cs" />
+    <Compile Include="PartModuleException.cs" />
     <Compile Include="ModuleSparesContainer.cs" />
-    <Compile Include="PerkGenerator.cs" />
+    <Compile Include="CrewFiles\PerkGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Failure modules\ReactionWheel.cs" />
     <Compile Include="Failure modules\Tanks.cs" />
@@ -79,7 +83,8 @@
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "D:\KSPModCopy\GameData\DangIt\"
 copy "$(ProjectDir)\cfgs\DangIt.cfg" "D:\KSPModCopy\GameData\DangIt\PluginData\DangIt"
-copy "$(ProjectDir)\cfgs\modules\*" "D:\KSPModCopy\GameData\DangIt"</PostBuildEvent>
+copy "$(ProjectDir)\cfgs\modules\*" "D:\KSPModCopy\GameData\DangIt\ModuleManager"
+copy "$(ProjectDir)\CrewFiles\CrewFilesInterface.dll" "D:\KSPModCopy\GameData\DangIt\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using CrewFilesInterface;
 using UnityEngine;
-//using CrewFiles;
 
 namespace DangIt
 {
@@ -17,16 +16,28 @@ namespace DangIt
             Debug.Log("DangIt: Spares Container [" + this.GetInstanceID() + "]: OnStart, state is " + state);
             
             this.Events["TakeParts"].active = true;
+
+            // Check if CrewFiles is installed
+            if (CrewFilesManager.CrewFilesAvailable)
+            {
+                this.Log("CrewFiles detected!");
+                this.Events["ShowPerks"].active = true;
+                this.Events["ShowPerks"].guiActiveUnfocused = true;
+            }
+            else
+            {
+                this.Log("CrewFiles not detected.");
+            }
+
         }
 
        
-        //[KSPEvent(active = true, guiActive = true, guiActiveEditor = false, guiActiveUnfocused = true, guiName = "Take spares", unfocusedRange = 20f)]
         [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange=DangIt.EvaRepairDistance)]
         public void TakeParts()
         {
             Part evaPart = DangIt.FindEVAPart();
             if (evaPart == null)
-                Debug.Log("ERROR: Spares Container couldn't find an active EVA!");
+                this.Log("ERROR: couldn't find an active EVA!");
             else
                 FillEvaSuit(evaPart, this.part);
 
@@ -34,9 +45,6 @@ namespace DangIt
 
             if (!eventAdded)
             {
-#if DEBUG
-                Debug.Log("SPARES CONTAINER: adding the OnCrewBoardVessel event"); 
-#endif
                 GameEvents.onCrewBoardVessel.Add(OnCrewBoardVessel);
                 eventAdded = true;
             }
@@ -49,7 +57,7 @@ namespace DangIt
         {
             Part evaPart = DangIt.FindEVAPart();
             if (evaPart == null)
-                Debug.Log("ERROR: Spares Container couldn't find an active EVA!");
+                this.Log("ERROR: couldn't find an active EVA!");
             else
                 EmptyEvaSuit(evaPart, this.part);
 
@@ -59,36 +67,40 @@ namespace DangIt
             eventAdded = false;
         }
 
-        /*
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Show perks", active = true)]
+
+        [KSPEvent(guiActiveUnfocused = false, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Show perks", active = false)]
         public void ShowPerks()
         {
-            this.Log("ShowPerks activated");
-            ProtoCrewMember kerbal;
+            try
+            {
+                ICrewFilesServer server = CrewFilesManager.Server;
 
-            try { kerbal = DangIt.FindEVAProtoCrewMember(); }
+                if (server == null) throw new Exception("server is null!");
+
+                ProtoCrewMember kerbal = DangIt.FindEVAProtoCrewMember();
+                ConfigNode kerbalFile = server.GetKerbalFile(kerbal);
+
+                if (kerbalFile == null) throw new Exception("kerbalFile is null!");
+
+                ConfigNode perksNode = kerbalFile.GetNode(PerkGenerator.NodeName);
+
+                if (perksNode == null) throw new Exception("perksNode is null!");
+
+                this.Log(kerbal.name + " has " + perksNode.CountNodes + " perks");
+            }
             catch (Exception e)
             {
                 this.Log(e.Message);
                 return;
             }
 
-            if (kerbal == null)
-                this.Log("ERROR: EVA kerbal not found!");
-            else
-            {
-                ConfigNode kerbalFile = CrewFiles.CrewFiles.Instance.GetKerbalFile(kerbal);
-                DangIt.Broadcast(kerbalFile.GetNode("PERKS").ToString());
-            }
-
         }
-        */
 
 
         protected void EmptyEvaSuit(Part evaPart, Part container)
         {
 #if DEBUG
-            Debug.Log("SPARES CONTAINER: Emptying the EVA suit from " + evaPart.name + " to " + container.name);
+            this.Log("Emptying the EVA suit from " + evaPart.name + " to " + container.name);
 #endif
             // Compute how much can be left in the container
             double capacity = container.Resources[DangIt.Spares.Name].maxAmount - container.Resources[DangIt.Spares.Name].amount;
@@ -111,7 +123,7 @@ namespace DangIt
             if (!evaPart.Resources.Contains(DangIt.Spares.Name))
             {
 #if DEBUG
-                Debug.Log("SPARES CONTAINER: the eva part doesn't contain spares, adding the config node"); 
+                this.Log("The eva part doesn't contain spares, adding the config node"); 
 #endif
                 ConfigNode node = new ConfigNode("RESOURCE");
                 node.AddValue("name", DangIt.Spares.Name);
@@ -141,7 +153,7 @@ namespace DangIt
         private void OnCrewBoardVessel(GameEvents.FromToAction<Part, Part> action)
         {
 #if DEBUG
-            Debug.Log("SPARES CONTAINER: OnCrewBoardVessel, emptying the EVA suit");
+            this.Log("OnCrewBoardVessel, emptying the EVA suit");
 #endif
             Part evaPart = action.from;
             Part container = action.to;

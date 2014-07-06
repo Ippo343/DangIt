@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DangIt
@@ -33,7 +32,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.torqueModule = part.Modules.OfType<ModuleReactionWheel>().First();                
+                this.torqueModule = this.GetModule<ModuleReactionWheel>();              
             }
         }
 
