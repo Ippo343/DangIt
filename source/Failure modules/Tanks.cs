@@ -13,6 +13,7 @@ namespace DangIt
     public class ModuleTankReliability : FailureModule
     {
         public override string DebugName { get { return "DangItTank"; } }
+        public override string InspectionName { get { return "Tank"; } }
         public override string FailureMessage { get { return "A tank of " + leakName + " is leaking!"; } }
         public override string RepairMessage { get { return "Duct tape applied."; } }
         public override string FailGuiName { get { return "Puncture tank"; } }

@@ -10,6 +10,7 @@ namespace DangIt
         ModuleRCS rcsModule;
 
         public override string DebugName { get { return "DangItRCS"; } }
+        public override string InspectionName { get { return "RCS Thruster"; } }
         public override string FailureMessage { get { return "A thruster has stopped thrusting!"; } }
         public override string RepairMessage { get { return "Thruster back online."; } }
         public override string FailGuiName { get { return "Fail thruster"; } }

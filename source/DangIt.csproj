@@ -57,6 +57,7 @@
     <Compile Include="Failure modules\Lights.cs" />
     <Compile Include="FailureModule.cs" />
     <Compile Include="Failure modules\ModuleRCSReliability.cs" />
+    <Compile Include="InspectionModule.cs" />
     <Compile Include="PartModuleException.cs" />
     <Compile Include="ModuleSparesContainer.cs" />
     <Compile Include="Perks\Generator.cs" />
@@ -66,16 +67,17 @@
     <Compile Include="Failure modules\Tanks.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cfgs\modules\DangItAlternator.cfg" />
-    <None Include="cfgs\modules\DangItBattery.cfg" />
-    <None Include="cfgs\modules\DangItControlSurface.cfg" />
-    <None Include="cfgs\modules\DangItEngines.cfg" />
-    <None Include="cfgs\modules\DangItGimbal.cfg" />
-    <None Include="cfgs\modules\DangItLights.cfg" />
-    <None Include="cfgs\modules\DangItRCS.cfg" />
-    <None Include="cfgs\modules\DangItReactionWheel.cfg" />
-    <None Include="cfgs\modules\DangItSpareParts.cfg" />
-    <None Include="cfgs\modules\DangItTanks.cfg" />
+    <None Include="cfgs\ModuleManager\Inspection.cfg" />
+    <None Include="cfgs\ModuleManager\Alternator.cfg" />
+    <None Include="cfgs\ModuleManager\Battery.cfg" />
+    <None Include="cfgs\ModuleManager\ControlSurface.cfg" />
+    <None Include="cfgs\ModuleManager\Engines.cfg" />
+    <None Include="cfgs\ModuleManager\Gimbal.cfg" />
+    <None Include="cfgs\ModuleManager\Lights.cfg" />
+    <None Include="cfgs\ModuleManager\RCS.cfg" />
+    <None Include="cfgs\ModuleManager\ReactionWheel.cfg" />
+    <None Include="cfgs\ModuleManager\SpareParts.cfg" />
+    <None Include="cfgs\ModuleManager\Tanks.cfg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cfgs\DangIt.cfg" />

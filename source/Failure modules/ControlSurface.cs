@@ -24,6 +24,7 @@ namespace DangIt
         
 
         public override string DebugName { get { return "DangItControlSurface"; } }
+        public override string InspectionName { get { return "Control surface"; } }
         public override string FailureMessage { get { return "A control surface is stuck!"; } }
         public override string RepairMessage { get { return "Control surface repaired."; } }
         public override string FailGuiName { get { return "Fail control surface"; } }

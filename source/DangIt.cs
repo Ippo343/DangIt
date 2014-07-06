@@ -208,10 +208,9 @@ namespace DangIt
         /// Broadcasts a message at the top-center of the screen
         /// ONLY if message notifications are enabled in the global settings
         /// </summary>
-        public static void Broadcast(string message, float time = 5f)
+        public static void Broadcast(string message, bool overrideMute = false, float time = 5f )
         {
-            // Check first if the settings allow message notifications
-            if (DangItRuntime.Instance.NotificationSettings.Messages)
+            if (overrideMute || DangItRuntime.Instance.NotificationSettings.Messages)
                 ScreenMessages.PostScreenMessage(message, time, ScreenMessageStyle.UPPER_CENTER);
         }
 

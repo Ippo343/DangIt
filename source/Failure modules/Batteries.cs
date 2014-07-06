@@ -15,6 +15,7 @@ namespace DangIt
         protected PartResource battery;
 
         public override string DebugName { get { return "DangItBattery"; } }
+        public override string InspectionName { get { return "Battery"; } }
         public override string FailureMessage { get { return "A battery has short-circuited!"; } }
         public override string RepairMessage { get { return "Battery repaired."; } }
         public override string FailGuiName { get { return "Fail battery"; } }

@@ -17,6 +17,7 @@ namespace DangIt
         ModuleAlternator alternatorModule;
 
         public override string DebugName { get { return "DangItAlternator"; } }
+        public override string InspectionName { get { return "Alternator"; } }
         public override string FailureMessage { get { return "Alternator failure!"; } }
         public override string RepairMessage { get { return "Alternator repaired."; } }
         public override string FailGuiName { get { return "Fail alternator"; } }

@@ -15,6 +15,7 @@ namespace DangIt
         ModuleReactionWheel torqueModule;
 
         public override string DebugName { get { return "DangItReactionWheel"; } }
+        public override string InspectionName { get { return "Reaction wheel"; } }
         public override string FailureMessage { get { return "Reaction wheel failure!"; } }
         public override string RepairMessage { get { return "Reaction wheel repaired."; } }
         public override string FailGuiName { get { return "Fail reaction wheel"; } }

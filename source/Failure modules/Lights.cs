@@ -13,8 +13,8 @@ namespace DangIt
     {
         ModuleLight lightModule;
 
-
         public override string DebugName { get { return "DangItLights"; } }
+        public override string InspectionName { get { return "Light bulb"; } }
         public override string FailureMessage { get { return "A light bulb has burned out."; } }
         public override string RepairMessage { get { return "Bulb replaced."; } }
         public override string FailGuiName { get { return "Fail light bulb"; } }

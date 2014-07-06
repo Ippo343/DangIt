@@ -13,13 +13,37 @@ namespace DangIt
     public abstract class FailureModule : PartModule
     {
 
-        #region Properties that return the custom strings
+        #region Custom strings
 
+        public abstract string InspectionName { get; }
         public abstract string DebugName { get; }
         public abstract string RepairMessage { get; }
         public abstract string FailureMessage { get; }
         public abstract string FailGuiName { get; }
         public abstract string EvaRepairGuiName { get; }
+
+        public virtual string InspectionMessage()
+        {
+            if (this.HasFailed)
+                return "the part has failed!";
+
+            float ratio = this.Age / this.LifeTimeSecs;
+
+            if (ratio < 0.10)
+                return "this part seems to be as good as new";
+            else if (ratio < 0.50)
+                return "this part is still in good condition";
+            else if (ratio < 0.75)
+                return "this part is starting to show its age";
+            else if (ratio < 1.25)
+                return "it looks like it's time to get a new one";
+            else if (ratio < 2.00)
+                return "it really isn't a good idea to keep using this part";
+            else if (ratio < 3)
+                return "this part needs replacing soon";
+            else
+                return "this part appears to be in terrible condition";
+        }
 
         #endregion
 

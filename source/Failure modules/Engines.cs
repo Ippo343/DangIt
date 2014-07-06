@@ -14,6 +14,7 @@ namespace DangIt
         ModuleEngines engineModule;
 
         public override string DebugName { get { return "DangItEngines"; } }
+        public override string InspectionName { get { return "Engine"; } }
         public override string FailureMessage { get { return "ENGINE FAILURE!"; } }
         public override string RepairMessage { get { return "Engine repaired."; } }
         public override string FailGuiName { get { return "Fail engine"; } }

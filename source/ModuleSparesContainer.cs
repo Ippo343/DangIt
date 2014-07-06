@@ -112,7 +112,7 @@ namespace DangIt
             evaPart.RequestResource(DangIt.Spares.Name, deposit);
 
             // GUI acknowledge
-            DangIt.Broadcast(evaPart.name + " has left " + deposit + " spares", 1f);
+            DangIt.Broadcast(evaPart.name + " has left " + deposit + " spares", false, 1f);
             ResourceDisplay.Instance.Refresh();
         }
 
@@ -143,7 +143,7 @@ namespace DangIt
             evaPart.RequestResource(DangIt.Spares.Name, -amountTaken);
 
             // GUI stuff
-            DangIt.Broadcast(evaPart.name + " has taken " + amountTaken + " spares", 1f);
+            DangIt.Broadcast(evaPart.name + " has taken " + amountTaken + " spares", false, 1f);
             ResourceDisplay.Instance.Refresh();
         }
 

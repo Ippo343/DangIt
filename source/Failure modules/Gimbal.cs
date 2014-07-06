@@ -16,6 +16,7 @@ namespace DangIt
         ModuleEngines engineModule;
 
         public override string DebugName { get { return "DangItGimbal"; } }
+        public override string InspectionName { get { return "Gimbal"; } }
         public override string FailureMessage { get { return "Gimbal failure!"; } }
         public override string RepairMessage { get { return "Gimbal repaired."; } }
         public override string FailGuiName { get { return "Fail gimbal"; } }

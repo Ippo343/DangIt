@@ -1,5 +1,6 @@
 === ALPHA 3 ===
 
+Added inspection: you can now inspect a part on EVA and get a message with a rough indication of the state of the part. Still hideous, but functional.
 Timewarp now stops when a failure occurs.
 
 Fixed the bug where the leak message was logged incorrectly in the flight log.
