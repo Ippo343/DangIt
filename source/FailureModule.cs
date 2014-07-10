@@ -116,21 +116,22 @@ namespace DangIt
         /// </summary>
         public float Lambda
         {
-            get { return LambdaFromMTBF() * LambdaMultiplier(); }
+            get { return LambdaFromMTBF(this.CurrentMTBF) * LambdaMultiplier(); }
         }
 
-        private float LambdaFromMTBF()
+        private float LambdaFromMTBF(float MTBF)
         {
             try
             {
-                return (1f / this.CurrentMTBF) / 3600f * TimeWarp.fixedDeltaTime;
+                return (1f / MTBF) / 3600f * TimeWarp.fixedDeltaTime;
             }
             catch (Exception e)
             {
                 OnError(e);
                 return 0f;
             }
-        } 
+        }
+
 
         #endregion
 
@@ -314,7 +315,8 @@ namespace DangIt
                         return;
                     }
 
-                    this.Age += now - LastFixedUpdate;
+                    float dt = now - LastFixedUpdate;
+                    this.Age += (dt * (1 + TemperatureMultiplier()));
 
                     this.CurrentMTBF = this.MTBF * (float)Math.Exp(-this.Age / this.LifeTimeSecs);
 
@@ -341,6 +343,14 @@ namespace DangIt
         }
 
 
+        /// <summary>
+        /// Increase the aging rate as the temperature increases.
+        /// </summary>
+        private float TemperatureMultiplier()
+        {
+            return 3 * (float)Math.Pow((Math.Max(part.temperature, 0) / part.maxTemp), 5);
+        }
+        
 
         /// <summary>
         /// Initiates the part's failure.
@@ -463,6 +473,7 @@ namespace DangIt
             }
 
         }
+
 
 
         public override string GetInfo()

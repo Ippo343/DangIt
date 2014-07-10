@@ -1,5 +1,6 @@
 === ALPHA 3 ===
 
+Implemented a temperature multiplier for the part's aging rate: the higher the part's temperature, the faster it will age.
 Fixed the name that is displayed for a kerbal during EVA events.
 Added support for engines that use ModuleEngineFX.
 Added inspection: you can now inspect a part on EVA and get a message with a rough indication of the state of the part. Still hideous, but functional.
