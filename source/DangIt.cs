@@ -202,6 +202,13 @@ namespace DangIt
                    (engineModule.currentThrottle > 0));
         }
 
+        public static bool EngineIsActive(ModuleEnginesFX engineModule)
+        {
+            return (engineModule.enabled &&
+                    engineModule.EngineIgnited &&
+                   (engineModule.currentThrottle > 0));
+        }
+
 
 
         /// <summary>

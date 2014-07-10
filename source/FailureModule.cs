@@ -419,6 +419,7 @@ namespace DangIt
                     return;
                 }
 
+                ProtoCrewMember evaKerbal = DangIt.FindEVAProtoCrewMember();
 
                 // Check if he is carrying enough spares
                 if (evaPart.Resources.Contains(DangIt.Spares.Name) && evaPart.Resources[DangIt.Spares.Name].amount >= this.RepairCost)
@@ -443,7 +444,7 @@ namespace DangIt
 
                     if (discount > 0)
                     {
-                        DangIt.Broadcast(evaPart.name + " was able to save " + discount + " spare parts");
+                        DangIt.Broadcast(evaKerbal.name + " was able to save " + discount + " spare parts");
                     }
                     
                 }
@@ -462,8 +463,6 @@ namespace DangIt
             }
 
         }
-
-
 
 
         public override string GetInfo()

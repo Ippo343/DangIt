@@ -2,7 +2,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: KSPAssemblyDependency("CrewFilesInterface", 0, 3)]
+[assembly: AssemblyVersion("0.0.2.2")]
+[assembly: AssemblyFileVersion("0.0.2.2")]
 
 [assembly: AssemblyTitle("DangIt")]
 [assembly: AssemblyDescription("Random failures mod for KSP")]
@@ -21,5 +22,3 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("91a53ca5-e3e3-41c1-a837-a125b9a2dff2")]
 
-[assembly: AssemblyVersion("0.0.2.2")]
-[assembly: AssemblyFileVersion("0.0.2.2")]

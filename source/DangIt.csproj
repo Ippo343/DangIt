@@ -52,6 +52,7 @@
     <Compile Include="Failure modules\Batteries.cs" />
     <Compile Include="Failure modules\ControlSurface.cs" />
     <Compile Include="DangIt.cs" />
+    <Compile Include="Failure modules\EnginesFX.cs" />
     <Compile Include="Failure modules\Engines.cs" />
     <Compile Include="Failure modules\Gimbal.cs" />
     <Compile Include="Failure modules\Lights.cs" />
@@ -89,7 +90,7 @@
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "D:\KSPModCopy\GameData\DangIt\"
 copy "$(ProjectDir)\cfgs\DangIt.cfg" "D:\KSPModCopy\GameData\DangIt\PluginData\DangIt"
-copy "$(ProjectDir)\cfgs\modules\*" "D:\KSPModCopy\GameData\DangIt\ModuleManager"
+copy "$(ProjectDir)\cfgs\ModuleManager\*" "D:\KSPModCopy\GameData\DangIt\ModuleManager"
 copy "$(ProjectDir)\CrewFiles\CrewFilesInterface.dll" "D:\KSPModCopy\GameData\DangIt\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
