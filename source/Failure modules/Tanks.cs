@@ -119,7 +119,15 @@ namespace DangIt
                    (part.Resources[leakName].amount > 0)))
                 {
                     double amount = pole * part.Resources[leakName].amount * TimeWarp.fixedDeltaTime;
-                    part.RequestResource(leakName, amount);
+
+                    // Check if the tank's valve has been closed
+                    if (part.Resources[leakName].flowState)
+                        part.RequestResource(leakName, amount); // valve open, request as usual
+                    else 
+                    {   // valve closed, subtract directly
+                        part.Resources[leakName].amount -= amount;
+                        part.Resources[leakName].amount = Math.Max(part.Resources[leakName].amount, 0);
+                    }
                 }
             }
             catch (Exception e)
@@ -190,6 +198,16 @@ namespace DangIt
 
 
 #if DEBUG
+        [KSPEvent(active = true, guiActive = true)]
+        public void PrintStatus()
+        {
+            this.Log("Printing flow modes");
+            foreach (PartResource res in this.part.Resources)
+            {
+                this.Log(res.resourceName + ": " + res.flowMode + ", " + res.flowState);
+            }
+        }
+
         [KSPEvent(active = true, guiActive=true)]
         public void PrintBlackList()
         {
