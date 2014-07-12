@@ -1,5 +1,6 @@
 === ALPHA 3 ===
 
+Added pre-emptive maintenance for parts.
 Fixed the bug that stops leaks when all the valves are shut off.
 Implemented a temperature multiplier for the part's aging rate: the higher the part's temperature, the faster it will age.
 Fixed the name that is displayed for a kerbal during EVA events.

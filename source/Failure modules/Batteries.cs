@@ -20,6 +20,7 @@ namespace DangIt
         public override string RepairMessage { get { return "Battery repaired."; } }
         public override string FailGuiName { get { return "Fail battery"; } }
         public override string EvaRepairGuiName { get { return "Repair battery"; } }
+        public override string MaintenanceString { get { return "Replace battery"; } }
 
 
         protected override void DI_Start(StartState state)

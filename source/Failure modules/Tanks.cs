@@ -18,6 +18,7 @@ namespace DangIt
         public override string RepairMessage { get { return "Duct tape applied."; } }
         public override string FailGuiName { get { return "Puncture tank"; } }
         public override string EvaRepairGuiName { get { return "Apply duct tape"; } }
+        public override string MaintenanceString { get { return "Repair the insulation"; } }
 
 
         [KSPField(isPersistant = true, guiActive = false)]

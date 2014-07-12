@@ -253,32 +253,6 @@ namespace DangIt
 
 
         /// <summary>
-        /// Finds the active EVA kerbal and returns its ProtoCrewMember
-        /// </summary>
-        /// <returns></returns>
-        public static ProtoCrewMember FindEVAProtoCrewMember()
-        {
-            int idx = FlightGlobals.Vessels.FindIndex(v => ((v.vesselType == VesselType.EVA) && v.isActiveVessel));
-            Vessel vessel = ((idx < 0) ? null : FlightGlobals.Vessels[idx]);
-
-            if (vessel == null)
-                return null;
-            else
-            {
-                List<ProtoCrewMember> crew = vessel.GetVesselCrew();
-
-                if (crew.Count == 1)
-                    return crew.First();
-                else
-                {
-                    throw new Exception("Error while searching for the EVA kerbal: found " + crew.Count + " crew elements, expected 1");
-                }
-            }
-        }
-
-
-
-        /// <summary>
         /// Resets the glow on all the vessel.
         /// Parts that have failed will glow red unless they are set to fail silently.
         /// </summary>

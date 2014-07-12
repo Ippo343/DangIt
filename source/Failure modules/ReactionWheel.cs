@@ -20,6 +20,7 @@ namespace DangIt
         public override string RepairMessage { get { return "Reaction wheel repaired."; } }
         public override string FailGuiName { get { return "Fail reaction wheel"; } }
         public override string EvaRepairGuiName { get { return "Fix reaction wheel"; } }
+        public override string MaintenanceString { get { return "Lubricate reaction wheel"; } }
 
 
         public override bool PartIsActive()

@@ -37,6 +37,7 @@ namespace DangIt
         public void TakeParts()
         {
             Part evaPart = DangIt.FindEVAPart();
+
             if (evaPart == null)
                 this.Log("ERROR: couldn't find an active EVA!");
             else
@@ -57,6 +58,7 @@ namespace DangIt
         public void DepositParts()
         {
             Part evaPart = DangIt.FindEVAPart();
+
             if (evaPart == null)
                 this.Log("ERROR: couldn't find an active EVA!");
             else
@@ -69,6 +71,7 @@ namespace DangIt
         }
 
 
+
         [KSPEvent(guiActiveUnfocused = false, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Show perks", active = false)]
         public void ShowPerks()
         {
@@ -78,7 +81,7 @@ namespace DangIt
 
                 if (server == null) throw new Exception("server is null!");
 
-                ProtoCrewMember kerbal = DangIt.FindEVAProtoCrewMember();
+                ProtoCrewMember kerbal = DangIt.FindEVAPart().vessel.GetVesselCrew().First();
                 ConfigNode kerbalFile = server.GetKerbalFile(kerbal);
 
                 if (kerbalFile == null) throw new Exception("kerbalFile is null!");
@@ -100,10 +103,8 @@ namespace DangIt
 
         protected void EmptyEvaSuit(Part evaPart, Part container)
         {
-            ProtoCrewMember evaKerbal = DangIt.FindEVAProtoCrewMember();
-#if DEBUG
-            this.Log("Emptying the EVA suit from " + evaKerbal.name + " to " + container.name);
-#endif
+            this.Log("Emptying the EVA suit from " + evaPart.name + " to " + container.name);
+
             // Compute how much can be left in the container
             double capacity = container.Resources[DangIt.Spares.Name].maxAmount - container.Resources[DangIt.Spares.Name].amount;
             double deposit = Math.Min(evaPart.Resources[DangIt.Spares.Name].amount, capacity);
@@ -113,7 +114,15 @@ namespace DangIt
             evaPart.RequestResource(DangIt.Spares.Name, deposit);
 
             // GUI acknowledge
-            DangIt.Broadcast(evaKerbal.name + " has left " + deposit + " spares", false, 1f);
+            try
+            {
+                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has left " + deposit + " spares", false, 1f);
+            }
+            catch (Exception e)
+            {
+                DangIt.Broadcast("You left " + deposit + " spares", false, 1f);
+            }
+
             ResourceDisplay.Instance.Refresh();
         }
 
@@ -121,14 +130,11 @@ namespace DangIt
 
         protected void FillEvaSuit(Part evaPart, Part container)
         {
-            ProtoCrewMember evaKerbal = DangIt.FindEVAProtoCrewMember();
-
             // Check if the EVA part contains the spare parts resource: if not, add a new config node
             if (!evaPart.Resources.Contains(DangIt.Spares.Name))
             {
-#if DEBUG
                 this.Log("The eva part doesn't contain spares, adding the config node"); 
-#endif
+
                 ConfigNode node = new ConfigNode("RESOURCE");
                 node.AddValue("name", DangIt.Spares.Name);
                 node.AddValue("maxAmount", DangIt.Spares.MaxEvaAmount);
@@ -146,7 +152,7 @@ namespace DangIt
             evaPart.RequestResource(DangIt.Spares.Name, -amountTaken);
 
             // GUI stuff
-            DangIt.Broadcast(evaKerbal.name + " has taken " + amountTaken + " spares", false, 1f);
+            DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " has taken " + amountTaken + " spares", false, 1f);
             ResourceDisplay.Instance.Refresh();
         }
 

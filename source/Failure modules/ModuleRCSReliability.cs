@@ -15,6 +15,7 @@ namespace DangIt
         public override string RepairMessage { get { return "Thruster back online."; } }
         public override string FailGuiName { get { return "Fail thruster"; } }
         public override string EvaRepairGuiName { get { return "Repair thruster"; } }
+        public override string MaintenanceString { get { return "Clean thruster"; } }
 
 
         public override bool PartIsActive()

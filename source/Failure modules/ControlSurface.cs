@@ -29,6 +29,8 @@ namespace DangIt
         public override string RepairMessage { get { return "Control surface repaired."; } }
         public override string FailGuiName { get { return "Fail control surface"; } }
         public override string EvaRepairGuiName { get { return "Drown in WD40"; } }
+        public override string MaintenanceString { get { return "Lubricate hinges"; } }
+
 
         public override bool PartIsActive()
         {

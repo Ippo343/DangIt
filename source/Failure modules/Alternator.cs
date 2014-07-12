@@ -21,8 +21,8 @@ namespace DangIt
         public override string FailureMessage { get { return "Alternator failure!"; } }
         public override string RepairMessage { get { return "Alternator repaired."; } }
         public override string FailGuiName { get { return "Fail alternator"; } }
-        public override string EvaRepairGuiName { get { return "Repair alternator"; } }
-
+        public override string EvaRepairGuiName { get { return "Replace alternator"; } }
+        public override string MaintenanceString { get { return "Replace alternator"; } }
 
         // The alternator is only active when the engine is actually firing
         public override bool PartIsActive()

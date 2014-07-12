@@ -19,6 +19,7 @@ namespace DangIt
         public override string RepairMessage { get { return "Bulb replaced."; } }
         public override string FailGuiName { get { return "Fail light bulb"; } }
         public override string EvaRepairGuiName { get { return "Replace light bulb"; } }
+        public override string MaintenanceString { get { return "Replace light bulb"; } }
 
 
         public override bool PartIsActive()

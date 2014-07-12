@@ -21,6 +21,7 @@ namespace DangIt
         public abstract string FailureMessage { get; }
         public abstract string FailGuiName { get; }
         public abstract string EvaRepairGuiName { get; }
+        public abstract string MaintenanceString { get; }
 
         public virtual string InspectionMessage()
         {
@@ -74,6 +75,15 @@ namespace DangIt
 
         [KSPField(isPersistant = true, guiActive = false)]
         public float RepairCost = 5f;                               // Amount of spares needed to repair the part
+
+        [KSPField(isPersistant = true, guiActive = false)]
+        public float RepairBonus = 0f;                              // Age discount during a repair
+
+        [KSPField(isPersistant = true, guiActive = false)]
+        public float MaintenanceCost = 1f;                          // Amount of spares needed to perform maintenance
+
+        [KSPField(isPersistant = true, guiActive = false)]
+        public float MaintenanceBonus = 0.2f;                       // Age discount for preemptive maintenance
 
         [KSPField(isPersistant = true, guiActive = false)]
         public bool Silent = false;
@@ -163,9 +173,13 @@ namespace DangIt
                 #endregion
 
                 #region Fail and repair events
+
                 this.Events["Fail"].guiName = this.FailGuiName;
+
                 this.Events["EvaRepair"].guiName = this.EvaRepairGuiName;
                 this.Events["EvaRepair"].active = false;
+
+                this.Events["Maintenance"].guiName = this.MaintenanceString;
               
                 #endregion
 
@@ -350,7 +364,38 @@ namespace DangIt
         {
             return 3 * (float)Math.Pow((Math.Max(part.temperature, 0) / part.maxTemp), 5);
         }
-        
+
+
+
+        [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
+        public void Maintenance()
+        {
+            this.Log("Initiating EVA maitenance");
+
+            // Get the EVA part (parts can hold resources)
+            Part evaPart = DangIt.FindEVAPart();
+            if (evaPart == null)
+            {
+                DangIt.Broadcast("DangIt ERROR: couldn't find an active EVA!");
+                this.Log("ERROR: couldn't find an active EVA!");
+                return;
+            }
+
+            // Check if he is carrying enough spares
+            if (evaPart.Resources.Contains(DangIt.Spares.Name) && evaPart.Resources[DangIt.Spares.Name].amount >= this.MaintenanceCost)
+            {
+                this.Log("Spare parts check: OK! Maintenance allowed allowed");
+                DiscountAge(this.MaintenanceBonus);
+                DangIt.Broadcast("This should last a little longer now");
+            }
+            else
+            {
+                this.Log("Spare parts check: failed! Maintenance NOT allowed");
+                DangIt.Broadcast("You need " + this.MaintenanceCost + " spares to maintain this.");
+            }
+
+        }
+
 
         /// <summary>
         /// Initiates the part's failure.
@@ -399,6 +444,7 @@ namespace DangIt
 
                 Events["Fail"].active = ((state) ? false : DangIt.EnableGuiFailure);
                 Events["EvaRepair"].active = state;
+                Events["Maintenance"].active = !state;
             }
             catch (Exception e)
             {
@@ -422,14 +468,13 @@ namespace DangIt
 
                 // Get the EVA part (parts can hold resources)
                 Part evaPart = DangIt.FindEVAPart();
+                
                 if (evaPart == null)
                 {
                     DangIt.Broadcast("DangIt ERROR: couldn't find an active EVA!");
                     this.Log("ERROR: couldn't find an active EVA!");
                     return;
                 }
-
-                ProtoCrewMember evaKerbal = DangIt.FindEVAProtoCrewMember();
 
                 // Check if he is carrying enough spares
                 if (evaPart.Resources.Contains(DangIt.Spares.Name) && evaPart.Resources[DangIt.Spares.Name].amount >= this.RepairCost)
@@ -441,7 +486,7 @@ namespace DangIt
 
                     DangIt.FlightLog(this.RepairMessage);
 
-                    float intelligence = 1 - evaPart.protoModuleCrew[0].stupidity;
+                    float intelligence = 1 - evaPart.vessel.GetVesselCrew().First().stupidity;
                     float discountedCost = (float)Math.Round( RepairCost * (1 - UnityEngine.Random.Range(0f, intelligence)) );
                     float discount = RepairCost - discountedCost;
 
@@ -452,9 +497,11 @@ namespace DangIt
 
                     DangIt.Broadcast(this.RepairMessage);
 
+                    DiscountAge(this.RepairBonus);
+
                     if (discount > 0)
                     {
-                        DangIt.Broadcast(evaKerbal.name + " was able to save " + discount + " spare parts");
+                        DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " was able to save " + discount + " spare parts");
                     }
                     
                 }
@@ -522,6 +569,10 @@ namespace DangIt
         }
 
 
+        private void DiscountAge(float percentage)
+        {
+            this.Age *= (1 - percentage);
+        }
 
         #region Logging utilities
 

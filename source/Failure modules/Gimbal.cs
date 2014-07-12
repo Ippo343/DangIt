@@ -21,6 +21,7 @@ namespace DangIt
         public override string RepairMessage { get { return "Gimbal repaired."; } }
         public override string FailGuiName { get { return "Fail gimbal"; } }
         public override string EvaRepairGuiName { get { return "Repair gimbal"; } }
+        public override string MaintenanceString { get { return "Lubricate gimbal"; } }
 
 
         public override bool PartIsActive()

@@ -19,6 +19,7 @@ namespace DangIt
         public override string RepairMessage { get { return "Engine repaired."; } }
         public override string FailGuiName { get { return "Fail engine"; } }
         public override string EvaRepairGuiName { get { return "Repair engine"; } }
+        public override string MaintenanceString { get { return "Clean engine"; } }
 
 
         protected override float LambdaMultiplier()
