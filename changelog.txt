@@ -1,5 +1,6 @@
 === ALPHA 3 ===
 
+Implemented inspection bonus: for a short time, the part is very unlikely to fail after an inspection.
 Now all the reliability infos are in their own panel in the editor.
 Added pre-emptive maintenance for parts.
 Fixed the bug that stops leaks when all the valves are shut off.

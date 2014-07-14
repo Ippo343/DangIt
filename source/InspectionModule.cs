@@ -19,7 +19,10 @@ namespace DangIt
                 sb.AppendLine("This part seems to be as good as new");
 
             foreach (FailureModule fm in failModules)
+            {
+                fm.TimeOfLastInspection = DangIt.Now();
                 sb.AppendLine(fm.InspectionName + ": " + fm.InspectionMessage());
+            }
 
             ScreenMessages.PostScreenMessage(sb.ToString(), 5f, ScreenMessageStyle.UPPER_LEFT);
         }

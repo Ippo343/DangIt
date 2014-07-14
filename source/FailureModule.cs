@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+
 namespace DangIt
 {
     /// <summary>
@@ -86,6 +87,9 @@ namespace DangIt
         public float MaintenanceBonus = 0.2f;                       // Age discount for preemptive maintenance
 
         [KSPField(isPersistant = true, guiActive = false)]
+        public float InspectionBonus = 60f;                         // Duration of the inspection discount
+
+        [KSPField(isPersistant = true, guiActive = false)]
         public bool Silent = false;
 
 
@@ -99,6 +103,9 @@ namespace DangIt
 
         [KSPField(isPersistant = true, guiActive = false)]
         public float TimeOfLastReset = float.PositiveInfinity;
+
+        [KSPField(isPersistant = true, guiActive = DangIt.DEBUG)]
+        public float TimeOfLastInspection = float.NegativeInfinity;
 
         [KSPField(isPersistant = true, guiActive = DangIt.DEBUG)]
         public float Age = 0;
@@ -126,7 +133,9 @@ namespace DangIt
         /// </summary>
         public float Lambda
         {
-            get { return LambdaFromMTBF(this.CurrentMTBF) * LambdaMultiplier(); }
+            get { return LambdaFromMTBF(this.CurrentMTBF) 
+                         * LambdaMultiplier()
+                         * InspectionMultiplier(); }
         }
 
         private float LambdaFromMTBF(float MTBF)
@@ -140,6 +149,12 @@ namespace DangIt
                 OnError(e);
                 return 0f;
             }
+        }
+
+        private float InspectionMultiplier()
+        {
+            float elapsed = (DangIt.Now() - this.TimeOfLastInspection);
+            return Math.Min(elapsed / this.InspectionBonus, 1);
         }
 
 
@@ -166,6 +181,8 @@ namespace DangIt
                 this.Age = 0;
                 this.TimeOfLastReset = now;
                 this.LastFixedUpdate = now;
+
+                this.TimeOfLastInspection = float.NegativeInfinity;
 
                 this.CurrentMTBF = this.MTBF;
                 this.LifeTimeSecs = this.LifeTime * 3600f;
@@ -212,6 +229,7 @@ namespace DangIt
                 this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
                 this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
                 this.TimeOfLastReset = DangIt.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
+                this.TimeOfLastInspection = DangIt.Parse<float>(node.GetValue("TimeOfLastInspection"), defaultTo: float.NegativeInfinity);
                 this.LastFixedUpdate = DangIt.Parse<float>(node.GetValue("LastFixedUpdate"), defaultTo: 0f);
                 this.CurrentMTBF = DangIt.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
                 this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
@@ -251,6 +269,7 @@ namespace DangIt
                 node.SetValue("HasInitted", this.HasInitted.ToString());
                 node.SetValue("Age", Age.ToString());
                 node.SetValue("TimeOfLastReset", TimeOfLastReset.ToString());
+                node.SetValue("TimeOfLastInspection", TimeOfLastInspection.ToString());
                 node.SetValue("LastFixedUpdate", LastFixedUpdate.ToString());
                 node.SetValue("CurrentMTBF", CurrentMTBF.ToString());
                 node.SetValue("LifeTimeSecs", LifeTimeSecs.ToString());
