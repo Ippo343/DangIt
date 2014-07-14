@@ -59,8 +59,9 @@
     <Compile Include="FailureModule.cs" />
     <Compile Include="Failure modules\ModuleRCSReliability.cs" />
     <Compile Include="InspectionModule.cs" />
+    <Compile Include="ModuleReliabilityInfo.cs" />
     <Compile Include="PartModuleException.cs" />
-    <Compile Include="ModuleSparesContainer.cs" />
+    <Compile Include="SparesContainer.cs" />
     <Compile Include="Perks\Generator.cs" />
     <Compile Include="Perks\Perk.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Failure modules\Tanks.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cfgs\ModuleManager\Information.cfg" />
     <None Include="cfgs\ModuleManager\Inspection.cfg" />
     <None Include="cfgs\ModuleManager\Alternator.cfg" />
     <None Include="cfgs\ModuleManager\Battery.cfg" />

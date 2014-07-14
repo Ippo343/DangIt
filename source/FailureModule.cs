@@ -522,7 +522,7 @@ namespace DangIt
         }
 
 
-
+        /*
         public override string GetInfo()
         {
             try
@@ -541,6 +541,7 @@ namespace DangIt
                 return string.Empty;
             }
         }
+        */
 
 
 
