@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CrewFilesInterface;
 using UnityEngine;
-using DangIt.Perks;
 
 namespace DangIt
 {
@@ -17,19 +15,6 @@ namespace DangIt
             Debug.Log("DangIt: Spares Container [" + this.GetInstanceID() + "]: OnStart, state is " + state);
             
             this.Events["TakeParts"].active = true;
-
-            // Check if CrewFiles is installed
-            if (CrewFilesManager.CrewFilesAvailable)
-            {
-                this.Log("CrewFiles detected!");
-                this.Events["ShowPerks"].active = true;
-                this.Events["ShowPerks"].guiActiveUnfocused = true;
-            }
-            else
-            {
-                this.Log("CrewFiles not detected.");
-            }
-
         }
 
        
@@ -71,7 +56,7 @@ namespace DangIt
         }
 
 
-
+        /*
         [KSPEvent(guiActiveUnfocused = false, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Show perks", active = false)]
         public void ShowPerks()
         {
@@ -99,6 +84,7 @@ namespace DangIt
             }
 
         }
+        */
 
 
         protected void EmptyEvaSuit(Part evaPart, Part container)
@@ -118,7 +104,7 @@ namespace DangIt
             {
                 DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has left " + deposit + " spares", false, 1f);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 DangIt.Broadcast("You left " + deposit + " spares", false, 1f);
             }

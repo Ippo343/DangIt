@@ -1,0 +1,13 @@
+{
+  "NAME": "DangIt",
+  "URL": "https://raw.githubusercontent.com/Ippo343/DangIt/master/source/Data/DangIt.version",
+  "VERSION": {
+    "MAJOR": 0,
+    "MINOR": 3
+  },
+  "KSP_VERSION": {
+    "MAJOR": 0,
+    "MINOR": 24,
+    "PATCH": 0
+  }
+}

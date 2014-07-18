@@ -1,16 +1,21 @@
 === ALPHA 3 ===
 
-Implemented inspection bonus: for a short time, the part is very unlikely to fail after an inspection.
-Now all the reliability infos are in their own panel in the editor.
-Added pre-emptive maintenance for parts.
-Fixed the bug that stops leaks when all the valves are shut off.
-Implemented a temperature multiplier for the part's aging rate: the higher the part's temperature, the faster it will age.
-Fixed the name that is displayed for a kerbal during EVA events.
-Added support for engines that use ModuleEngineFX.
-Added inspection: you can now inspect a part on EVA and get a message with a rough indication of the state of the part. Still hideous, but functional.
-Timewarp now stops when a failure occurs.
-Fixed the bug where the leak message was logged incorrectly in the flight log.
-Fixed the formatting of the flight log messages.
+Big Stuff:
+ - EVA Inspection: you can now inspect a part while on EVA to have a ballpark estimate of its reliability (currently hideous, will embellish asap);
+ - Inpsection bonus: additionally, performing an inspection will give a temporary reliability boost to the part;
+ - Preemptive maintenance: you can now permanently improve the reliability (by consuming spare parts);
+ - The higher a part's temperature, the faster it will age: be careful with those reentry angles!
+
+Small stuff:
+ - Now all the reliability infos are in their own panel in the editor;
+ - Added support for engines that use ModuleEngineFX: now all engines should be covered, at least in theory;
+
+Fixes:
+ - Timewarp now stops when a failure occurs;
+ - Resource leaks can't be stopped by shutting the valves;
+ - The kerbal's name is now displayed correctly during EVA events
+ - A bug that caused leaks to show incorrectly in the flight log
+ - The formatting of the flight log messages.
 
 
 
