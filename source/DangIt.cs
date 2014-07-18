@@ -129,7 +129,7 @@ namespace DangIt
 #else
         public const float EvaRepairDistance = 1.5f;
         public const bool DEBUG = false;
-        public const bool EnableGuiFailure = true;
+        public const bool EnableGuiFailure = true; //TODO: change this to false for the final release
 #endif
 
 
