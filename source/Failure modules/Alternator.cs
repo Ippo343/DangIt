@@ -27,7 +27,7 @@ namespace DangIt
         // The alternator is only active when the engine is actually firing
         public override bool PartIsActive()
         {
-            return DangIt.EngineIsActive(this.engineModule);
+            return Static.EngineIsActive(this.engineModule);
         }
 
 

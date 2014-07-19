@@ -108,9 +108,9 @@ namespace DangIt
         {
             if (node != null)
             {
-                Messages = DangIt.Parse<bool>(node.GetValue("messages"), true);
-                Glow = DangIt.Parse<bool>(node.GetValue("glow"), true);
-                Sounds = DangIt.Parse<bool>(node.GetValue("sounds"), true); 
+                Messages = Static.Parse<bool>(node.GetValue("messages"), true);
+                Glow = Static.Parse<bool>(node.GetValue("glow"), true);
+                Sounds = Static.Parse<bool>(node.GetValue("sounds"), true); 
             }
         }
     }
@@ -119,7 +119,7 @@ namespace DangIt
     /// <summary>
     /// Contains shared functions and project constants
     /// </summary>
-    public static class DangIt
+    public static class Static
     {
 
 #if DEBUG
@@ -297,7 +297,7 @@ namespace DangIt
 
             // Reset the glow for all the child parts
             foreach (Part child in part.children)
-                DangIt.ResetPartGlow(child);
+                Static.ResetPartGlow(child);
         }
 
     }

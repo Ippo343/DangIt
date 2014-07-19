@@ -18,10 +18,10 @@ namespace DangIt
         }
 
        
-        [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange=DangIt.EvaRepairDistance)]
+        [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange=Static.EvaRepairDistance)]
         public void TakeParts()
         {
-            Part evaPart = DangIt.FindEVAPart();
+            Part evaPart = Static.FindEVAPart();
 
             if (evaPart == null)
                 this.Log("ERROR: couldn't find an active EVA!");
@@ -39,10 +39,10 @@ namespace DangIt
 
 
 
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Deposit spares", active = false)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = Static.EvaRepairDistance, guiName = "Deposit spares", active = false)]
         public void DepositParts()
         {
-            Part evaPart = DangIt.FindEVAPart();
+            Part evaPart = Static.FindEVAPart();
 
             if (evaPart == null)
                 this.Log("ERROR: couldn't find an active EVA!");
@@ -92,21 +92,21 @@ namespace DangIt
             this.Log("Emptying the EVA suit from " + evaPart.name + " to " + container.name);
 
             // Compute how much can be left in the container
-            double capacity = container.Resources[DangIt.Spares.Name].maxAmount - container.Resources[DangIt.Spares.Name].amount;
-            double deposit = Math.Min(evaPart.Resources[DangIt.Spares.Name].amount, capacity);
+            double capacity = container.Resources[Static.Spares.Name].maxAmount - container.Resources[Static.Spares.Name].amount;
+            double deposit = Math.Min(evaPart.Resources[Static.Spares.Name].amount, capacity);
 
             // Add it to the spares container and drain it from the EVA part
-            container.RequestResource(DangIt.Spares.Name, -deposit);
-            evaPart.RequestResource(DangIt.Spares.Name, deposit);
+            container.RequestResource(Static.Spares.Name, -deposit);
+            evaPart.RequestResource(Static.Spares.Name, deposit);
 
             // GUI acknowledge
             try
             {
-                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has left " + deposit + " spares", false, 1f);
+                Static.Broadcast(evaPart.protoModuleCrew[0].name + " has left " + deposit + " spares", false, 1f);
             }
             catch (Exception)
             {
-                DangIt.Broadcast("You left " + deposit + " spares", false, 1f);
+                Static.Broadcast("You left " + deposit + " spares", false, 1f);
             }
 
             ResourceDisplay.Instance.Refresh();
@@ -117,28 +117,28 @@ namespace DangIt
         protected void FillEvaSuit(Part evaPart, Part container)
         {
             // Check if the EVA part contains the spare parts resource: if not, add a new config node
-            if (!evaPart.Resources.Contains(DangIt.Spares.Name))
+            if (!evaPart.Resources.Contains(Static.Spares.Name))
             {
                 this.Log("The eva part doesn't contain spares, adding the config node"); 
 
                 ConfigNode node = new ConfigNode("RESOURCE");
-                node.AddValue("name", DangIt.Spares.Name);
-                node.AddValue("maxAmount", DangIt.Spares.MaxEvaAmount);
+                node.AddValue("name", Static.Spares.Name);
+                node.AddValue("maxAmount", Static.Spares.MaxEvaAmount);
                 node.AddValue("amount", 0);
                 evaPart.Resources.Add(node);
             }
 
 
             // Compute how much the kerbal can take
-            double desired = Math.Min(DangIt.Spares.MaxEvaAmount - evaPart.Resources[DangIt.Spares.Name].amount, DangIt.Spares.Increment);
-            double amountTaken = Math.Min(desired, container.Resources[DangIt.Spares.Name].amount);
+            double desired = Math.Min(Static.Spares.MaxEvaAmount - evaPart.Resources[Static.Spares.Name].amount, Static.Spares.Increment);
+            double amountTaken = Math.Min(desired, container.Resources[Static.Spares.Name].amount);
 
             // Take it from the container and add it to the EVA
-            container.RequestResource(DangIt.Spares.Name, amountTaken);
-            evaPart.RequestResource(DangIt.Spares.Name, -amountTaken);
+            container.RequestResource(Static.Spares.Name, amountTaken);
+            evaPart.RequestResource(Static.Spares.Name, -amountTaken);
 
             // GUI stuff
-            DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " has taken " + amountTaken + " spares", false, 1f);
+            Static.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " has taken " + amountTaken + " spares", false, 1f);
             ResourceDisplay.Instance.Refresh();
         }
 
@@ -154,7 +154,7 @@ namespace DangIt
             Part evaPart = action.from;
             Part container = action.to;
 
-            if (evaPart.Resources.Contains(DangIt.Spares.Name))
+            if (evaPart.Resources.Contains(Static.Spares.Name))
                 EmptyEvaSuit(evaPart, container);
         }
 

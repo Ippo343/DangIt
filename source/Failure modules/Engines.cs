@@ -32,7 +32,7 @@ namespace DangIt
         // Returns true when the engine is actually in use
         public override bool PartIsActive()
         {
-            return DangIt.EngineIsActive(this.engineModule);
+            return Static.EngineIsActive(this.engineModule);
         }
 
 
