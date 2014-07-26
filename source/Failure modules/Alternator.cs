@@ -6,14 +6,10 @@ using UnityEngine;
 
 namespace DangIt
 {
-    /// <summary>
-    /// Module that causes failures in the power generator of engines
-    /// </summary>
+
     public class ModuleAlternatorReliability : FailureModule
     {
-        // The alternator is tied to an engine
-        // The engine module also allows to check when the alternator is active
-        ModuleEngines engineModule;
+        EngineManager engine;
         ModuleAlternator alternatorModule;
 
         public override string DebugName { get { return "DangItAlternator"; } }
@@ -24,10 +20,10 @@ namespace DangIt
         public override string EvaRepairGuiName { get { return "Replace alternator"; } }
         public override string MaintenanceString { get { return "Replace alternator"; } }
 
-        // The alternator is only active when the engine is actually firing
+
         public override bool PartIsActive()
         {
-            return DangIt.EngineIsActive(this.engineModule);
+            return engine.IsActive;
         }
 
 
@@ -35,8 +31,8 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.alternatorModule = this.GetModule<ModuleAlternator>();
-                this.engineModule = this.GetModule<ModuleEngines>();
+                this.alternatorModule = this.part.Modules.OfType<ModuleAlternator>().Single();
+                this.engine = new EngineManager(this.part);
             }
         }
 

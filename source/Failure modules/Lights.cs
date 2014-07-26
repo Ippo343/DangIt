@@ -32,7 +32,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.lightModule = this.GetModule<ModuleLight>(); 
+                this.lightModule = this.part.Modules.OfType<ModuleLight>().Single();
             }
         }
 

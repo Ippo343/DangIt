@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using ferram4;
+using System.Reflection;
+using DangIt;
 
-namespace DangIt
+namespace DangIt_FAR
 {
     /// <summary>
     /// Module that causes failures in aerodynamic control surfaces
     /// </summary>
-    public class ModuleControlSurfaceReliability : FailureModule
+    public class ModuleFARControlSurfaceReliability : FailureModule
     {
-        ModuleControlSurface controlSurfaceModule;
+        FARControllableSurface controlSurfaceModule;
 
         [KSPField(isPersistant = true, guiActive = false)]
-        protected bool ignorePitch = false;
+        public bool wasFlap = true;
 
-        [KSPField(isPersistant = true, guiActive = false)]
-        protected bool ignoreRoll = false;
-
-        [KSPField(isPersistant = true, guiActive = false)]
-        protected bool ignoreYaw = false;
+        FieldInfo AoAOffset;
+        FieldInfo AoAFromFlap;
         
 
-        public override string DebugName { get { return "DangItControlSurface"; } }
+        public override string DebugName { get { return "DangItFARControlSurface"; } }
         public override string InspectionName { get { return "Control surface"; } }
         public override string FailureMessage { get { return "A control surface is stuck!"; } }
         public override string RepairMessage { get { return "Control surface repaired."; } }
@@ -41,17 +41,13 @@ namespace DangIt
 
         protected override void DI_OnLoad(ConfigNode node)
         {
-            this.ignorePitch = Static.Parse<bool>(node.GetValue("ignorePitch"), defaultTo: false);
-            this.ignoreRoll = Static.Parse<bool>(node.GetValue("ignoreRoll"), defaultTo: false);
-            this.ignoreYaw = Static.Parse<bool>(node.GetValue("ignoreYaw"), defaultTo: false);
+            this.wasFlap = DangIt.Static.Parse<bool>(node.GetValue("wasFlap"), defaultTo: true);
         }
 
 
         protected override void DI_OnSave(ConfigNode node)
         {
-            node.SetValue("ignorePitch", this.ignorePitch.ToString());
-            node.SetValue("ignoreRoll", this.ignoreRoll.ToString());
-            node.SetValue("ignoreYaw", this.ignoreYaw.ToString());
+            node.SetValue("wasFlap", this.wasFlap.ToString());
         }
 
 
@@ -59,7 +55,17 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.controlSurfaceModule = this.part.Modules.OfType<ModuleControlSurface>().Single();
+                this.controlSurfaceModule = this.part.Modules.OfType<FARControllableSurface>().Single();
+                this.wasFlap = controlSurfaceModule.isFlap;
+
+                this.AoAFromFlap = typeof(FARControllableSurface).GetField("AoAFromFlap", BindingFlags.NonPublic);
+                this.AoAOffset = typeof(FARControllableSurface).GetField("AoAOffset", BindingFlags.NonPublic);
+
+                if (AoAOffset == null || AoAFromFlap == null)
+                {
+                    throw new Exception("Could not get the field info from FAR!");
+                }
+
             }
         }
 
@@ -73,14 +79,11 @@ namespace DangIt
         {
             // Save the settings before overwriting them,
             // just in the case that the user has already set the control surface to ignore some direction
-            this.ignorePitch = this.controlSurfaceModule.ignorePitch;
-            this.ignoreRoll = this.controlSurfaceModule.ignoreRoll;
-            this.ignoreYaw = this.controlSurfaceModule.ignoreYaw;
+            this.wasFlap = this.controlSurfaceModule.isFlap;
 
             // Make the control surface unresponsive
-            this.controlSurfaceModule.ignorePitch = true;
-            this.controlSurfaceModule.ignoreRoll = true;
-            this.controlSurfaceModule.ignoreYaw = true;
+            //AoAFromFlap.SetValue(this.controlSurfaceModule, AoAOffset.GetValue(this.controlSurfaceModule));
+            this.controlSurfaceModule.isFlap = false;
 
             // Disable the module for good measure
             this.controlSurfaceModule.enabled = false; 
@@ -93,11 +96,11 @@ namespace DangIt
             // Enable the module
             this.controlSurfaceModule.enabled = true;
 
-            // Restore the previous settings
-            this.controlSurfaceModule.ignorePitch = this.ignorePitch;
-            this.controlSurfaceModule.ignoreRoll = this.ignoreRoll;
-            this.controlSurfaceModule.ignoreYaw = this.ignoreYaw; 
+            // Re-allow control as a flap
+            this.controlSurfaceModule.isFlap = true;
         }
 
     }
+
+
 }

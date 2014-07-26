@@ -8,7 +8,7 @@ namespace DangIt
 {
     class InspectionModule : PartModule
     {
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = Static.EvaRepairDistance, externalToEVAOnly = true)]
         public void Inspect()
         {
             StringBuilder sb = new StringBuilder();
@@ -20,7 +20,7 @@ namespace DangIt
 
             foreach (FailureModule fm in failModules)
             {
-                fm.TimeOfLastInspection = DangIt.Now();
+                fm.TimeOfLastInspection = Static.Now();
                 sb.AppendLine(fm.InspectionName + ": " + fm.InspectionMessage());
             }
 

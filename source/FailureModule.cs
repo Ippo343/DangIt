@@ -11,7 +11,7 @@ namespace DangIt
     /// Base failure module: handles the aging of the part, causes the random failures
     /// and handles the EVA repair.
     /// </summary>
-    public abstract class FailureModule : PartModule
+    public abstract class FailureModule : PartModule, IPartCostModifier
     {
 
         #region Custom strings
@@ -104,10 +104,10 @@ namespace DangIt
         [KSPField(isPersistant = true, guiActive = false)]
         public float TimeOfLastReset = float.PositiveInfinity;
 
-        [KSPField(isPersistant = true, guiActive = DangIt.DEBUG)]
+        [KSPField(isPersistant = true, guiActive = Static.DEBUG)]
         public float TimeOfLastInspection = float.NegativeInfinity;
 
-        [KSPField(isPersistant = true, guiActive = DangIt.DEBUG)]
+        [KSPField(isPersistant = true, guiActive = Static.DEBUG)]
         public float Age = 0;
 
         [KSPField(isPersistant = true, guiActive = false)]
@@ -153,7 +153,7 @@ namespace DangIt
 
         private float InspectionMultiplier()
         {
-            float elapsed = (DangIt.Now() - this.TimeOfLastInspection);
+            float elapsed = (Static.Now() - this.TimeOfLastInspection);
             return Math.Min(elapsed / this.InspectionBonus, 1);
         }
 
@@ -174,7 +174,7 @@ namespace DangIt
             {
                 this.Log("Resetting");
 
-                float now = DangIt.Now();
+                float now = Static.Now();
 
                 #region Internal state
 
@@ -226,14 +226,14 @@ namespace DangIt
                 this.Log(node.ToString());
 #endif
                 // Load all the internal state variables
-                this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
-                this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
-                this.TimeOfLastReset = DangIt.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
-                this.TimeOfLastInspection = DangIt.Parse<float>(node.GetValue("TimeOfLastInspection"), defaultTo: float.NegativeInfinity);
-                this.LastFixedUpdate = DangIt.Parse<float>(node.GetValue("LastFixedUpdate"), defaultTo: 0f);
-                this.CurrentMTBF = DangIt.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
-                this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
-                this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
+                this.HasInitted = Static.Parse<bool>(node.GetValue("HasInitted"), false);
+                this.Age = Static.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
+                this.TimeOfLastReset = Static.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
+                this.TimeOfLastInspection = Static.Parse<float>(node.GetValue("TimeOfLastInspection"), defaultTo: float.NegativeInfinity);
+                this.LastFixedUpdate = Static.Parse<float>(node.GetValue("LastFixedUpdate"), defaultTo: 0f);
+                this.CurrentMTBF = Static.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
+                this.LifeTimeSecs = Static.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
+                this.HasFailed = Static.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
                 // Run the subclass' custom onload
                 this.DI_OnLoad(node);
@@ -251,7 +251,6 @@ namespace DangIt
             catch (Exception e)
             {
                 this.OnError(e);
-                throw;
             }
         }
 
@@ -301,11 +300,11 @@ namespace DangIt
                 if (HighLogic.LoadedSceneIsFlight) // nothing to do in editor
                 {
 #if DEBUG
-                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
+                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Static.Now());
 #endif
                     // Reset the internal state at the beginning of the flight
                     // this condition also catches a revert to launch (+1 second for safety)
-                    if (DangIt.Now() < (this.TimeOfLastReset + 1))
+                    if (Static.Now() < (this.TimeOfLastReset + 1))
                         this.Reset();
 
                     // If the part was saved when it was failed,
@@ -314,7 +313,7 @@ namespace DangIt
                     if (this.HasFailed)
                         this.DI_Disable();
 
-                    DangIt.ResetShipGlow(this.part.vessel);
+                    Static.ResetShipGlow(this.part.vessel);
                 }
 
 
@@ -340,7 +339,7 @@ namespace DangIt
                 // Only update the module during flight and after the re-initialization has run
                 if (HighLogic.LoadedSceneIsFlight && this.HasInitted)
                 {
-                    float now = DangIt.Now();
+                    float now = Static.Now();
 
                     if (!PartIsActive())
                     {
@@ -351,7 +350,7 @@ namespace DangIt
                     float dt = now - LastFixedUpdate;
                     this.Age += (dt * (1 + TemperatureMultiplier()));
 
-                    this.CurrentMTBF = this.MTBF * (float)Math.Exp(-this.Age / this.LifeTimeSecs);
+                    this.CurrentMTBF = this.MTBF * this.ExponentialDecay();
 
                     // If the part has not already failed, toss the dice
                     if (!this.HasFailed)
@@ -376,6 +375,12 @@ namespace DangIt
         }
 
 
+        private float ExponentialDecay()
+        {
+            return (float)Math.Exp(-this.Age / this.LifeTimeSecs);
+        }
+
+
         /// <summary>
         /// Increase the aging rate as the temperature increases.
         /// </summary>
@@ -386,31 +391,31 @@ namespace DangIt
 
 
 
-        [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
+        [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = Static.EvaRepairDistance, externalToEVAOnly = true)]
         public void Maintenance()
         {
             this.Log("Initiating EVA maitenance");
 
             // Get the EVA part (parts can hold resources)
-            Part evaPart = DangIt.FindEVAPart();
+            Part evaPart = Static.FindEVAPart();
             if (evaPart == null)
             {
-                DangIt.Broadcast("DangIt ERROR: couldn't find an active EVA!");
+                Static.Broadcast("DangIt ERROR: couldn't find an active EVA!");
                 this.Log("ERROR: couldn't find an active EVA!");
                 return;
             }
 
             // Check if he is carrying enough spares
-            if (evaPart.Resources.Contains(DangIt.Spares.Name) && evaPart.Resources[DangIt.Spares.Name].amount >= this.MaintenanceCost)
+            if (evaPart.Resources.Contains(Static.Spares.Name) && evaPart.Resources[Static.Spares.Name].amount >= this.MaintenanceCost)
             {
                 this.Log("Spare parts check: OK! Maintenance allowed allowed");
                 DiscountAge(this.MaintenanceBonus);
-                DangIt.Broadcast("This should last a little longer now");
+                Static.Broadcast("This should last a little longer now");
             }
             else
             {
                 this.Log("Spare parts check: failed! Maintenance NOT allowed");
-                DangIt.Broadcast("You need " + this.MaintenanceCost + " spares to maintain this.");
+                Static.Broadcast("You need " + this.MaintenanceCost + " spares to maintain this.");
             }
 
         }
@@ -420,7 +425,7 @@ namespace DangIt
         /// Initiates the part's failure.
         /// Put your custom failure code in DI_Fail()
         /// </summary>
-        [KSPEvent(guiActive = DangIt.EnableGuiFailure)]
+        [KSPEvent(guiActive = Static.EnableGuiFailure)]
         public void Fail()
         {
             try
@@ -438,9 +443,9 @@ namespace DangIt
                 this.DI_Disable();
 
                 if (!this.Silent)
-                    DangIt.Broadcast(this.FailureMessage);
+                    Static.Broadcast(this.FailureMessage);
 
-                DangIt.FlightLog(this.FailureMessage);
+                Static.FlightLog(this.FailureMessage);
 
             }
             catch (Exception e)
@@ -459,9 +464,9 @@ namespace DangIt
             try
             {
                 this.HasFailed = state;
-                DangIt.ResetShipGlow(this.part.vessel);
+                Static.ResetShipGlow(this.part.vessel);
 
-                Events["Fail"].active = ((state) ? false : DangIt.EnableGuiFailure);
+                Events["Fail"].active = ((state) ? false : Static.EnableGuiFailure);
                 Events["EvaRepair"].active = state;
                 Events["Maintenance"].active = !state;
             }
@@ -478,7 +483,7 @@ namespace DangIt
         /// The repair won't be executed if the kerbonaut doesn't have enough spare parts.
         /// Put your custom repair code in DI_Repair()
         /// </summary>
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = Static.EvaRepairDistance, externalToEVAOnly = true)]
         public void EvaRepair()
         {
             try
@@ -486,24 +491,24 @@ namespace DangIt
                 this.Log("Initiating EVA repair");
 
                 // Get the EVA part (parts can hold resources)
-                Part evaPart = DangIt.FindEVAPart();
+                Part evaPart = Static.FindEVAPart();
                 
                 if (evaPart == null)
                 {
-                    DangIt.Broadcast("DangIt ERROR: couldn't find an active EVA!");
+                    Static.Broadcast("DangIt ERROR: couldn't find an active EVA!");
                     this.Log("ERROR: couldn't find an active EVA!");
                     return;
                 }
 
                 // Check if he is carrying enough spares
-                if (evaPart.Resources.Contains(DangIt.Spares.Name) && evaPart.Resources[DangIt.Spares.Name].amount >= this.RepairCost)
+                if (evaPart.Resources.Contains(Static.Spares.Name) && evaPart.Resources[Static.Spares.Name].amount >= this.RepairCost)
                 {
                     this.Log("Spare parts check: OK! Repair allowed");
 
                     this.DI_EvaRepair();
                     this.SetFailureState(false);
 
-                    DangIt.FlightLog(this.RepairMessage);
+                    Static.FlightLog(this.RepairMessage);
 
                     float intelligence = 1 - evaPart.vessel.GetVesselCrew().First().stupidity;
                     float discountedCost = (float)Math.Round( RepairCost * (1 - UnityEngine.Random.Range(0f, intelligence)) );
@@ -511,26 +516,26 @@ namespace DangIt
 
                     this.Log("Kerbal's intelligence: " + intelligence + ", discount: " + discount);
 
-                    evaPart.RequestResource(DangIt.Spares.Name, discountedCost);
+                    evaPart.RequestResource(Static.Spares.Name, discountedCost);
                     ResourceDisplay.Instance.Refresh();
 
-                    DangIt.Broadcast(this.RepairMessage);
+                    Static.Broadcast(this.RepairMessage);
 
                     DiscountAge(this.RepairBonus);
 
                     if (discount > 0)
                     {
-                        DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " was able to save " + discount + " spare parts");
+                        Static.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " was able to save " + discount + " spare parts");
                     }
                     
                 }
                 else
                 {
                     this.Log("Spare parts check: failed! Repair NOT allowed");
-                    DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.");
+                    Static.Broadcast("You need " + this.RepairCost + " spares to repair this.");
                 }
 
-                DangIt.ResetShipGlow(this.part.vessel);
+                Static.ResetShipGlow(this.part.vessel);
 
             }
             catch (Exception e)
@@ -561,32 +566,6 @@ namespace DangIt
             }
         }
         */
-
-
-
-        /// <summary>
-        /// Tries to find the single module of the specified type.
-        /// If no module is found, or more than one is found,
-        /// a ModuleException is thrown.
-        /// </summary>
-        public T GetModule<T>()
-        {
-            try
-            {
-                List<T> modules = this.part.Modules.OfType<T>().ToList();
-
-                if (modules.Count < 1)
-                    throw new PartModuleException("No suitable module found!");
-                if (modules.Count > 1)
-                    throw new PartModuleException("Multiple suitable modules found!");
-
-                return modules.FirstOrDefault<T>();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
 
 
         private void DiscountAge(float percentage)
@@ -637,19 +616,11 @@ namespace DangIt
 
         #endregion
 
-    }
 
-
-    [Serializable]
-    public class PartModuleException : Exception
-    {
-        public PartModuleException() { }
-        public PartModuleException(string message) : base(message) { }
-        public PartModuleException(string message, Exception inner) : base(message, inner) { }
-        protected PartModuleException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        public float GetModuleCost()
+        {
+            return (this.ExponentialDecay() - 1) * this.part.partInfo.cost;
+        }
     }
 
 }

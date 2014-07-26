@@ -47,11 +47,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnginesManager.cs" />
     <Compile Include="Failure modules\Alternator.cs" />
     <Compile Include="Failure modules\Batteries.cs" />
     <Compile Include="Failure modules\ControlSurface.cs" />
     <Compile Include="DangIt.cs" />
-    <Compile Include="Failure modules\EnginesFX.cs" />
     <Compile Include="Failure modules\Engines.cs" />
     <Compile Include="Failure modules\Gimbal.cs" />
     <Compile Include="Failure modules\Lights.cs" />

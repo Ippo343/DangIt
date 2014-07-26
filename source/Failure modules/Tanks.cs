@@ -96,7 +96,7 @@ namespace DangIt
             this.Log("OnLoad: loaded leakName " + ((leakName == null) ? "null" : leakName));
 #endif
 
-            this.pole = DangIt.Parse<float>("leakName", 0.01f);
+            this.pole = Static.Parse<float>("leakName", 0.01f);
         }
 
 
