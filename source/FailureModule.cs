@@ -300,7 +300,7 @@ namespace DangIt
                 if (HighLogic.LoadedSceneIsFlight) // nothing to do in editor
                 {
 #if DEBUG
-                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
+                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Static.Now());
 #endif
                     // Reset the internal state at the beginning of the flight
                     // this condition also catches a revert to launch (+1 second for safety)
@@ -562,32 +562,6 @@ namespace DangIt
         */
 
 
-
-        /// <summary>
-        /// Tries to find the single module of the specified type.
-        /// If no module is found, or more than one is found,
-        /// a ModuleException is thrown.
-        /// </summary>
-        public T GetModule<T>()
-        {
-            try
-            {
-                List<T> modules = this.part.Modules.OfType<T>().ToList();
-
-                if (modules.Count < 1)
-                    throw new PartModuleException("No suitable module found!");
-                if (modules.Count > 1)
-                    throw new PartModuleException("Multiple suitable modules found!");
-
-                return modules.FirstOrDefault<T>();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-
         private void DiscountAge(float percentage)
         {
             this.Age *= (1 - percentage);
@@ -636,19 +610,6 @@ namespace DangIt
 
         #endregion
 
-    }
-
-
-    [Serializable]
-    public class PartModuleException : Exception
-    {
-        public PartModuleException() { }
-        public PartModuleException(string message) : base(message) { }
-        public PartModuleException(string message, Exception inner) : base(message, inner) { }
-        protected PartModuleException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
     }
 
 }

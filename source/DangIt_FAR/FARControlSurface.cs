@@ -55,7 +55,7 @@ namespace DangIt_FAR
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.controlSurfaceModule = this.GetModule<FARControllableSurface>();
+                this.controlSurfaceModule = this.part.Modules.OfType<FARControllableSurface>().Single();
                 this.wasFlap = controlSurfaceModule.isFlap;
 
                 this.AoAFromFlap = typeof(FARControllableSurface).GetField("AoAFromFlap", BindingFlags.NonPublic);
@@ -63,7 +63,7 @@ namespace DangIt_FAR
 
                 if (AoAOffset == null || AoAFromFlap == null)
                 {
-                    throw new PartModuleException("Could not get the field info from FAR!");
+                    throw new Exception("Could not get the field info from FAR!");
                 }
 
             }

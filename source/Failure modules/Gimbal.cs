@@ -13,7 +13,7 @@ namespace DangIt
     public class ModuleGimbalReliability : FailureModule
     {
         ModuleGimbal gimbalModule;
-        ModuleEngines engineModule;
+        EngineManager engine;
 
         public override string DebugName { get { return "DangItGimbal"; } }
         public override string InspectionName { get { return "Gimbal"; } }
@@ -26,7 +26,7 @@ namespace DangIt
 
         public override bool PartIsActive()
         {
-            return Static.EngineIsActive(this.engineModule);
+            return this.engine.IsActive;
         }
 
 
@@ -34,8 +34,8 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.gimbalModule = this.GetModule<ModuleGimbal>();
-                this.engineModule = this.GetModule<ModuleEngines>();
+                this.gimbalModule = this.part.Modules.OfType<ModuleGimbal>().Single();
+                this.engine = new EngineManager(this.part);
             }
         }
 

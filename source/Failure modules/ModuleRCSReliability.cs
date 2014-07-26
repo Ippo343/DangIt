@@ -33,7 +33,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                rcsModule = this.GetModule<ModuleRCS>();             
+                rcsModule = this.part.Modules.OfType<ModuleRCS>().Single();         
             }
         }
 

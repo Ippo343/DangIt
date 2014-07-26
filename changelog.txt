@@ -1,6 +1,7 @@
 === ALPHA 3.1 ===
 
-FAR compatibility
+Partial FAR compatibility.
+Fixed (?) the issue with RAPIER engines.
 
 
 === ALPHA 3 ===

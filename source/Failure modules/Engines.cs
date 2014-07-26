@@ -11,7 +11,7 @@ namespace DangIt
     /// </summary>
     public class ModuleEngineReliability : FailureModule
     {
-        ModuleEngines engineModule;
+        EngineManager engines;
 
         public override string DebugName { get { return "DangItEngines"; } }
         public override string InspectionName { get { return "Engine"; } }
@@ -24,15 +24,15 @@ namespace DangIt
 
         protected override float LambdaMultiplier()
         {
-            float x = this.engineModule.currentThrottle;
-            return (2*x*x - 2 * x + 1.25f);
+            float x = this.engines.CurrentThrottle;
+            return (2*x*x - 2*x + 1.25f);
         }
 
 
         // Returns true when the engine is actually in use
         public override bool PartIsActive()
         {
-            return Static.EngineIsActive(this.engineModule);
+            return this.engines.IsActive;
         }
 
 
@@ -41,7 +41,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.engineModule = this.GetModule<ModuleEngines>();
+                this.engines = new EngineManager(this.part);
             }
         }
 
@@ -53,19 +53,12 @@ namespace DangIt
 
         protected override void DI_Disable()
         {
-            // Shutdown the engine and disable the module
-            this.engineModule.Shutdown();
-            this.engineModule.enabled = false;
-
-            // The particle effects need to be shut down separately
-            this.engineModule.DeactivatePowerFX();
-            this.engineModule.DeactivateRunningFX();
+            this.engines.Disable();
         }
-
 
         protected override void DI_EvaRepair()
         {
-            this.engineModule.enabled = true;
+            this.engines.Enable();
         }
 
     }

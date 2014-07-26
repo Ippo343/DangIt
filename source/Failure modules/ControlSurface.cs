@@ -59,7 +59,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.controlSurfaceModule = this.GetModule<ModuleControlSurface>();
+                this.controlSurfaceModule = this.part.Modules.OfType<ModuleControlSurface>().Single();
             }
         }
 

@@ -1,8 +1,6 @@
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\DangIt_FAR.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\DangIt_FAR.pdb
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\Assembly-CSharp.dll
-C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\DangIt.dll
-C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\FerramAerospaceResearch.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\UnityEngine.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\Mono.Cecil.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\Assembly-CSharp-firstpass.dll
@@ -10,4 +8,4 @@ C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\TDx.
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\Mono.Security.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\obj\Release\DangIt_FAR.dll
 C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\obj\Release\DangIt_FAR.pdb
-C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\ferramGraph.dll
+C:\Users\Michele\Documents\KSP Modding\DangIt\source\DangIt_FAR\bin\Release\DangIt.dll

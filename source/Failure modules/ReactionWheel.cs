@@ -34,7 +34,7 @@ namespace DangIt
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.torqueModule = this.GetModule<ModuleReactionWheel>();              
+                this.torqueModule = this.part.Modules.OfType<ModuleReactionWheel>().Single();            
             }
         }
 
