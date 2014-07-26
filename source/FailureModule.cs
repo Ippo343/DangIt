@@ -11,7 +11,7 @@ namespace DangIt
     /// Base failure module: handles the aging of the part, causes the random failures
     /// and handles the EVA repair.
     /// </summary>
-    public abstract class FailureModule : PartModule
+    public abstract class FailureModule : PartModule, IPartCostModifier
     {
 
         #region Custom strings
@@ -350,7 +350,7 @@ namespace DangIt
                     float dt = now - LastFixedUpdate;
                     this.Age += (dt * (1 + TemperatureMultiplier()));
 
-                    this.CurrentMTBF = this.MTBF * (float)Math.Exp(-this.Age / this.LifeTimeSecs);
+                    this.CurrentMTBF = this.MTBF * this.ExponentialDecay();
 
                     // If the part has not already failed, toss the dice
                     if (!this.HasFailed)
@@ -372,6 +372,12 @@ namespace DangIt
             {
                 OnError(e);
             }
+        }
+
+
+        private float ExponentialDecay()
+        {
+            return (float)Math.Exp(-this.Age / this.LifeTimeSecs);
         }
 
 
@@ -610,6 +616,11 @@ namespace DangIt
 
         #endregion
 
+
+        public float GetModuleCost()
+        {
+            return (this.ExponentialDecay() - 1) * this.part.partInfo.cost;
+        }
     }
 
 }

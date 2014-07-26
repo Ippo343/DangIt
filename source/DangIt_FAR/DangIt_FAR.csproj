@@ -53,13 +53,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="FARControlSurface.cfg" />
     <Compile Include="FARControlSurface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "D:\KSPModCopy\GameData\ZZZ_DangIt"
-copy "$(TargetPath)" "D:\KSPModCopy\GameData\ZZZ_DangIt"</PostBuildEvent>
+copy "$(TargetPath)" "D:\KSPModCopy\GameData\ZZZ_DangIt"
+copy "$(ProjectDir)FARControlSurface.cfg" "D:\KSPModCopy\GameData\ZZZ_DangIt"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

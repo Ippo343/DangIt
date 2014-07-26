@@ -2,6 +2,7 @@
 
 Partial FAR compatibility.
 Fixed (?) the issue with RAPIER engines.
+Exponential decay of the recovery value of a part.
 
 
 === ALPHA 3 ===
