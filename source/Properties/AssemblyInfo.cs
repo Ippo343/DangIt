@@ -2,8 +2,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("0.0.3.1")]
-[assembly: AssemblyFileVersion("0.0.3.1")]
+[assembly: AssemblyVersion("0.3.1")]
+[assembly: AssemblyFileVersion("0.3.1")]
 
 [assembly: AssemblyTitle("DangIt")]
 [assembly: AssemblyDescription("Random failures mod for KSP")]

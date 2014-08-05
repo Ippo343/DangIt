@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DangIt
+namespace ippo
 {
     class InspectionModule : PartModule
     {
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = Static.EvaRepairDistance, externalToEVAOnly = true)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
         public void Inspect()
         {
             StringBuilder sb = new StringBuilder();
@@ -20,7 +20,7 @@ namespace DangIt
 
             foreach (FailureModule fm in failModules)
             {
-                fm.TimeOfLastInspection = Static.Now();
+                fm.TimeOfLastInspection = DangIt.Now();
                 sb.AppendLine(fm.InspectionName + ": " + fm.InspectionMessage());
             }
 

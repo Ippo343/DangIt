@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using ferram4;
 using System.Reflection;
-using DangIt;
+using ippo;
 
 namespace DangIt_FAR
 {
@@ -41,7 +41,7 @@ namespace DangIt_FAR
 
         protected override void DI_OnLoad(ConfigNode node)
         {
-            this.wasFlap = DangIt.Static.Parse<bool>(node.GetValue("wasFlap"), defaultTo: true);
+            this.wasFlap = DangIt.Parse<bool>(node.GetValue("wasFlap"), defaultTo: true);
         }
 
 

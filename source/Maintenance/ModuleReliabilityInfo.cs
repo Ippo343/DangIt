@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DangIt
+namespace ippo
 {
     public class ModuleReliabilityInfo : PartModule
     {

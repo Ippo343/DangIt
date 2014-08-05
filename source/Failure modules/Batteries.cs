@@ -5,7 +5,7 @@ using System.Text;
 
 using UnityEngine;
 
-namespace DangIt
+namespace ippo
 {
     /// <summary>
     /// Module that causes leaks in resource tanks

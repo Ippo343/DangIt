@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DangIt
+namespace ippo
 {
     /// <summary>
     /// Module that causes leaks in resource tanks
@@ -42,7 +42,7 @@ namespace DangIt
             List<PartResource> result;
 
             // Find the runtime and check the resource blacklist
-            DangItRuntime runtime = DangItRuntime.Instance;
+            DangIt runtime = DangIt.Instance;
             if (runtime != null)
                 result = part.Resources.list.FindAll(r => !runtime.LeakBlackList.Contains(r.resourceName));
             else
@@ -50,7 +50,9 @@ namespace DangIt
 
             // Didn't find the runtime
             if (result == null)
-                this.Log("ERROR: couldn't find the Runtime instance!");
+            {
+                throw new Exception("Could not find the runtime instance!");
+            }
 
             // Found zero eligible resources (this happens on liquid engines for example)
             if (result.Count == 0)
@@ -96,7 +98,7 @@ namespace DangIt
             this.Log("OnLoad: loaded leakName " + ((leakName == null) ? "null" : leakName));
 #endif
 
-            this.pole = Static.Parse<float>("leakName", 0.01f);
+            this.pole = DangIt.Parse<float>("leakName", 0.01f);
         }
 
 

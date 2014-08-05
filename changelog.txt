@@ -1,3 +1,8 @@
+=== ALPHA 3.2 ===
+
+Code changes to have a persistent scenario module as runtime controller.
+
+
 === ALPHA 3.1 ===
 
 Partial FAR compatibility.

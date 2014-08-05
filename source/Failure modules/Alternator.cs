@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DangIt
+namespace ippo
 {
 
     public class ModuleAlternatorReliability : FailureModule

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DangIt
+namespace ippo
 {
     class EngineManager
     {
@@ -20,8 +20,8 @@ namespace DangIt
         {
             get
             {
-                return engines.Any(e => DangIt.Static.EngineIsActive(e)) |
-                       enginesFX.Any(e => DangIt.Static.EngineIsActive(e));
+                return engines.Any(e => ippo.DangIt.EngineIsActive(e)) |
+                       enginesFX.Any(e => ippo.DangIt.EngineIsActive(e));
             }
         }
 

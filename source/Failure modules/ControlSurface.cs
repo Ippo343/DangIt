@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DangIt
+namespace ippo
 {
     /// <summary>
     /// Module that causes failures in aerodynamic control surfaces
@@ -41,9 +41,9 @@ namespace DangIt
 
         protected override void DI_OnLoad(ConfigNode node)
         {
-            this.ignorePitch = Static.Parse<bool>(node.GetValue("ignorePitch"), defaultTo: false);
-            this.ignoreRoll = Static.Parse<bool>(node.GetValue("ignoreRoll"), defaultTo: false);
-            this.ignoreYaw = Static.Parse<bool>(node.GetValue("ignoreYaw"), defaultTo: false);
+            this.ignorePitch = DangIt.Parse<bool>(node.GetValue("ignorePitch"), defaultTo: false);
+            this.ignoreRoll = DangIt.Parse<bool>(node.GetValue("ignoreRoll"), defaultTo: false);
+            this.ignoreYaw = DangIt.Parse<bool>(node.GetValue("ignoreYaw"), defaultTo: false);
         }
 
 
