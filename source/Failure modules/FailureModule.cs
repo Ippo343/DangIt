@@ -300,7 +300,7 @@ namespace ippo
                 if (HighLogic.LoadedSceneIsFlight) // nothing to do in editor
                 {
 #if DEBUG
-                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Static.Now());
+                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
 #endif
                     // Reset the internal state at the beginning of the flight
                     // this condition also catches a revert to launch (+1 second for safety)

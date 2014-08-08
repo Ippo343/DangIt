@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,33 +37,24 @@ namespace ippo
 
         protected List<PartResource> leakables;
 
-
-        protected List<PartResource> FindLeakables()
+        IEnumerator ScanLeakables()
         {
-            List<PartResource> result;
+            this.leakables = null;
 
-            // Find the runtime and check the resource blacklist
-            DangIt runtime = DangIt.Instance;
-            if (runtime != null)
-                result = part.Resources.list.FindAll(r => !runtime.LeakBlackList.Contains(r.resourceName));
-            else
-                result = null;
+            // Wait for the server to be available
+            while (DangIt.Instance == null)
+                yield return null;
 
-            // Didn't find the runtime
-            if (result == null)
+            this.leakables = part.Resources.list.FindAll(r => !DangIt.Instance.LeakBlackList.Contains(r.resourceName));
+
+            // If no leakables are found, just disable the module
+            if (leakables.Count == 0)
             {
-                throw new Exception("Could not find the runtime instance!");
-            }
-
-            // Found zero eligible resources (this happens on liquid engines for example)
-            if (result.Count == 0)
-            {
-                this.Log("The part " + this.part.name + " does not contain any leakable!");
+                this.Log("The part " + this.part.name + " does not contain any leakable resource.");
                 this.Events["Fail"].active = false;
                 this.leakName = null;
+                this.enabled = false;
             }
-
-            return result;
         }
 
 
@@ -72,7 +64,7 @@ namespace ippo
             if (HighLogic.LoadedSceneIsFlight)
             {
                 // Ask the runtime for the resources that can be leaked
-                this.leakables = FindLeakables();
+                this.StartCoroutine("ScanLeakables");
 
                 // The part was already failed when loaded:
                 // check if the resource is still in the tank
@@ -115,8 +107,6 @@ namespace ippo
         {
             try
             {
-                if (!this.isEnabled) return;
-
                 if (this.HasFailed && 
                    (!string.IsNullOrEmpty(leakName) && 
                    (part.Resources[leakName].amount > 0)))
@@ -145,42 +135,21 @@ namespace ippo
 
         protected override void DI_FailBegin()
         {
-            try
+            if ((leakables != null) && (leakables.Count > 0))
             {
-                leakables = FindLeakables();
-#if DEBUG
-                this.Log("FailBegin: scanned for leakables, returned " + ((leakables == null) ? "null" : leakables.Count.ToString()));
-#endif
+                // Choose a random severity of the leak
+                float TC = UnityEngine.Random.Range(MinTC, MaxTC);
+                this.pole = 1 / TC;
+                this.Log("Chosen TC = " + TC + " (min = " + MinTC + ", max = " + MaxTC + ")");
 
-                if ((leakables != null) && (leakables.Count > 0))
-                {
-                    // Choose a random severity of the leak
-                    float TC = UnityEngine.Random.Range(MinTC, MaxTC);
-                    this.pole = 1 / TC;
-                    this.Log("Chosen TC = " + TC + " (min = " + MinTC + ", max = " + MaxTC + ")");
-
-                    // Pick a random index to leak.
-                    int idx = (leakables.Count == 1) ? 0 : UnityEngine.Random.Range(0, leakables.Count);
-#if DEBUG
-                    this.Log("Chosen index " + idx);
-#endif
-                    this.leakName = leakables[idx].resourceName;
-#if DEBUG
-                    this.Log("Chosen resource " + leakName);
-#endif
-
-                }
-                else
-                {
-                    leakName = null;
-                    throw new Exception("Couldn't find any leakable resources!");
-                }
+                // Pick a random index to leak.
+                int idx = (leakables.Count == 1) ? 0 : UnityEngine.Random.Range(0, leakables.Count);
+                this.leakName = leakables[idx].resourceName;
             }
-            catch (Exception e)
+            else
             {
-                OnError(e);
-                this.isEnabled = false;
-                this.SetFailureState(false);
+                leakName = null;
+                throw new Exception("Couldn't find any leakable resources!");
             }
         }
 
@@ -215,7 +184,7 @@ namespace ippo
         public void PrintBlackList()
         {
             this.Log("Printing blacklist");
-            foreach (string item in DangItRuntime.Instance.LeakBlackList)
+            foreach (string item in DangIt.Instance.LeakBlackList)
             {
                 this.Log("Blacklisted: " + item);
             }
