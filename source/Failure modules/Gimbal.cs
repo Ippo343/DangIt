@@ -6,14 +6,10 @@ using UnityEngine;
 
 namespace ippo
 {
-
-    /// <summary>
-    /// Module that causes failures in the thrust vectoring of engines.
-    /// </summary>
     public class ModuleGimbalReliability : FailureModule
     {
         ModuleGimbal gimbalModule;
-        EngineManager engine;
+        EngineManager engineManager;
 
         public override string DebugName { get { return "DangItGimbal"; } }
         public override string InspectionName { get { return "Gimbal"; } }
@@ -26,7 +22,7 @@ namespace ippo
 
         public override bool PartIsActive()
         {
-            return this.engine.IsActive;
+            return this.engineManager.IsActive;
         }
 
 
@@ -35,7 +31,7 @@ namespace ippo
             if (HighLogic.LoadedSceneIsFlight)
             {
                 this.gimbalModule = this.part.Modules.OfType<ModuleGimbal>().Single();
-                this.engine = new EngineManager(this.part);
+                this.engineManager = new EngineManager(this.part);
             }
         }
 

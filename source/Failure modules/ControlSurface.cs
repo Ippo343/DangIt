@@ -6,12 +6,9 @@ using UnityEngine;
 
 namespace ippo
 {
-    /// <summary>
-    /// Module that causes failures in aerodynamic control surfaces
-    /// </summary>
     public class ModuleControlSurfaceReliability : FailureModule
     {
-        ModuleControlSurface controlSurfaceModule;
+        ModuleControlSurface controlSurface;
 
         [KSPField(isPersistant = true, guiActive = false)]
         protected bool ignorePitch = false;
@@ -59,7 +56,7 @@ namespace ippo
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                this.controlSurfaceModule = this.part.Modules.OfType<ModuleControlSurface>().Single();
+                this.controlSurface = this.part.Modules.OfType<ModuleControlSurface>().Single();
             }
         }
 
@@ -73,17 +70,17 @@ namespace ippo
         {
             // Save the settings before overwriting them,
             // just in the case that the user has already set the control surface to ignore some direction
-            this.ignorePitch = this.controlSurfaceModule.ignorePitch;
-            this.ignoreRoll = this.controlSurfaceModule.ignoreRoll;
-            this.ignoreYaw = this.controlSurfaceModule.ignoreYaw;
+            this.ignorePitch = this.controlSurface.ignorePitch;
+            this.ignoreRoll = this.controlSurface.ignoreRoll;
+            this.ignoreYaw = this.controlSurface.ignoreYaw;
 
             // Make the control surface unresponsive
-            this.controlSurfaceModule.ignorePitch = true;
-            this.controlSurfaceModule.ignoreRoll = true;
-            this.controlSurfaceModule.ignoreYaw = true;
+            this.controlSurface.ignorePitch = true;
+            this.controlSurface.ignoreRoll = true;
+            this.controlSurface.ignoreYaw = true;
 
             // Disable the module for good measure
-            this.controlSurfaceModule.enabled = false; 
+            this.controlSurface.enabled = false; 
         }
 
 
@@ -91,12 +88,12 @@ namespace ippo
         protected override void DI_EvaRepair()
         {
             // Enable the module
-            this.controlSurfaceModule.enabled = true;
+            this.controlSurface.enabled = true;
 
             // Restore the previous settings
-            this.controlSurfaceModule.ignorePitch = this.ignorePitch;
-            this.controlSurfaceModule.ignoreRoll = this.ignoreRoll;
-            this.controlSurfaceModule.ignoreYaw = this.ignoreYaw; 
+            this.controlSurface.ignorePitch = this.ignorePitch;
+            this.controlSurface.ignoreRoll = this.ignoreRoll;
+            this.controlSurface.ignoreYaw = this.ignoreYaw; 
         }
 
     }

@@ -18,7 +18,7 @@ namespace ippo
         }
 
        
-        [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange=DangIt.EvaRepairDistance)]
+        [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange = 1f)]
         public void TakeParts()
         {
             Part evaPart = DangIt.FindEVAPart();
@@ -39,7 +39,7 @@ namespace ippo
 
 
 
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Deposit spares", active = false)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 1f, guiName = "Deposit spares", active = false)]
         public void DepositParts()
         {
             Part evaPart = DangIt.FindEVAPart();
@@ -148,9 +148,8 @@ namespace ippo
         /// </summary>
         private void OnCrewBoardVessel(GameEvents.FromToAction<Part, Part> action)
         {
-#if DEBUG
             this.Log("OnCrewBoardVessel, emptying the EVA suit");
-#endif
+
             Part evaPart = action.from;
             Part container = action.to;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,25 @@ namespace ippo
 {
     class InspectionModule : PartModule
     {
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
+        public override void OnStart(PartModule.StartState state)
+        {
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                this.StartCoroutine("RuntimeFetch");
+            }
+        }
+
+
+        IEnumerator RuntimeFetch()
+        {
+            while (DangIt.Instance == null || !DangIt.Instance.IsReady)
+                yield return null;
+
+            this.Events["Inspect"].unfocusedRange = DangIt.Instance.Settings.MaxDistance;
+        }
+
+
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 1f, externalToEVAOnly = true)]
         public void Inspect()
         {
             StringBuilder sb = new StringBuilder();
@@ -24,7 +43,15 @@ namespace ippo
                 sb.AppendLine(fm.InspectionName + ": " + fm.InspectionMessage());
             }
 
-            ScreenMessages.PostScreenMessage(sb.ToString(), 5f, ScreenMessageStyle.UPPER_LEFT);
+            //ScreenMessages.PostScreenMessage(sb.ToString(), 5f, ScreenMessageStyle.UPPER_LEFT);
+
+            // Post the inspection result as a new message in the message system
+            MessageSystem.Message msg = new MessageSystem.Message(
+                "Inspection result",
+                sb.ToString(),
+                MessageSystemButton.MessageButtonColor.BLUE,
+                MessageSystemButton.ButtonIcons.MESSAGE);
+            MessageSystem.Instance.AddMessage(msg);
         }
 
     }

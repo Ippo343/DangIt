@@ -11,34 +11,11 @@ namespace ippo
 {
     public partial class DangIt : ScenarioModule
     {
-
-#if DEBUG
-        public const float EvaRepairDistance = 20f;
-        public const bool DEBUG = true;
-        public const bool EnableGuiFailure = true;
-#else
-        public const float EvaRepairDistance = 1.5f;
-        public const bool DEBUG = false;
-        public const bool EnableGuiFailure = true; //TODO: change this to false for the final release
-#endif
-
-
-        /// <summary>
-        /// Lists the name of the resources that will be ignored by the tank leaks
-        /// </summary>
         public List<string> LeakBlackList;
+        public DangSettings Settings;
 
-        /// <summary>
-        /// Master switches to enable / disable notification types.
-        /// A failure that is set to silent will still be silent even when these
-        /// settings are set to true
-        /// </summary>
-        public NotificationSettings NotificationSettings;
-
-        /// <summary>
-        /// Returns the current instance of the class
-        /// </summary>
         public static DangIt Instance { get; private set; }
+        public bool IsReady { get; private set; }        
 
         public string SettingsFilePath
         {
@@ -47,60 +24,36 @@ namespace ippo
 
 
         public DangIt()
-        {
-            Instance = this;
-
-            #region Load the global configuration file
-            ConfigNode globalSettingsNode;
-            if (System.IO.File.Exists(this.SettingsFilePath))
-                globalSettingsNode = ConfigNode.Load(this.SettingsFilePath);
-            else
-            {
-                Debug.Log("[DangIt]: Runtime error: the global settings file does not exist, creating a default one");
-                globalSettingsNode = CreateDefaultSettings();
-            } 
-            #endregion
-
-            #region Load the resource blacklist
+        {      
+            // Load the resource blacklist from the file
             LeakBlackList = new List<string>();
-            ConfigNode blackListNode = globalSettingsNode.GetNode("BLACKLIST");
+            ConfigNode blackListNode = ConfigNode.Load(SettingsFilePath).GetNode("BLACKLIST");
             foreach (string item in blackListNode.GetValues("ignore"))
-                LeakBlackList.Add(item); 
-            #endregion
+                LeakBlackList.Add(item);
 
-            #region Load the notification settings
-            NotificationSettings = new NotificationSettings(globalSettingsNode.GetNode("NOTIFICATIONS"));
-            #endregion
-
+            Instance = this;
+            this.IsReady = false;
         }
 
 
-        /// <summary>
-        /// Creates the default global configuration node
-        /// and saves it to the default path
-        /// </summary>
-        private ConfigNode CreateDefaultSettings()
+        public override void OnLoad(ConfigNode node)
         {
-            ConfigNode result = new ConfigNode("SETTINGS");
+            if (node.HasNode("SETTINGS"))
+                this.Settings = new DangSettings(node.GetNode("SETTINGS"));
+            else
+            {
+                this.Settings = new DangSettings();
+                Debug.Log("[DangIt] WARNING: No settings node to load, creating default one");
+            }
 
-            #region Default notification behaviour
-            ConfigNode notificationsNode = new ConfigNode("NOTIFICATIONS");
-            notificationsNode.AddValue("messages", true);
-            notificationsNode.AddValue("glow", true);
-            notificationsNode.AddValue("sounds", true);  // not yet implemented
-            result.AddNode(notificationsNode); 
-            #endregion
+            this.IsReady = true;
+        }
 
-            #region Default resource blacklist
-            ConfigNode blackListNode = new ConfigNode("BLACKLIST");
-            blackListNode.AddValue("ignore", "ElectricCharge");
-            blackListNode.AddValue("ignore", "SolidFuel");
-            blackListNode.AddValue("ignore", "SpareParts");
-            result.AddNode(blackListNode); 
-            #endregion
 
-            result.Save(this.SettingsFilePath);
-            return result;
+        public override void OnSave(ConfigNode node)
+        {
+            Debug.Log("[DangIt] Saving settings...");
+            node.AddNode(Settings.ToNode());
         }
 
     }

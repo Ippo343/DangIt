@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -55,6 +56,7 @@ namespace ippo
         protected virtual void DI_Reset() { }
         protected virtual void DI_OnLoad(ConfigNode node) { }
         protected virtual void DI_Start(StartState state) { }
+        protected virtual void DI_RuntimeFetch() { }
         protected virtual void DI_Update() { }
         protected abstract void DI_FailBegin();
         protected abstract void DI_Disable();
@@ -104,10 +106,10 @@ namespace ippo
         [KSPField(isPersistant = true, guiActive = false)]
         public float TimeOfLastReset = float.PositiveInfinity;
 
-        [KSPField(isPersistant = true, guiActive = DangIt.DEBUG)]
+        [KSPField(isPersistant = true, guiActive = false)]
         public float TimeOfLastInspection = float.NegativeInfinity;
 
-        [KSPField(isPersistant = true, guiActive = DangIt.DEBUG)]
+        [KSPField(isPersistant = true, guiActive = false)]
         public float Age = 0;
 
         [KSPField(isPersistant = true, guiActive = false)]
@@ -160,6 +162,23 @@ namespace ippo
 
         #endregion
 
+
+        /// <summary>
+        /// Coroutine that waits for the runtime to be ready
+        /// and initializes the results from preference.
+        /// </summary>
+        IEnumerator RuntimeFetch()
+        {
+            // Wait for the server to be available
+            while (DangIt.Instance == null || !DangIt.Instance.IsReady)
+                yield return null;
+
+            this.Events["Fail"].guiActive = DangIt.Instance.Settings.ManualFailures;
+            this.Events["EvaRepair"].unfocusedRange = DangIt.Instance.Settings.MaxDistance;
+            this.Events["Maintenance"].unfocusedRange = DangIt.Instance.Settings.MaxDistance;
+
+            DI_RuntimeFetch();
+        }
 
 
         /// <summary>
@@ -221,10 +240,8 @@ namespace ippo
         {
             try
             {
-#if DEBUG
-                this.Log("OnLoad");
-                this.Log(node.ToString());
-#endif
+                this.Log("OnLoad. Node:\n" + node.ToString());
+
                 // Load all the internal state variables
                 this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
                 this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
@@ -242,9 +259,9 @@ namespace ippo
                 // so that modules can be rescanned
                 if (HighLogic.LoadedSceneIsFlight)
                     this.DI_Start(StartState.Flying);
-#if DEBUG
+
                 this.Log("OnLoad complete, age is " + this.Age); 
-#endif
+
                 base.OnLoad(node);
 
             }
@@ -299,9 +316,8 @@ namespace ippo
             {
                 if (HighLogic.LoadedSceneIsFlight) // nothing to do in editor
                 {
-#if DEBUG
                     this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
-#endif
+
                     // Reset the internal state at the beginning of the flight
                     // this condition also catches a revert to launch (+1 second for safety)
                     if (DangIt.Now() < (this.TimeOfLastReset + 1))
@@ -316,9 +332,8 @@ namespace ippo
                     DangIt.ResetShipGlow(this.part.vessel);
                 }
 
-
                 this.DI_Start(state);
-
+                this.StartCoroutine("RuntimeFetch");
             }
             catch (Exception e)
             {
@@ -391,7 +406,7 @@ namespace ippo
 
 
 
-        [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
+        [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = 1f, externalToEVAOnly = true)]
         public void Maintenance()
         {
             this.Log("Initiating EVA maitenance");
@@ -425,7 +440,7 @@ namespace ippo
         /// Initiates the part's failure.
         /// Put your custom failure code in DI_Fail()
         /// </summary>
-        [KSPEvent(guiActive = DangIt.EnableGuiFailure)]
+        [KSPEvent(guiActive = false)]
         public void Fail()
         {
             try
@@ -443,7 +458,18 @@ namespace ippo
                 this.DI_Disable();
 
                 if (!this.Silent)
+                {
                     DangIt.Broadcast(this.FailureMessage);
+
+                    // Post the failure message in the messaging system
+                    MessageSystem.Message msg = new MessageSystem.Message(
+                        "Failure!",
+                        this.FailureMessage,
+                        MessageSystemButton.MessageButtonColor.RED,
+                        MessageSystemButton.ButtonIcons.ALERT);
+                    MessageSystem.Instance.AddMessage(msg);
+
+                }
 
                 DangIt.FlightLog(this.FailureMessage);
 
@@ -466,7 +492,7 @@ namespace ippo
                 this.HasFailed = state;
                 DangIt.ResetShipGlow(this.part.vessel);
 
-                Events["Fail"].active = ((state) ? false : DangIt.EnableGuiFailure);
+                Events["Fail"].active = !state;
                 Events["EvaRepair"].active = state;
                 Events["Maintenance"].active = !state;
             }
@@ -483,7 +509,7 @@ namespace ippo
         /// The repair won't be executed if the kerbonaut doesn't have enough spare parts.
         /// Put your custom repair code in DI_Repair()
         /// </summary>
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = DangIt.EvaRepairDistance, externalToEVAOnly = true)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 1f, externalToEVAOnly = true)]
         public void EvaRepair()
         {
             try

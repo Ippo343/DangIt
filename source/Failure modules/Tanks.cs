@@ -37,13 +37,10 @@ namespace ippo
 
         protected List<PartResource> leakables;
 
-        IEnumerator ScanLeakables()
+
+        protected override void DI_RuntimeFetch()
         {
             this.leakables = null;
-
-            // Wait for the server to be available
-            while (DangIt.Instance == null)
-                yield return null;
 
             this.leakables = part.Resources.list.FindAll(r => !DangIt.Instance.LeakBlackList.Contains(r.resourceName));
 
@@ -63,9 +60,6 @@ namespace ippo
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
-                // Ask the runtime for the resources that can be leaked
-                this.StartCoroutine("ScanLeakables");
-
                 // The part was already failed when loaded:
                 // check if the resource is still in the tank
                 if (this.HasFailed)
@@ -86,9 +80,8 @@ namespace ippo
         {
             this.leakName = node.GetValue("leakName");
             if (string.IsNullOrEmpty(leakName)) leakName = null;
-#if DEBUG
+
             this.Log("OnLoad: loaded leakName " + ((leakName == null) ? "null" : leakName));
-#endif
 
             this.pole = DangIt.Parse<float>("leakName", 0.01f);
         }
@@ -169,6 +162,7 @@ namespace ippo
         }
 
 
+        /*
 #if DEBUG
         [KSPEvent(active = true, guiActive = true)]
         public void PrintStatus()
@@ -191,6 +185,7 @@ namespace ippo
             this.Log("Done");
         }
 #endif
+         */
 
     }
 }

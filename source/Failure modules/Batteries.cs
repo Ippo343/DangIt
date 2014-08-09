@@ -7,9 +7,6 @@ using UnityEngine;
 
 namespace ippo
 {
-    /// <summary>
-    /// Module that causes leaks in resource tanks
-    /// </summary>
     public class ModuleBatteryReliability : FailureModule
     {
         protected PartResource battery;

@@ -63,7 +63,7 @@
     <Compile Include="Maintenance\ModuleReliabilityInfo.cs" />
     <None Include="Perks\Generator.cs" />
     <None Include="Perks\Perk.cs" />
-    <Compile Include="Runtime\NotificationSettings.cs" />
+    <Compile Include="Runtime\Settings.cs" />
     <Compile Include="Runtime\SparesInfo.cs" />
     <Compile Include="Runtime\Static.cs" />
     <Compile Include="Maintenance\SparesContainer.cs" />

@@ -6,10 +6,9 @@ using UnityEngine;
 
 namespace ippo
 {
-
     public class ModuleAlternatorReliability : FailureModule
     {
-        EngineManager engine;
+        EngineManager engineManager;
         ModuleAlternator alternatorModule;
 
         public override string DebugName { get { return "DangItAlternator"; } }
@@ -23,7 +22,7 @@ namespace ippo
 
         public override bool PartIsActive()
         {
-            return engine.IsActive;
+            return engineManager.IsActive;
         }
 
 
@@ -32,7 +31,7 @@ namespace ippo
             if (HighLogic.LoadedSceneIsFlight)
             {
                 this.alternatorModule = this.part.Modules.OfType<ModuleAlternator>().Single();
-                this.engine = new EngineManager(this.part);
+                this.engineManager = new EngineManager(this.part);
             }
         }
 

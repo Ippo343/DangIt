@@ -6,9 +6,6 @@ using UnityEngine;
 
 namespace ippo
 {
-    /// <summary>
-    /// Module that causes engines failures.
-    /// </summary>
     public class ModuleEngineReliability : FailureModule
     {
         EngineManager engines;
@@ -29,7 +26,6 @@ namespace ippo
         }
 
 
-        // Returns true when the engine is actually in use
         public override bool PartIsActive()
         {
             return this.engines.IsActive;
