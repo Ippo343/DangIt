@@ -40,18 +40,16 @@ namespace ippo
             foreach (FailureModule fm in failModules)
             {
                 fm.TimeOfLastInspection = DangIt.Now();
-                sb.AppendLine(fm.InspectionName + ": " + fm.InspectionMessage());
+                sb.AppendLine(fm.InspectionName + ":");
+                sb.AppendLine(fm.InspectionMessage());
+                sb.AppendLine("");
             }
 
-            //ScreenMessages.PostScreenMessage(sb.ToString(), 5f, ScreenMessageStyle.UPPER_LEFT);
-
-            // Post the inspection result as a new message in the message system
-            MessageSystem.Message msg = new MessageSystem.Message(
-                "Inspection result",
-                sb.ToString(),
-                MessageSystemButton.MessageButtonColor.BLUE,
-                MessageSystemButton.ButtonIcons.MESSAGE);
-            MessageSystem.Instance.AddMessage(msg);
+            DangIt.PostMessage("Inspection results", 
+                               sb.ToString(), 
+                               MessageSystemButton.MessageButtonColor.BLUE,
+                               MessageSystemButton.ButtonIcons.MESSAGE,
+                               overrideMute: true);
         }
 
     }

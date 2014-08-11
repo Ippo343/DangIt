@@ -2,6 +2,9 @@
 
 Heavy code changes to have the runtime implemented as a ScenarioModule which also holds settings.
 Now using the stock messaging system for inspections and failures.
+Added an app button that opens a settings window. These settings can be edited in the space centre and are reloaded at the beginning of the flight.
+
+There is now no difference between debug and release builds.
 
 
 === ALPHA 3.1 ===

@@ -15,6 +15,9 @@ namespace ippo
         // Working copy for the new settings, will be copied over the old ones
         DangIt.Settings newSettings = null;
 
+        // temp variable to edit the Max Distance in the GUI
+        string evaDistanceString = string.Empty;
+
         // Default window position / size
         private Rect windowRect = new Rect(20, 20, 200, 200);
 
@@ -65,6 +68,7 @@ namespace ippo
             // Copy the current settings to a working copy that can be edited
             // in the GUI without modifying directly the settings
             newSettings = this.CurrentSettings.ShallowClone();
+            evaDistanceString = CurrentSettings.MaxDistance.ToString();
 
             this.showGUI = true;            
         }
@@ -74,7 +78,6 @@ namespace ippo
         {
             // Delete the working copy
             newSettings = null;
-
             this.showGUI = false;
         }
 
@@ -102,12 +105,23 @@ namespace ippo
             newSettings.Glow = GUILayout.Toggle(newSettings.Glow, "Glow");
             newSettings.Messages = GUILayout.Toggle(newSettings.Messages, "Messages");
 
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Max EVA distance: ");
+            evaDistanceString = GUILayout.TextField(evaDistanceString);
+            GUILayout.EndHorizontal();
+
             // Creates the button and returns true when it is pressed
             if (GUILayout.Button("OK"))
             {
-                this.Log("Applying the new settings selected from GUI");
+                // Parse the string
+                this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 1f);
+
+                this.Log("Applying the new settings selected from GUI. New settings:\n" + newSettings.ToNode().ToString());
                 DangIt.Instance.CurrentSettings = this.newSettings;
-                showGUI = false;
+
+                //showGUI = false;
+                // "Click" on the app button to close the window
+                appBtn.SetFalse(makeCall: true);
             }
 
             // This call allows the user to drag the window around the screen

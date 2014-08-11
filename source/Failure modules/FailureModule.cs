@@ -462,12 +462,10 @@ namespace ippo
                     DangIt.Broadcast(this.FailureMessage);
 
                     // Post the failure message in the messaging system
-                    MessageSystem.Message msg = new MessageSystem.Message(
-                        "Failure!",
-                        this.FailureMessage,
-                        MessageSystemButton.MessageButtonColor.RED,
-                        MessageSystemButton.ButtonIcons.ALERT);
-                    MessageSystem.Instance.AddMessage(msg);
+                    DangIt.PostMessage("Failure!",
+                                       this.FailureMessage,
+                                       MessageSystemButton.MessageButtonColor.RED,
+                                       MessageSystemButton.ButtonIcons.ALERT);
 
                 }
 
@@ -545,7 +543,7 @@ namespace ippo
                     evaPart.RequestResource(Spares.Name, discountedCost);
                     ResourceDisplay.Instance.Refresh();
 
-                    DangIt.Broadcast(this.RepairMessage);
+                    DangIt.Broadcast(this.RepairMessage, true);
 
                     DiscountAge(this.RepairBonus);
 
@@ -558,7 +556,7 @@ namespace ippo
                 else
                 {
                     this.Log("Spare parts check: failed! Repair NOT allowed");
-                    DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.");
+                    DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.", true);
                 }
 
                 DangIt.ResetShipGlow(this.part.vessel);

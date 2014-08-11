@@ -75,6 +75,25 @@ namespace ippo
         }
 
 
+        /// <summary>
+        /// Posts a new message to the messaging system unless notifications have been disabled in the general settings.
+        /// </summary>
+        public static void PostMessage(string title, string message, MessageSystemButton.MessageButtonColor messageButtonColor, MessageSystemButton.ButtonIcons buttonIcons,
+            bool overrideMute = false)
+        {
+            if (DangIt.Instance.CurrentSettings.Messages || overrideMute)
+            {
+                MessageSystem.Message msg = new MessageSystem.Message(
+                        title,
+                        message,
+                        messageButtonColor,
+                        buttonIcons);
+                MessageSystem.Instance.AddMessage(msg); 
+            }
+
+        }
+
+
 
         /// <summary>
         /// Tries to parse a string and convert it to the type T.

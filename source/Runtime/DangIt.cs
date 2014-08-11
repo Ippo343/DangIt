@@ -109,6 +109,5 @@ namespace ippo
         {
             Debug.Log("[DangIt][Runtime]: " + msg);
         }
-
     }
 }

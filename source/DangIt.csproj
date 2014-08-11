@@ -94,6 +94,7 @@
     <None Include="Data\PluginData\DangIt\DangIt.cfg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\ModuleManager.2.2.0.dll" />
     <Content Include="Data\Textures\appBtn.png" />
     <Content Include="Perks\CrewFilesInterface.dll" />
   </ItemGroup>
@@ -104,6 +105,7 @@ copy "$(TargetPath)"  "D:\KSPModCopy\GameData\DangIt"
 copy "$(ProjectDir)\Data\DangIt.version"    "D:\KSPModCopy\GameData\DangIt"
 
 mkdir "D:\KSPModCopy\GameData\DangIt\ModuleManager"
+copy  "$(ProjectDir)\Data\*.dll"   "D:\KSPModCopy\GameData\DangIt"
 copy "$(ProjectDir)\Data\ModuleManager\*"   "D:\KSPModCopy\GameData\DangIt\ModuleManager"
 
 mkdir "D:\KSPModCopy\GameData\DangIt\ModuleManager"
