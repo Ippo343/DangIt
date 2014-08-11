@@ -6,10 +6,8 @@ using UnityEngine;
 
 namespace ippo
 {
-
     public partial class DangIt
     {
-
         /// <summary>
         /// Returns the in-game universal time
         /// </summary>
@@ -71,7 +69,7 @@ namespace ippo
         /// </summary>
         public static void Broadcast(string message, bool overrideMute = false, float time = 5f)
         {
-            if (overrideMute || DangIt.Instance.Settings.Messages)
+            if (overrideMute || DangIt.Instance.currentSettings.Messages)
                 ScreenMessages.PostScreenMessage(message, time, ScreenMessageStyle.UPPER_CENTER);
         }
 
@@ -130,7 +128,7 @@ namespace ippo
 
 
             // If the glow is globally disabled, don't even bother looking for failures
-            if (DangIt.Instance.Settings.Glow)
+            if (DangIt.Instance.currentSettings.Glow)
             {
                 // Scan all the failure modules, if any
                 List<FailureModule> failModules = part.Modules.OfType<FailureModule>().ToList();

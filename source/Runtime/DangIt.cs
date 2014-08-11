@@ -12,7 +12,7 @@ namespace ippo
     public partial class DangIt : ScenarioModule
     {
         public List<string> LeakBlackList;
-        public DangSettings Settings;
+        public Settings currentSettings;
 
         public static DangIt Instance { get; private set; }
         public bool IsReady { get; private set; }        
@@ -24,7 +24,9 @@ namespace ippo
 
 
         public DangIt()
-        {      
+        {
+            Debug.Log("[DangIt]: Instantiating runtime...");
+
             // Load the resource blacklist from the file
             LeakBlackList = new List<string>();
             ConfigNode blackListNode = ConfigNode.Load(SettingsFilePath).GetNode("BLACKLIST");
@@ -36,13 +38,28 @@ namespace ippo
         }
 
 
+        public void Awake()
+        {
+            try
+            {
+                Debug.Log("[DangIt]: Awaking runtime...");
+                GameEvents.onGUIApplicationLauncherReady.Add(OnLauncherReady);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                throw;
+            }
+        }
+
+
         public override void OnLoad(ConfigNode node)
         {
             if (node.HasNode("SETTINGS"))
-                this.Settings = new DangSettings(node.GetNode("SETTINGS"));
+                this.currentSettings = new Settings(node.GetNode("SETTINGS"));
             else
             {
-                this.Settings = new DangSettings();
+                this.currentSettings = new Settings();
                 Debug.Log("[DangIt] WARNING: No settings node to load, creating default one");
             }
 
@@ -53,7 +70,7 @@ namespace ippo
         public override void OnSave(ConfigNode node)
         {
             Debug.Log("[DangIt] Saving settings...");
-            node.AddNode(Settings.ToNode());
+            node.AddNode(currentSettings.ToNode());
         }
 
     }

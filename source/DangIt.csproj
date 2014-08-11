@@ -35,6 +35,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\KSPModCopy\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\KSPModCopy\KSP_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,6 +53,7 @@
   <ItemGroup>
     <None Include="Data\DangIt.version" />
     <Compile Include="Runtime\ScenarioInjector.cs" />
+    <Compile Include="Runtime\SettingsGUI.cs" />
     <Compile Include="Utilities\EnginesManager.cs" />
     <Compile Include="Failure modules\Alternator.cs" />
     <Compile Include="Failure modules\Batteries.cs" />
@@ -89,6 +94,7 @@
     <None Include="Data\PluginData\DangIt\DangIt.cfg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\Textures\appBtn.png" />
     <Content Include="Perks\CrewFilesInterface.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -105,7 +111,9 @@ copy "$(ProjectDir)\Data\ModuleManager\*"   "D:\KSPModCopy\GameData\DangIt\Modul
 
 mkdir "D:\KSPModCopy\GameData\DangIt\PluginData\DangIt"
 copy "$(ProjectDir)\Data\PluginData\DangIt\*"  "D:\KSPModCopy\GameData\DangIt\PluginData\DangIt"
-</PostBuildEvent>
+
+mkdir "D:\KSPModCopy\GameData\DangIt\Textures"
+copy "$(ProjectDir)\Data\Textures\*"  "D:\KSPModCopy\GameData\DangIt\Textures"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

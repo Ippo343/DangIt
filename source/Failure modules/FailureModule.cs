@@ -173,9 +173,9 @@ namespace ippo
             while (DangIt.Instance == null || !DangIt.Instance.IsReady)
                 yield return null;
 
-            this.Events["Fail"].guiActive = DangIt.Instance.Settings.ManualFailures;
-            this.Events["EvaRepair"].unfocusedRange = DangIt.Instance.Settings.MaxDistance;
-            this.Events["Maintenance"].unfocusedRange = DangIt.Instance.Settings.MaxDistance;
+            this.Events["Fail"].guiActive = DangIt.Instance.currentSettings.ManualFailures;
+            this.Events["EvaRepair"].unfocusedRange = DangIt.Instance.currentSettings.MaxDistance;
+            this.Events["Maintenance"].unfocusedRange = DangIt.Instance.currentSettings.MaxDistance;
 
             DI_RuntimeFetch();
         }
