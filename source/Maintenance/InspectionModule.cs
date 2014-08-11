@@ -23,7 +23,7 @@ namespace ippo
             while (DangIt.Instance == null || !DangIt.Instance.IsReady)
                 yield return null;
 
-            this.Events["Inspect"].unfocusedRange = DangIt.Instance.currentSettings.MaxDistance;
+            this.Events["Inspect"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
         }
 
 

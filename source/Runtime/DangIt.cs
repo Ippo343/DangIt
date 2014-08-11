@@ -9,15 +9,35 @@ using System.Text;
 
 namespace ippo
 {
+    /// <summary>
+    /// Mod's runtime controller and manager.
+    /// Provides general utilities, definitions, and handles the user's settings.
+    /// </summary>
     public partial class DangIt : ScenarioModule
     {
+
+        /// <summary>
+        /// List of resources that must be ignored by tank leaks.
+        /// </summary>
         public List<string> LeakBlackList;
-        public Settings currentSettings;
+
+
+        /// <summary>
+        /// General settings about notifications and gameplay elements.
+        /// </summary>
+        public Settings CurrentSettings { get; private set; }
+
 
         public static DangIt Instance { get; private set; }
+
         public bool IsReady { get; private set; }        
 
-        public string SettingsFilePath
+
+        /// <summary>
+        /// Returns the location of the mod's configuration file.
+        /// Likely, GameData/DangIt/PluginData/DangIt/DangIt.cfg
+        /// </summary>
+        internal string ConfigFilePath
         {
             get { return IOUtils.GetFilePathFor(this.GetType(), "DangIt.cfg"); }
         }
@@ -27,27 +47,43 @@ namespace ippo
         {
             Debug.Log("[DangIt]: Instantiating runtime...");
 
-            // Load the resource blacklist from the file
-            LeakBlackList = new List<string>();
-            ConfigNode blackListNode = ConfigNode.Load(SettingsFilePath).GetNode("BLACKLIST");
-            foreach (string item in blackListNode.GetValues("ignore"))
-                LeakBlackList.Add(item);
+            try
+            {
+                LeakBlackList = new List<string>();
+                ConfigNode blackListNode = ConfigNode.Load(ConfigFilePath).GetNode("BLACKLIST");
+                foreach (string item in blackListNode.GetValues("ignore"))
+                    LeakBlackList.Add(item);
+            }
+            catch (Exception e)
+            {
+                LeakBlackList = new List<string>();
+                LeakBlackList.Add("ElectricCharge");
+                LeakBlackList.Add("SolidFuel");
+                LeakBlackList.Add("SpareParts");
+
+                this.Log("An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
+            }
+
 
             Instance = this;
+
+            // Not yet ready: will be ready only after OnLoad
             this.IsReady = false;
 
+            // Start waiting for everything to be ready so that the settings button can be added
             this.StartCoroutine("AddAppButton");
         }
+
 
 
         public override void OnLoad(ConfigNode node)
         {
             if (node.HasNode("SETTINGS"))
-                this.currentSettings = new Settings(node.GetNode("SETTINGS"));
+                this.CurrentSettings = new Settings(node.GetNode("SETTINGS"));
             else
             {
-                this.currentSettings = new Settings();
-                Debug.Log("[DangIt] WARNING: No settings node to load, creating default one");
+                this.CurrentSettings = new Settings();
+                this.Log("WARNING: No settings node to load, creating default one");
             }
 
             this.IsReady = true;
@@ -56,8 +92,22 @@ namespace ippo
 
         public override void OnSave(ConfigNode node)
         {
-            Debug.Log("[DangIt] Saving settings...");
-            node.AddNode(currentSettings.ToNode());
+            this.Log("Saving settings...");
+
+            if (node.HasNode("SETTINGS"))
+            {
+                node.SetNode("SETTINGS", CurrentSettings.ToNode());
+            }
+            else
+            {
+                node.AddNode(CurrentSettings.ToNode());
+            }
+        }
+
+
+        private void Log(string msg)
+        {
+            Debug.Log("[DangIt][Runtime]: " + msg);
         }
 
     }

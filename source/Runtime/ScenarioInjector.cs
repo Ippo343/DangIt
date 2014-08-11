@@ -24,7 +24,7 @@ namespace ippo
 
             if (psm == null)
             {
-                Debug.Log("[DangIt][" + this.GetInstanceID() + "]: Adding the scenario module to the game.");
+                Debug.Log("[DangIt]: Adding the controller to the game.");
                 psm = game.AddProtoScenarioModule(typeof(DangIt), GameScenes.EDITOR,
                                                                   GameScenes.FLIGHT,
                                                                   GameScenes.SPACECENTER,
@@ -33,7 +33,7 @@ namespace ippo
             }
             else // make sure the scenario is targeting all the scenes
             {
-                Debug.Log("[DangIt][" + this.GetInstanceID() + "]: The runtime is already present.");
+                Debug.Log("[DangIt]: The runtime is already installed (OK).");
 
                 SetTargetScene(psm, GameScenes.EDITOR);
                 SetTargetScene(psm, GameScenes.FLIGHT);

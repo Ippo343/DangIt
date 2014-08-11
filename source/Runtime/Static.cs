@@ -65,11 +65,12 @@ namespace ippo
 
         /// <summary>
         /// Broadcasts a message at the top-center of the screen
-        /// ONLY if message notifications are enabled in the global settings
+        /// The message is ignored if the settings have disabled messages, unless
+        /// overrideMute is true
         /// </summary>
         public static void Broadcast(string message, bool overrideMute = false, float time = 5f)
         {
-            if (overrideMute || DangIt.Instance.currentSettings.Messages)
+            if (overrideMute || DangIt.Instance.CurrentSettings.Messages)
                 ScreenMessages.PostScreenMessage(message, time, ScreenMessageStyle.UPPER_CENTER);
         }
 
@@ -128,7 +129,7 @@ namespace ippo
 
 
             // If the glow is globally disabled, don't even bother looking for failures
-            if (DangIt.Instance.currentSettings.Glow)
+            if (DangIt.Instance.CurrentSettings.Glow)
             {
                 // Scan all the failure modules, if any
                 List<FailureModule> failModules = part.Modules.OfType<FailureModule>().ToList();
