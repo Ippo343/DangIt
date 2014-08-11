@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,9 +16,12 @@ namespace ippo
         bool showGUI = false;
 
 
-        void OnLauncherReady()
+        IEnumerator AddAppButton()
         {
-            if (ApplicationLauncher.Ready)
+            while (!ApplicationLauncher.Ready || !this.IsReady)
+                yield return null;
+
+            if (ApplicationLauncher.Ready && this.IsReady)
             {
                 try
                 {
@@ -44,6 +48,7 @@ namespace ippo
                 }
             }
         }
+
 
 
         void onAppBtnToggleOn()

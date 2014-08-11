@@ -35,21 +35,8 @@ namespace ippo
 
             Instance = this;
             this.IsReady = false;
-        }
 
-
-        public void Awake()
-        {
-            try
-            {
-                Debug.Log("[DangIt]: Awaking runtime...");
-                GameEvents.onGUIApplicationLauncherReady.Add(OnLauncherReady);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-                throw;
-            }
+            this.StartCoroutine("AddAppButton");
         }
 
 
