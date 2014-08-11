@@ -37,21 +37,25 @@ namespace ippo
 
             try
             {
-                this.Log("About to add the app button...");
+                if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+                {
+                    this.Log("About to add the app button...");
 
-                Texture btnTex = GameDatabase.Instance.GetTexture("DangIt/Textures/appBtn", false);
-                if (btnTex == null)
-                    throw new Exception("The button texture wasn't loaded!");
+                    Texture btnTex = GameDatabase.Instance.GetTexture("DangIt/Textures/appBtn", false);
+                    if (btnTex == null)
+                        throw new Exception("The button texture wasn't loaded!");
 
-                appBtn = ApplicationLauncher.Instance.AddModApplication(
-                            onAppBtnToggleOn,
-                            onAppBtnToggleOff,
-                            dummyVoid,  // ignore callbacks for more elaborate events
-                            dummyVoid,
-                            dummyVoid,
-                            dummyVoid,
-                            ApplicationLauncher.AppScenes.SPACECENTER,
-                            btnTex);
+                    appBtn = ApplicationLauncher.Instance.AddModApplication(
+                                onAppBtnToggleOn,
+                                onAppBtnToggleOff,
+                                dummyVoid,  // ignore callbacks for more elaborate events
+                                dummyVoid,
+                                dummyVoid,
+                                dummyVoid,
+                                ApplicationLauncher.AppScenes.SPACECENTER,
+                                btnTex);
+                }
+                
             }
             catch (Exception e)
             {

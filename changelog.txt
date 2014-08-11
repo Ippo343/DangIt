@@ -1,3 +1,9 @@
+=== ALPHA 3.2.1 ===
+
+Hotfix to patch the issue causing multiple instances of the app button to be created.
+Added the download URL to the .version file.
+
+
 === ALPHA 3.2 ===
 
 Heavy code changes to have the runtime implemented as a ScenarioModule which also holds settings.

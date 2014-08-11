@@ -105,6 +105,15 @@ namespace ippo
         }
 
 
+
+        public void OnDestroy()
+        {
+            this.Log("Destroying instance...");
+
+            if (appBtn != null) ApplicationLauncher.Instance.RemoveModApplication(this.appBtn);
+        }
+
+
         private void Log(string msg)
         {
             Debug.Log("[DangIt][Runtime]: " + msg);

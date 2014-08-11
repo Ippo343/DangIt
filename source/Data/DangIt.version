@@ -1,10 +1,12 @@
 {
   "NAME": "DangIt",
   "URL": "https://raw.githubusercontent.com/Ippo343/DangIt/master/source/Data/DangIt.version",
-  "VERSION": {
-    "MAJOR": 0,
-    "MINOR": 3,
-    "PATCH": 2
+  "DOWNLOAD": "http://beta.kerbalstuff.com/mod/7/DangIt",
+  "VERSION":{
+	"MAJOR":0,
+    "MINOR":3,
+    "PATCH":2,
+    "BUILD":1
   },
   "KSP_VERSION": {
     "MAJOR": 0,
