@@ -1,3 +1,12 @@
+=== ALPHA 4 ===
+
+The temperature's effect on aging is now independent from the use of the part.
+The TemperatureMultiplier is now included in the computation of Lambda.
+
+
+
+
+
 === ALPHA 3.2.1 ===
 
 Hotfix to patch the issue causing multiple instances of the app button to be created.

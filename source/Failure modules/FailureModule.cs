@@ -129,16 +129,18 @@ namespace ippo
 
         #region Lambda
 
+
         /// <summary>
         /// Istantenous chance of failure.
-        /// Already considers the LambdaMultiplier
         /// </summary>
-        public float Lambda
+        public float Lambda()
         {
-            get { return LambdaFromMTBF(this.CurrentMTBF) 
-                         * LambdaMultiplier()
-                         * InspectionMultiplier(); }
+            return LambdaFromMTBF(this.CurrentMTBF)
+                    * TemperatureMultiplier()           // the temperature increases the chance of failure
+                    * LambdaMultiplier()                // optional multiplier from the child class
+                    * InspectionMultiplier();           // apply inspection bonus
         }
+
 
         private float LambdaFromMTBF(float MTBF)
         {
@@ -356,14 +358,19 @@ namespace ippo
                 {
                     float now = DangIt.Now();
 
+                    float dt = now - LastFixedUpdate;
+
+                    // The temperature aging is independent from the use of the part
+                    this.Age += dt * this.TemperatureMultiplier();
+
                     if (!PartIsActive())
                     {
                         this.LastFixedUpdate = now;
                         return;
                     }
 
-                    float dt = now - LastFixedUpdate;
-                    this.Age += (dt * (1 + TemperatureMultiplier()));
+                    // If control reaches this point, the part is active: add the elapsed time to the age
+                    this.Age += dt;
 
                     this.CurrentMTBF = this.MTBF * this.ExponentialDecay();
 
