@@ -61,9 +61,9 @@ namespace ippo
         }
 
 
-        protected override void DI_FailBegin()
+        protected override bool DI_FailBegin()
         {
-            return;
+            return true;
         }
 
         protected override void DI_Disable()

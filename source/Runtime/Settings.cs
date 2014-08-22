@@ -14,7 +14,7 @@ namespace ippo
         public class Settings
         {
             public bool ManualFailures = false;     // initiate failures manually
-            public float MaxDistance = 1f;          // maximum distance for EVA activities
+            public float MaxDistance = 2f;          // maximum distance for EVA activities
             public bool Messages = true;            // enable messages and screen posts
             public bool Glow = true;                // enable the part's glow upon failure
 

@@ -118,7 +118,7 @@ namespace ippo
             if (GUILayout.Button("OK"))
             {
                 // Parse the string
-                this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 1f);
+                this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 2f);
 
                 this.Log("Applying the new settings selected from GUI. New settings:\n" + newSettings.ToNode().ToString());
                 DangIt.Instance.CurrentSettings = this.newSettings;

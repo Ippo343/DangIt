@@ -36,9 +36,10 @@ namespace ippo
         }
 
 
-        protected override void DI_FailBegin()
+        protected override bool DI_FailBegin()
         {
-            return;
+            // Always agree to fail
+            return true;
         }
 
 

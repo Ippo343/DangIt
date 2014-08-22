@@ -27,7 +27,7 @@ namespace ippo
         }
 
 
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 1f, externalToEVAOnly = true)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 2f, externalToEVAOnly = true)]
         public void Inspect()
         {
             StringBuilder sb = new StringBuilder();
