@@ -3,7 +3,8 @@
 The temperature's effect on aging is now independent from the use of the part.
 The TemperatureMultiplier is now included in the computation of Lambda.
 Fixes the bug where the spares container does not check the eva distance in the settings.
-Changed the default max distance to 2m
+Changed the default max distance to 2m.
+Edited the MM patch so that unmanned command pods don't get spare parts. Supports up to 7 crew members.
 
 
 
