@@ -1,14 +1,15 @@
-=== ALPHA 4 ===
+=== ALPHA 3.3 ===
 
-The temperature's effect on aging is now independent from the use of the part.
-The TemperatureMultiplier is now included in the computation of Lambda.
-Fixes the bug where the spares container does not check the eva distance in the settings.
-Changed the default max distance to 2m.
-Edited the MM patch so that unmanned command pods don't get spare parts. Supports up to 7 crew members.
-
-
-
-
+Fixes:
+ * the spares container now responds correctly to the distance settings;
+ * changed the default max distance to 2m to allow interaction with parts up to 3.75m;
+ * tank leaks now ignore empty resources.
+ 
+Improvements:
+ * the temperature now makes parts age even when they are not in use;
+ * the TemperatureMultiplier is now included in the computation of Lambda for all parts;
+ * unmanned command pods don't get spare parts. Supports up to 7 crew members.
+ * the atmospheric density is now used as LambdaMultiplier for control surfaces: this means they are less likely to fail at high altitudes.
 
 === ALPHA 3.2.1 ===
 

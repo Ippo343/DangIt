@@ -128,10 +128,14 @@ namespace ippo
 
         protected override bool DI_FailBegin()
         {
-            if ((leakables != null) && (leakables.Count > 0))
-            {
-                //TODO: handle the case of empty tanks
+            if (leakables == null)
+                throw new Exception("The list of leakables is null!");
 
+            // Discard every resource that has already been emptied
+            leakables.RemoveAll(r => r.amount == 0);
+
+            if (leakables.Count > 0)
+            {
                 // Choose a random severity of the leak
                 float TC = UnityEngine.Random.Range(MinTC, MaxTC);
                 this.pole = 1 / TC;
@@ -146,7 +150,7 @@ namespace ippo
             else
             {
                 leakName = null;
-                this.Log("Invalid leakables list, aborting FailBegin()");
+                this.Log("Zero leakable resources found on part " + this.part.partName + ", aborting FailBegin()");
                 return false;
             }
         }

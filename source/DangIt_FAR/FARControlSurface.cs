@@ -37,6 +37,11 @@ namespace DangIt_FAR
             return (this.part.vessel.atmDensity > 0);
         }
 
+        protected override float LambdaMultiplier()
+        {
+            return (float)this.part.vessel.atmDensity;
+        }
+
 
 
         protected override void DI_OnLoad(ConfigNode node)
