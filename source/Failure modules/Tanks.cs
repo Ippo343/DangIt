@@ -126,9 +126,15 @@ namespace ippo
 
 
 
-        protected override void DI_FailBegin()
+        protected override bool DI_FailBegin()
         {
-            if ((leakables != null) && (leakables.Count > 0))
+            if (leakables == null)
+                throw new Exception("The list of leakables is null!");
+
+            // Discard every resource that has already been emptied
+            leakables.RemoveAll(r => r.amount == 0);
+
+            if (leakables.Count > 0)
             {
                 // Choose a random severity of the leak
                 float TC = UnityEngine.Random.Range(MinTC, MaxTC);
@@ -138,11 +144,14 @@ namespace ippo
                 // Pick a random index to leak.
                 int idx = (leakables.Count == 1) ? 0 : UnityEngine.Random.Range(0, leakables.Count);
                 this.leakName = leakables[idx].resourceName;
+
+                return true;
             }
             else
             {
                 leakName = null;
-                throw new Exception("Couldn't find any leakable resources!");
+                this.Log("Zero leakable resources found on part " + this.part.partName + ", aborting FailBegin()");
+                return false;
             }
         }
 

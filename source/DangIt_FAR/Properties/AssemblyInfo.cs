@@ -2,16 +2,16 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("0.3.2.1")]
-[assembly: AssemblyFileVersion("0.3.2.1")]
+[assembly: AssemblyVersion("0.3.3.0")]
+[assembly: AssemblyFileVersion("0.3.3.0")]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DangIt_FAR")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Compatibility patch for FerramAerospaceResearch")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Pota Studios")]
 [assembly: AssemblyProduct("DangIt_FAR")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]

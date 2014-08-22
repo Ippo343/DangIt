@@ -1,3 +1,16 @@
+=== ALPHA 3.3 ===
+
+Fixes:
+ * the spares container now responds correctly to the distance settings;
+ * changed the default max distance to 2m to allow interaction with parts up to 3.75m;
+ * tank leaks now ignore empty resources.
+ 
+Improvements:
+ * the temperature now makes parts age even when they are not in use;
+ * the TemperatureMultiplier is now included in the computation of Lambda for all parts;
+ * unmanned command pods don't get spare parts. Supports up to 7 crew members.
+ * the atmospheric density is now used as LambdaMultiplier for control surfaces: this means they are less likely to fail at high altitudes.
+
 === ALPHA 3.2.1 ===
 
 Hotfix to patch the issue causing multiple instances of the app button to be created.

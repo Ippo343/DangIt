@@ -58,7 +58,7 @@ namespace ippo
         protected virtual void DI_Start(StartState state) { }
         protected virtual void DI_RuntimeFetch() { }
         protected virtual void DI_Update() { }
-        protected abstract void DI_FailBegin();
+        protected abstract bool DI_FailBegin();
         protected abstract void DI_Disable();
         protected abstract void DI_EvaRepair();
         protected virtual void DI_OnSave(ConfigNode node) { }
@@ -129,16 +129,18 @@ namespace ippo
 
         #region Lambda
 
+
         /// <summary>
         /// Istantenous chance of failure.
-        /// Already considers the LambdaMultiplier
         /// </summary>
-        public float Lambda
+        public float Lambda()
         {
-            get { return LambdaFromMTBF(this.CurrentMTBF) 
-                         * LambdaMultiplier()
-                         * InspectionMultiplier(); }
+            return LambdaFromMTBF(this.CurrentMTBF)
+                    * TemperatureMultiplier()           // the temperature increases the chance of failure
+                    * LambdaMultiplier()                // optional multiplier from the child class
+                    * InspectionMultiplier();           // apply inspection bonus
         }
+
 
         private float LambdaFromMTBF(float MTBF)
         {
@@ -356,21 +358,26 @@ namespace ippo
                 {
                     float now = DangIt.Now();
 
+                    float dt = now - LastFixedUpdate;
+
+                    // The temperature aging is independent from the use of the part
+                    this.Age += dt * this.TemperatureMultiplier();
+
                     if (!PartIsActive())
                     {
                         this.LastFixedUpdate = now;
                         return;
                     }
 
-                    float dt = now - LastFixedUpdate;
-                    this.Age += (dt * (1 + TemperatureMultiplier()));
+                    // If control reaches this point, the part is active: add the elapsed time to the age
+                    this.Age += dt;
 
                     this.CurrentMTBF = this.MTBF * this.ExponentialDecay();
 
                     // If the part has not already failed, toss the dice
                     if (!this.HasFailed)
                     {
-                        if (UnityEngine.Random.Range(0f, 1f) < this.Lambda)
+                        if (UnityEngine.Random.Range(0f, 1f) < this.Lambda())
                         {
                             this.Fail();
                         }
@@ -406,7 +413,7 @@ namespace ippo
 
 
 
-        [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = 1f, externalToEVAOnly = true)]
+        [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = 2f, externalToEVAOnly = true)]
         public void Maintenance()
         {
             this.Log("Initiating EVA maitenance");
@@ -445,23 +452,31 @@ namespace ippo
         {
             try
             {
-                this.Log("FAIL!");
+                this.Log("Initiating Fail()");
 
-                // Stop the timewarp instantly
-                TimeWarp.SetRate(0, true);
+                // First, run the custom failure logic
+                // The child class can refuse to fail in FailBegin()
+                if (!this.DI_FailBegin())
+                {
+                    this.Log(this.DebugName + " has not agreed to fail, failure aborted!");
+                    return;
+                }
+                else
+                {
+                    this.Log(this.DebugName + " has agreed to fail, failure allowed.");
+                }
 
-                // Sets the failure state and resets the glow
-                this.SetFailureState(true);
+                // If control reaches this point, the child class has agreed to fail
+                // Disable the part and handle the internal state and notifications
 
-                // Custom failure logic
-                this.DI_FailBegin();
                 this.DI_Disable();
+
+                TimeWarp.SetRate(0, true);      // stop instantly
+                this.SetFailureState(true);     // Sets the failure state, handles the events, handles the glow
 
                 if (!this.Silent)
                 {
                     DangIt.Broadcast(this.FailureMessage);
-
-                    // Post the failure message in the messaging system
                     DangIt.PostMessage("Failure!",
                                        this.FailureMessage,
                                        MessageSystemButton.MessageButtonColor.RED,
@@ -507,7 +522,7 @@ namespace ippo
         /// The repair won't be executed if the kerbonaut doesn't have enough spare parts.
         /// Put your custom repair code in DI_Repair()
         /// </summary>
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 1f, externalToEVAOnly = true)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 2f, externalToEVAOnly = true)]
         public void EvaRepair()
         {
             try

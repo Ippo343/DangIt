@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +14,27 @@ namespace ippo
         public override void OnStart(PartModule.StartState state)
         {
             Debug.Log("DangIt: Spares Container [" + this.GetInstanceID() + "]: OnStart, state is " + state);
-            
+
+            this.StartCoroutine("RuntimeFetch");
+
             this.Events["TakeParts"].active = true;
         }
 
+
+
+        IEnumerator RuntimeFetch()
+        {
+            // Wait for the server to be available
+            while (DangIt.Instance == null || !DangIt.Instance.IsReady)
+                yield return null;
+
+            this.Events["TakeParts"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
+            this.Events["DepositParts"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
+        }
+
+
        
-        [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange = 1f)]
+        [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange = 2f)]
         public void TakeParts()
         {
             Part evaPart = DangIt.FindEVAPart();
@@ -39,7 +55,7 @@ namespace ippo
 
 
 
-        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 1f, guiName = "Deposit spares", active = false)]
+        [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 2f, guiName = "Deposit spares", active = false)]
         public void DepositParts()
         {
             Part evaPart = DangIt.FindEVAPart();

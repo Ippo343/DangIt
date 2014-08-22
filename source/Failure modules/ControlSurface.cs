@@ -34,6 +34,10 @@ namespace ippo
             return (this.part.vessel.atmDensity > 0);
         }
 
+        protected override float LambdaMultiplier()
+        {
+            return (float)this.part.vessel.atmDensity;
+        }
 
 
         protected override void DI_OnLoad(ConfigNode node)
@@ -61,9 +65,9 @@ namespace ippo
         }
 
 
-        protected override void DI_FailBegin()
+        protected override bool DI_FailBegin()
         {
-            return;
+            return true;
         }
 
         protected override void DI_Disable()
