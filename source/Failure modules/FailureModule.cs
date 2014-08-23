@@ -136,7 +136,7 @@ namespace ippo
         public float Lambda()
         {
             return LambdaFromMTBF(this.CurrentMTBF)
-                    * TemperatureMultiplier()           // the temperature increases the chance of failure
+                    * (1 + TemperatureMultiplier())     // the temperature increases the chance of failure
                     * LambdaMultiplier()                // optional multiplier from the child class
                     * InspectionMultiplier();           // apply inspection bonus
         }
@@ -158,7 +158,7 @@ namespace ippo
         private float InspectionMultiplier()
         {
             float elapsed = (DangIt.Now() - this.TimeOfLastInspection);
-            return Math.Min(elapsed / this.InspectionBonus, 1);
+            return Math.Max(0f, Math.Min(elapsed / this.InspectionBonus, 1f));
         }
 
 
