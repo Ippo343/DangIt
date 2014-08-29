@@ -3,30 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DangIt.Perks
+namespace ippo
 {
-    public enum Specialty
-    {
-        Mechanic,
-        Electrician
-    }
-
-    public enum SkillLevel
-    {
-        None = 0,
-        Unskilled = 1,
-        Normal = 2,
-        Skilled = 3
-    }
-
 
     public class Perk
     {
-        private readonly string NodeName = "PERK";
-
+        // A perk object is immutable
+        // once these are set by the constructor, they can never change
         public readonly Specialty Specialty;
         public readonly SkillLevel SkillLevel;
-
 
         public Perk(Specialty specialty, SkillLevel level)
         {
@@ -35,30 +20,31 @@ namespace DangIt.Perks
         }
 
 
-        public static Perk FromNode(ConfigNode node)
+        public override string ToString()
         {
-            if (!node.HasValue("specialty") || !node.HasValue("level"))
-                throw new Exception("Invalid perk node!");
-
-            return new Perk((Specialty)Enum.Parse(typeof(Specialty), node.GetValue("specialty")), 
-                            (SkillLevel)Enum.Parse(typeof(SkillLevel), node.GetValue("level")));
+            return this.Specialty.ToString() + ":" + this.SkillLevel.ToString();
         }
 
 
-        public ConfigNode ToNode()
+        public static Perk FromString(string nodeString)
         {
-            ConfigNode node = new ConfigNode(NodeName);
+            // String format for a perk is perk = Specialty:Level
+            // e.g: perk = Electrician:2
+            char[] sep = { ':' };
+            string[] parts = nodeString.Split(sep, StringSplitOptions.RemoveEmptyEntries);
 
-            node.AddValue("specialty", Specialty.ToString());
-            node.AddValue("level", SkillLevel.ToString());
+            // Decode the string
+            Specialty specialty = (Specialty)Enum.Parse(typeof(Specialty), parts[0]);
+            SkillLevel level = (SkillLevel)Enum.Parse(typeof(SkillLevel), parts[1]);
 
-            return node;
+            return new Perk(specialty, level);
+
         }
 
 
         public static bool MeetsRequirement(Perk requirement, Perk perk)
         {
-            return ((requirement.Specialty == perk.Specialty) && 
+            return ((requirement.Specialty == perk.Specialty) &&
                     (perk.SkillLevel >= requirement.SkillLevel));
         }
 
@@ -72,5 +58,22 @@ namespace DangIt.Perks
             return requirements.All(r => MeetsRequirement(r, perks));
         }
     }
+
+
+    public enum Specialty
+    {
+        Mechanic,
+        Electrician
+    }
+
+    public enum SkillLevel
+    {
+        Untrained = 0,
+        Unskilled = 1,
+        Normal = 2,
+        Skilled = 3
+    }
+
+
 
 }

@@ -33,11 +33,14 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\KSPModCopy\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>bin\References\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\KSPModCopy\KSP_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>bin\References\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="CrewFilesInterface">
+      <HintPath>bin\References\CrewFilesInterface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,7 +50,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\KSPModCopy\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>bin\References\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -66,8 +69,8 @@
     <Compile Include="Failure modules\ModuleRCSReliability.cs" />
     <Compile Include="Maintenance\InspectionModule.cs" />
     <Compile Include="Maintenance\ModuleReliabilityInfo.cs" />
-    <None Include="Perks\Generator.cs" />
-    <None Include="Perks\Perk.cs" />
+    <Compile Include="Perks\Generator.cs" />
+    <Compile Include="Perks\Perk.cs" />
     <Compile Include="Runtime\Settings.cs" />
     <Compile Include="Runtime\SparesInfo.cs" />
     <Compile Include="Runtime\Static.cs" />
@@ -96,7 +99,6 @@
   <ItemGroup>
     <Content Include="Data\ModuleManager.2.2.0.dll" />
     <Content Include="Data\Textures\appBtn.png" />
-    <Content Include="Perks\CrewFilesInterface.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

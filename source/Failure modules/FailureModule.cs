@@ -68,6 +68,9 @@ namespace ippo
         #endregion
 
 
+        public List<Perk> PerkRequirements = new List<Perk>();
+
+
         #region Fields from the cfg file
 
         [KSPField(isPersistant = true, guiActive = false)]
@@ -136,7 +139,7 @@ namespace ippo
         public float Lambda()
         {
             return LambdaFromMTBF(this.CurrentMTBF)
-                    * TemperatureMultiplier()           // the temperature increases the chance of failure
+                    * (1 + TemperatureMultiplier())     // the temperature increases the chance of failure
                     * LambdaMultiplier()                // optional multiplier from the child class
                     * InspectionMultiplier();           // apply inspection bonus
         }
@@ -158,7 +161,7 @@ namespace ippo
         private float InspectionMultiplier()
         {
             float elapsed = (DangIt.Now() - this.TimeOfLastInspection);
-            return Math.Min(elapsed / this.InspectionBonus, 1);
+            return Math.Max(0f, Math.Min(elapsed / this.InspectionBonus, 1f));
         }
 
 
@@ -253,6 +256,16 @@ namespace ippo
                 this.CurrentMTBF = DangIt.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
                 this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
                 this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
+
+                // Load the required perks, if any
+                this.PerkRequirements = new List<Perk>();
+                if (node.HasNode("PERKS"))
+                {
+                    foreach (string item in node.values)
+                    {
+                        this.PerkRequirements.Add(Perk.FromString(item));
+                    }
+                }
 
                 // Run the subclass' custom onload
                 this.DI_OnLoad(node);
@@ -539,11 +552,9 @@ namespace ippo
                     return;
                 }
 
-                // Check if he is carrying enough spares
-                if (evaPart.Resources.Contains(Spares.Name) && evaPart.Resources[Spares.Name].amount >= this.RepairCost)
+                // Check if the kerbal is able to perform the repair
+                if ( CheckRepairConditions(evaPart) )
                 {
-                    this.Log("Spare parts check: OK! Repair allowed");
-
                     this.DI_EvaRepair();
                     this.SetFailureState(false);
 
@@ -560,18 +571,12 @@ namespace ippo
 
                     DangIt.Broadcast(this.RepairMessage, true);
 
-                    DiscountAge(this.RepairBonus);
+                    this.DiscountAge(this.RepairBonus);
 
                     if (discount > 0)
                     {
                         DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " was able to save " + discount + " spare parts");
-                    }
-                    
-                }
-                else
-                {
-                    this.Log("Spare parts check: failed! Repair NOT allowed");
-                    DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.", true);
+                    }   
                 }
 
                 DangIt.ResetShipGlow(this.part.vessel);
@@ -582,6 +587,27 @@ namespace ippo
                 OnError(e);
             }
 
+        }
+
+
+        private bool CheckRepairConditions(Part evaPart)
+        {
+            bool allow = true;
+            string reason = string.Empty;
+
+            if (!evaPart.Resources.Contains(Spares.Name) || evaPart.Resources[Spares.Name].amount < this.RepairCost)
+            {
+                allow = false;
+                reason = "not carrying enough spares";
+                DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.", true);
+            }
+
+            if (allow)
+                this.Log("Repair allowed!");
+            else
+                this.Log("Repair NOT allowed. Reason: " + reason);
+
+            return allow;
         }
 
 

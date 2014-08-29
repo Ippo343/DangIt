@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using CrewFilesInterface;
 
-namespace DangIt.Perks
+namespace ippo
 {
     class PerkGenerator : ICrewDataGenerator
     {
-        public static string NodeName { get { return "DANGIT_PERKS"; } }
+        public static readonly string NodeName = "DANGIT_PERKS"; 
 
 
         public bool MustRun(ScenePhase phase, ConfigNode kerbalData)
@@ -27,9 +27,11 @@ namespace DangIt.Perks
             // Generate a random perk for each perk type
             foreach (Specialty spec in Enum.GetValues(typeof(Specialty)))
             {
+                //TODO: Improve generation algorithm
+
                 SkillLevel level = (SkillLevel)( (int)Math.Floor(UnityEngine.Random.Range(0f, intelligence) / 0.25f) );
                 Perk perk = new Perk(spec, level);
-                perksNode.AddNode(perk.ToNode());
+                perksNode.AddValue("perk", perk.ToString());
             }
 
             return perksNode;
