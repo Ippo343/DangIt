@@ -9,6 +9,7 @@ namespace ippo
 {
     class InspectionModule : PartModule
     {
+
         public override void OnStart(PartModule.StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)

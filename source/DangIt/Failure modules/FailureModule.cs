@@ -25,27 +25,42 @@ namespace ippo
         public abstract string EvaRepairGuiName { get; }
         public abstract string MaintenanceString { get; }
 
+        /// <summary>
+        /// Returns the string that is displayed during an inspection
+        /// If the perks are not met, a generic string is returned
+        /// </summary>
         public virtual string InspectionMessage()
         {
             if (this.HasFailed)
                 return "the part has failed!";
 
+
+            // Try to check out perks
+            Part evaPart = DangIt.FindEVAPart();
+            if (evaPart != null)
+            {
+                if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
+                    return evaPart.protoModuleCrew[0].name + " isn't quite sure about this...";
+            }
+
+
+            // Perks check out, return a message based on the age
             float ratio = this.Age / this.LifeTimeSecs;
 
             if (ratio < 0.10)
-                return "this part seems to be as good as new";
+                return "This part seems to be as good as new";
             else if (ratio < 0.50)
-                return "this part is still in good condition";
+                return "This part is still in good condition";
             else if (ratio < 0.75)
-                return "this part is starting to show its age";
+                return "This part is starting to show its age";
             else if (ratio < 1.25)
-                return "it looks like it's time to get a new one";
+                return "It looks like it's time to get a new one";
             else if (ratio < 2.00)
-                return "it really isn't a good idea to keep using this part";
+                return "It really isn't a good idea to keep using this part";
             else if (ratio < 3)
-                return "this part needs replacing soon";
+                return "This part needs replacing soon";
             else
-                return "this part appears to be in terrible condition";
+                return "This part appears to be in terrible condition";
         }
 
         #endregion
@@ -443,6 +458,15 @@ namespace ippo
                 return;
             }
 
+
+            // You need the right perks to perform maintenance
+            if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
+            {
+                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " isn't really qualified for this...", true);
+                return;
+            }
+
+
             // Check if he is carrying enough spares
             if (evaPart.Resources.Contains(Spares.Name) && evaPart.Resources[Spares.Name].amount >= this.MaintenanceCost)
             {
@@ -602,6 +626,7 @@ namespace ippo
             bool allow = true;
             string reason = string.Empty;
 
+
             #region Amount of spare parts
             if (!evaPart.Resources.Contains(Spares.Name) || evaPart.Resources[Spares.Name].amount < this.RepairCost)
             {
@@ -620,34 +645,15 @@ namespace ippo
             } 
             #endregion
 
-
             #region Perks
             if (CrewFilesManager.CrewFilesInstalled && CrewFilesManager.Server != null)
             {
-                List<Perk> kerbalPerks = new List<Perk>();
-                #region Get the perks from the file
-                if (CrewFilesManager.Server.Contains(evaPart.protoModuleCrew[0]))
-                {
-                    // Get the kerbal's file and parse all the perks
-                    ConfigNode kerbalNode = CrewFilesManager.Server.GetKerbalFile(evaPart.protoModuleCrew[0]);
-                    ConfigNode perksNode = kerbalNode.GetNode(PerkGenerator.NodeName);
-
-                    foreach (string item in perksNode.GetValues("perk"))
-                        kerbalPerks.Add(Perk.FromString(item));
-                }
-                else
-                {
-                    this.Log("WARNING: the current kerbal is not in the database!");
-                } 
-                #endregion
-
-                if (!Perk.MeetsRequirement(this.PerkRequirements, kerbalPerks))
+                if (CheckOutPerks(evaPart.protoModuleCrew[0]))
                 {
                     allow = false;
                     reason = "perks don't match requirements";
                     DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
                 }
-
             }
             else
             {
@@ -680,26 +686,15 @@ namespace ippo
         }
 
 
-        /*
-        public override string GetInfo()
+        /// <summary>
+        /// Checks if a kerbal has the required perks to interact with this module
+        /// </summary>
+        bool CheckOutPerks(ProtoCrewMember kerbal)
         {
-            try
-            {
-                // This is the time (in hours) that it takes for the MTBF to drop to 1 hour
-                double EOL = Math.Round(Math.Max(-LifeTime * Math.Log(1 / this.MTBF), 0));
-
-                return ("MTBF: " + this.MTBF + " h"
-                    + "\nLifetime: " + this.LifeTime + " h"
-                    + "\nEOL: " + EOL + " h"
-                    + "\nRepair cost: " + this.RepairCost);
-            }
-            catch (Exception e)
-            {
-                this.OnError(e);
-                return string.Empty;
-            }
+            List<Perk> perks = DangIt.FetchKerbalPerks(kerbal);
+            return Perk.MeetsRequirement(this.PerkRequirements, perks);
         }
-        */
+
 
 
         private void DiscountAge(float percentage)
