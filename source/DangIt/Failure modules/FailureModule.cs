@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-
+using CrewFilesInterface;
 
 namespace ippo
 {
@@ -602,23 +602,74 @@ namespace ippo
             bool allow = true;
             string reason = string.Empty;
 
-            // Check the amount of spares
+            #region Amount of spare parts
             if (!evaPart.Resources.Contains(Spares.Name) || evaPart.Resources[Spares.Name].amount < this.RepairCost)
             {
                 allow = false;
                 reason = "not carrying enough spares";
                 DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.", true);
-            }
+            } 
+            #endregion
 
-            // Check the part's temperature
+            #region Part temperature
             if (this.part.temperature > 100)
             {
                 allow = false;
                 reason = "part is too hot (" + part.temperature.ToString() + " degrees)";
                 DangIt.Broadcast("This is too hot to service right now", true);
-            }
+            } 
+            #endregion
 
-            
+
+            #region Perks
+            if (CrewFilesManager.CrewFilesInstalled && CrewFilesManager.Server != null)
+            {
+                List<Perk> kerbalPerks = new List<Perk>();
+                #region Get the perks from the file
+                if (CrewFilesManager.Server.Contains(evaPart.protoModuleCrew[0]))
+                {
+                    // Get the kerbal's file and parse all the perks
+                    ConfigNode kerbalNode = CrewFilesManager.Server.GetKerbalFile(evaPart.protoModuleCrew[0]);
+                    ConfigNode perksNode = kerbalNode.GetNode(PerkGenerator.NodeName);
+
+                    foreach (string item in perksNode.GetValues("perk"))
+                        kerbalPerks.Add(Perk.FromString(item));
+                }
+                else
+                {
+                    this.Log("WARNING: the current kerbal is not in the database!");
+                } 
+                #endregion
+
+                if (!Perk.MeetsRequirement(this.PerkRequirements, kerbalPerks))
+                {
+                    allow = false;
+                    reason = "perks don't match requirements";
+                    DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
+                }
+
+            }
+            else
+            {
+                #region Log the incident and notify the user
+                this.Log("WARNING: CrewFiles is not available!");
+
+                //TODO: remove this message
+                DangIt.PostMessage(
+                    "Installation error",
+
+                    "There seems to be a problem with your installation.\n" +
+                    "CrewFiles seems to be not running.\n" +
+                    "You should probably head to the forum and drop me a line.\n" +
+                    "In the meantime, the perk system is disabled.\n\n" +
+                    "This immersion-breaking message will not be in the final release, I promise!",
+
+                    MessageSystemButton.MessageButtonColor.RED,
+                    MessageSystemButton.ButtonIcons.MESSAGE, true); 
+                #endregion
+            } 
+            #endregion
+
 
             if (allow)
                 this.Log("Repair allowed!");
