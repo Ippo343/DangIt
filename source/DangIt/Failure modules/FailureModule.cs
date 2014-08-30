@@ -68,6 +68,9 @@ namespace ippo
         #endregion
 
 
+        /// <summary>
+        /// List of perks that are necessary to repair the component
+        /// </summary>
         public List<Perk> PerkRequirements = new List<Perk>();
 
 
@@ -590,17 +593,32 @@ namespace ippo
         }
 
 
+        /// <summary>
+        /// Check if a kerbal is able to repair a part,
+        /// factoring spares, perks, and additional conditions
+        /// </summary>
         private bool CheckRepairConditions(Part evaPart)
         {
             bool allow = true;
             string reason = string.Empty;
 
+            // Check the amount of spares
             if (!evaPart.Resources.Contains(Spares.Name) || evaPart.Resources[Spares.Name].amount < this.RepairCost)
             {
                 allow = false;
                 reason = "not carrying enough spares";
                 DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.", true);
             }
+
+            // Check the part's temperature
+            if (this.part.temperature > 100)
+            {
+                allow = false;
+                reason = "part is too hot (" + part.temperature.ToString() + " degrees)";
+                DangIt.Broadcast("This is too hot to service right now", true);
+            }
+
+            
 
             if (allow)
                 this.Log("Repair allowed!");
