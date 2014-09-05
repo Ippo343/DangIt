@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\DangIt.version" />
+    <Compile Include="Perks\Skills.cs" />
     <Compile Include="Runtime\ScenarioInjector.cs" />
     <Compile Include="Runtime\SettingsGUI.cs" />
     <Compile Include="Utilities\EnginesManager.cs" />

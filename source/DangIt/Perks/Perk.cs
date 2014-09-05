@@ -29,7 +29,8 @@ namespace ippo
         public static Perk FromString(string nodeString)
         {
             // String format for a perk is perk = Specialty:Level
-            // e.g: perk = Electrician:2
+            // e.g: Electrician:Skilled
+            // or Mechanic:1
             char[] sep = { ':' };
             string[] parts = nodeString.Split(sep, StringSplitOptions.RemoveEmptyEntries);
 
@@ -58,22 +59,4 @@ namespace ippo
             return requirements.All(r => MeetsRequirement(r, perks));
         }
     }
-
-
-    public enum Specialty
-    {
-        Mechanic,
-        Electrician
-    }
-
-    public enum SkillLevel
-    {
-        Untrained = 0,
-        Unskilled = 1,
-        Normal = 2,
-        Skilled = 3
-    }
-
-
-
 }

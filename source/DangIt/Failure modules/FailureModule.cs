@@ -279,7 +279,7 @@ namespace ippo
                 this.PerkRequirements = new List<Perk>();
                 if (node.HasNode("PERKS"))
                 {
-                    foreach (string item in node.values)
+                    foreach (string item in node.GetValues("perk"))
                     {
                         this.PerkRequirements.Add(Perk.FromString(item));
                     }
@@ -587,7 +587,8 @@ namespace ippo
 
                     DangIt.FlightLog(this.RepairMessage);
 
-                    float intelligence = 1 - evaPart.vessel.GetVesselCrew().First().stupidity;
+                    //TODO: perks repair boni
+                    float intelligence = 1 - evaPart.protoModuleCrew[0].stupidity;
                     float discountedCost = (float)Math.Round( RepairCost * (1 - UnityEngine.Random.Range(0f, intelligence)) );
                     float discount = RepairCost - discountedCost;
 
@@ -602,7 +603,7 @@ namespace ippo
 
                     if (discount > 0)
                     {
-                        DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " was able to save " + discount + " spare parts");
+                        DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " was able to save " + discount + " spare parts");
                     }   
                 }
 
@@ -665,7 +666,7 @@ namespace ippo
                     "Installation error",
 
                     "There seems to be a problem with your installation.\n" +
-                    "CrewFiles seems to be not running.\n" +
+                    "CrewFiles doesn't seem to be availabe.\n" +
                     "You should probably head to the forum and drop me a line.\n" +
                     "In the meantime, the perk system is disabled.\n\n" +
                     "This immersion-breaking message will not be in the final release, I promise!",
