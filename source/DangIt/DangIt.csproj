@@ -57,8 +57,10 @@
   <ItemGroup>
     <None Include="Data\DangIt.version" />
     <Compile Include="Perks\Skills.cs" />
+    <Compile Include="Runtime\GUI\RosterWindow.cs" />
+    <Compile Include="Runtime\GUI\SettingsWindow.cs" />
     <Compile Include="Runtime\ScenarioInjector.cs" />
-    <Compile Include="Runtime\SettingsGUI.cs" />
+    <Compile Include="Runtime\GUI\GUI.cs" />
     <Compile Include="Utilities\EnginesManager.cs" />
     <Compile Include="Failure modules\Alternator.cs" />
     <Compile Include="Failure modules\Batteries.cs" />

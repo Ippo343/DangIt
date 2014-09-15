@@ -25,7 +25,16 @@ namespace ippo
         /// <summary>
         /// General settings about notifications and gameplay elements.
         /// </summary>
-        public Settings CurrentSettings { get; private set; }
+        public Settings CurrentSettings 
+        {
+            get { return currentSettings; }
+            set
+            {
+                this.Log("Applying new settings:\n" + value.ToNode().ToString());
+                currentSettings = value;
+            }
+        }
+        private DangIt.Settings currentSettings;
 
 
         public static DangIt Instance { get; private set; }
