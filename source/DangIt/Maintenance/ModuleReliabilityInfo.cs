@@ -26,7 +26,15 @@ namespace ippo
                     sb.AppendLine(" - Lifetime: " + fm.LifeTime + " hours");
                     sb.AppendLine(" - EOL : " + EOL + " hours");
                     sb.AppendLine(" - Repair cost: " + fm.RepairCost);
-                    sb.AppendLine(" ");
+
+                    if (fm.PerkRequirements != null && fm.PerkRequirements.Count > 0)
+                    {
+                        sb.AppendLine("Servicing:");
+                        foreach (Perk p in fm.PerkRequirements)
+                            sb.AppendLine(" - " + p.ToString());
+                    }
+
+                    sb.AppendLine();
                 }
 
                 return sb.ToString();

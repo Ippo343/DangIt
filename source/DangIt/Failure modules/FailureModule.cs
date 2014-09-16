@@ -263,8 +263,6 @@ namespace ippo
         {
             try
             {
-                this.Log("OnLoad. Node:\n" + node.ToString());
-
                 // Load all the internal state variables
                 this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
                 this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
@@ -279,7 +277,8 @@ namespace ippo
                 this.PerkRequirements = new List<Perk>();
                 if (node.HasNode("PERKS"))
                 {
-                    foreach (string item in node.GetValues("perk"))
+                    ConfigNode perksNode = node.GetNode("PERKS");
+                    foreach (string item in perksNode.GetValues("perk"))
                     {
                         this.PerkRequirements.Add(Perk.FromString(item));
                     }
@@ -293,7 +292,7 @@ namespace ippo
                 if (HighLogic.LoadedSceneIsFlight)
                     this.DI_Start(StartState.Flying);
 
-                this.Log("OnLoad complete, age is " + this.Age); 
+                this.Log("OnLoad complete: loaded " + PerkRequirements.Count + " perks.");
 
                 base.OnLoad(node);
 
@@ -323,6 +322,19 @@ namespace ippo
                 node.SetValue("CurrentMTBF", CurrentMTBF.ToString());
                 node.SetValue("LifeTimeSecs", LifeTimeSecs.ToString());
                 node.SetValue("HasFailed", HasFailed.ToString());
+
+                // Save the perks
+                if (this.PerkRequirements.Count > 0)
+                {
+                    ConfigNode perksNode = new ConfigNode("PERKS");
+                    foreach (Perk p in this.PerkRequirements)
+                        perksNode.AddValue("perk", p.ToString());
+
+                    if (node.HasNode("PERKS"))
+                        node.SetNode("PERKS", perksNode);
+                    else
+                        node.AddNode(perksNode);
+                }                
 
                 // Run the subclass' custom onsave
                 this.DI_OnSave(node);
