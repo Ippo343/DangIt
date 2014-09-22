@@ -21,6 +21,7 @@ namespace ippo
         /// </summary>
         public List<string> LeakBlackList;
 
+        public Dictionary<SkillLevel, Perk.UpgradeCost> trainingCosts;
 
         /// <summary>
         /// General settings about notifications and gameplay elements.
@@ -56,22 +57,46 @@ namespace ippo
         {
             Debug.Log("[DangIt]: Instantiating runtime...");
 
+            ConfigNode settingsFile = ConfigNode.Load(ConfigFilePath);
+
+            LeakBlackList = new List<string>();
             try
             {
-                LeakBlackList = new List<string>();
-                ConfigNode blackListNode = ConfigNode.Load(ConfigFilePath).GetNode("BLACKLIST");
+                ConfigNode blackListNode = settingsFile.GetNode("BLACKLIST");
                 foreach (string item in blackListNode.GetValues("ignore"))
                     LeakBlackList.Add(item);
             }
             catch (Exception e)
-            {
-                LeakBlackList = new List<string>();
+            {                
                 LeakBlackList.Add("ElectricCharge");
                 LeakBlackList.Add("SolidFuel");
                 LeakBlackList.Add("SpareParts");
 
                 this.Log("An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
             }
+
+
+            trainingCosts = new Dictionary<SkillLevel, Perk.UpgradeCost>();
+            try
+            {
+                ConfigNode trainingNode = settingsFile.GetNode("TRAINING");
+
+                foreach (SkillLevel level in Enum.GetValues(typeof(SkillLevel)))
+                {
+                    string item = trainingNode.GetValue(level.ToString());
+                    trainingCosts.Add(level, Perk.UpgradeCost.FromString(item));
+                }
+
+            }
+            catch (Exception e)
+            {
+                trainingCosts.Clear();
+                trainingCosts.Add(SkillLevel.Unskilled, new Perk.UpgradeCost(science: 10, funds: 10000));
+                trainingCosts.Add(SkillLevel.Normal, new Perk.UpgradeCost(science: 50, funds: 50000));
+                trainingCosts.Add(SkillLevel.Skilled, new Perk.UpgradeCost(science: 150, funds: 150000));
+
+                this.Log("An exception occurred when loading the training costs dictionary and a default one has been created. " + e.Message);
+           }
 
 
             Instance = this;

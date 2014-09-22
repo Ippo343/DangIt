@@ -273,15 +273,15 @@ namespace ippo
                 this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
                 this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
-                // Load the required perks, if any
-                this.PerkRequirements = new List<Perk>();
+                // Load the required perks, if any        
                 if (node.HasNode("PERKS"))
                 {
                     ConfigNode perksNode = node.GetNode("PERKS");
-                    foreach (string item in perksNode.GetValues("perk"))
-                    {
-                        this.PerkRequirements.Add(Perk.FromString(item));
-                    }
+                    this.PerkRequirements = Perk.FromNode(perksNode);
+                }
+                else
+                {
+                    this.PerkRequirements = new List<Perk>();
                 }
 
                 // Run the subclass' custom onload

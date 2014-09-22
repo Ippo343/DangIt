@@ -5,9 +5,31 @@ using System.Text;
 
 namespace ippo
 {
-
     public class Perk
     {
+        public struct UpgradeCost
+        {
+            public float Science;
+            public float Funds;
+
+            public UpgradeCost(float science, float funds)
+            {
+                this.Science = science;
+                this.Funds = funds;
+            }
+
+            public static UpgradeCost FromString(string value)
+            {
+                char[] sep = { ':' };
+                string[] parts = value.Split(sep, StringSplitOptions.RemoveEmptyEntries);
+
+                float science = float.Parse(parts[0]);
+                float funds = float.Parse(parts[1]);
+
+                return new UpgradeCost(science, funds);
+            }
+        }
+
         // A perk object is immutable
         // once these are set by the constructor, they can never change
         public readonly Specialty Specialty;
@@ -25,6 +47,16 @@ namespace ippo
             return this.Specialty.ToString() + ":" + this.SkillLevel.ToString();
         }
 
+
+        public static List<Perk> FromNode(ConfigNode node)
+        {
+            List<Perk> result = new List<Perk>();
+
+            foreach (string item in node.GetValues("perk"))
+                result.Add(Perk.FromString(item));
+
+            return result;
+        }
 
         public static Perk FromString(string nodeString)
         {
