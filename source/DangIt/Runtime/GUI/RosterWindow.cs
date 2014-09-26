@@ -54,8 +54,8 @@ namespace ippo
 
             // Each of these methods creates its own GUI components
             RosterFilter filter = CreateFilter();
-            string kerbalName = SelectKerbal(filter);
-            ListPerks(kerbalName);
+            ProtoCrewMember kerbal = SelectKerbal(filter);
+            ListPerks(kerbal);
 
             GUILayout.EndHorizontal();
             
@@ -86,7 +86,7 @@ namespace ippo
         }
 
 
-        private string SelectKerbal(RosterFilter filter)
+        private ProtoCrewMember SelectKerbal(RosterFilter filter)
         {
             // Filter the roster using the filter selected by the user
             var allKerbals = HighLogic.CurrentGame.CrewRoster.Applicants.Concat(
@@ -107,28 +107,27 @@ namespace ippo
                                                              xCount: 1);
                 GUILayout.EndScrollView();
 
-                return selectedKerbals.ElementAt(kerbalSelectionIdx).name;
+                return selectedKerbals.ElementAt(kerbalSelectionIdx);
             }
             else
             {
                 GUILayout.Label("No kerbal matches your filter.", HighLogic.Skin.button);
-                return string.Empty;
+                return null;
             }
         }
 
 
-        private void ListPerks(string kerbalName)
+        private void ListPerks(ProtoCrewMember kerbal)
         {
             // No kerbal selected, nothing to do here
-            if (string.IsNullOrEmpty(kerbalName))
-                return;
+            if (kerbal == null) return;
 
-            if (CrewFilesManager.IsReady && CrewFilesManager.Server.Contains(kerbalName))
+            if (CrewFilesManager.IsReady && CrewFilesManager.Server.Contains(kerbal))
             {
                 #region Perks scrollview
 
                 ConfigNode perksNode = CrewFilesManager.Server
-                                       .GetKerbalFile(kerbalName)
+                                       .GetKerbalFile(kerbal)
                                        .GetNode(PerkGenerator.NodeName);
                 List<Perk> perks = Perk.FromNode(perksNode);
 
@@ -141,44 +140,94 @@ namespace ippo
 
                 #endregion
 
-
-                #region Upgrade button
-
-                Perk selectedPerk = perks[perkSelectionIdx];
-
-                // Two lines: a label with the current level
-                // and a button to upgrade to the next level
-                GUILayout.BeginVertical();
-
-                GUILayout.Label("Current:\n" + selectedPerk.SkillLevel.ToString(), HighLogic.Skin.button);
-
-                SkillLevel nextLevel = GetNextLevel(selectedPerk.SkillLevel);
-
-                if (nextLevel == selectedPerk.SkillLevel) // max level reached
-                {
-                    GUILayout.Label("Max level", HighLogic.Skin.button);
-                }
-                else //TODO: implement perks upgrade
-                {
-                    Perk.UpgradeCost cost = DangIt.Instance.trainingCosts[nextLevel];
-
-                    string btnLabel = "Upgrade to " + nextLevel.ToString() + "\n" +
-                                      "Funds: " + cost.Funds + "\n" +
-                                      "Science: " + cost.Science;
-
-                    if (GUILayout.Button(btnLabel))
-                        Debug.Log("Requested upgrade to " + nextLevel.ToString());
-                }
-
-                GUILayout.EndVertical();
-
-                #endregion
+                // Only show upgrades for kerbals that are available (they are at the KSC, so they have time to study)
+                if (kerbal.rosterStatus == ProtoCrewMember.RosterStatus.Available)
+                    UpgradePerkButton(kerbal, perks[perkSelectionIdx]);
 
             }
             else
                 GUILayout.Label("There seems to be some problem with CrewFiles",
                                 GUILayout.ExpandHeight(true),
                                 GUILayout.ExpandWidth(true));
+        }
+
+
+        private void UpgradePerkButton(ProtoCrewMember kerbal, Perk selectedPerk)
+        {
+            // Two lines: a label with the current level
+            // and a button to upgrade to the next level
+            GUILayout.BeginVertical();
+
+            GUILayout.Label("Current:\n" + selectedPerk.SkillLevel.ToString(), HighLogic.Skin.button);
+
+            SkillLevel nextLevel = GetNextLevel(selectedPerk.SkillLevel);
+
+            if (nextLevel == selectedPerk.SkillLevel) // max level reached
+            {
+                GUILayout.Label("Max level", HighLogic.Skin.button);
+            }
+            else // Upgrade the perk
+            {
+                Perk.UpgradeCost cost = DangIt.Instance.trainingCosts[nextLevel];
+
+                string btnLabel = "Upgrade to " + nextLevel.ToString() + "\n" +
+                                  "Funds: " + cost.Funds + "\n" +
+                                  "Science: " + cost.Science;
+
+                if (GUILayout.Button(btnLabel))
+                {
+                    Debug.Log("Requested upgrade to " + nextLevel.ToString());
+
+                    bool hasEnoughResources = true;
+
+                    switch (HighLogic.CurrentGame.Mode)
+                    {
+                        // In career mode, you need both funds and science
+                        case Game.Modes.CAREER:
+                            if (Funding.Instance.Funds < cost.Funds) hasEnoughResources = false;
+                            if (ResearchAndDevelopment.Instance.Science < cost.Science) hasEnoughResources = false;
+                            break;
+                        
+                        // In science mode, you only need science
+                        case Game.Modes.SCIENCE_SANDBOX:
+                            if (ResearchAndDevelopment.Instance.Science < cost.Science) hasEnoughResources = false;
+                            break;
+
+                        // In sandbox you have no limits
+                        case Game.Modes.SANDBOX:
+                            hasEnoughResources = true;
+                            break;
+
+                        default:
+                            hasEnoughResources = true;
+                            break;
+                    }
+
+                    if (hasEnoughResources)
+                    {
+                        ConfigNode perksNode = CrewFilesManager.Server
+                                              .GetKerbalFile(kerbal)
+                                              .GetNode(PerkGenerator.NodeName);
+                        List<Perk> perks = Perk.FromNode(perksNode);
+
+                        // Subtract the resources
+                        if (Funding.Instance != null) Funding.Instance.Funds -= cost.Funds;
+                        if (ResearchAndDevelopment.Instance != null) ResearchAndDevelopment.Instance.Science -= cost.Science;
+
+                        // Increase the skill level
+                        perks.Find(p => p == selectedPerk).SkillLevel++;
+
+                        // Re-assign in CrewFiles
+                        perksNode = perks.ToNode();
+                    }
+                    else
+                    {
+                        DangIt.Broadcast("You don't have enough resources for the training!", true);
+                    }
+                }
+            }
+
+            GUILayout.EndVertical();
         }
 
 

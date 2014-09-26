@@ -32,8 +32,8 @@ namespace ippo
 
         // A perk object is immutable
         // once these are set by the constructor, they can never change
-        public readonly Specialty Specialty;
-        public readonly SkillLevel SkillLevel;
+        public Specialty Specialty;
+        public SkillLevel SkillLevel;
 
         public Perk(Specialty specialty, SkillLevel level)
         {
@@ -57,6 +57,8 @@ namespace ippo
 
             return result;
         }
+
+
 
         public static Perk FromString(string nodeString)
         {
@@ -91,4 +93,18 @@ namespace ippo
             return requirements.All(r => MeetsRequirement(r, perks));
         }
     }
+
+    public static class PerksExtensions
+    {
+        public static ConfigNode ToNode(this List<Perk> perks)
+        {
+            ConfigNode result = new ConfigNode(PerkGenerator.NodeName);
+
+            foreach (Perk p in perks)
+                result.AddValue("perk", p.ToString());
+
+            return result;
+        }        
+    }
+
 }
