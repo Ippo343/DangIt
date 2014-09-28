@@ -54,13 +54,14 @@ namespace ippo
 
             // Each of these methods creates its own GUI components
             RosterFilter filter = CreateFilter();
-            ProtoCrewMember kerbal = SelectKerbal(filter);
-            ListPerks(kerbal);
+            ProtoCrewMember kerbal = ListKerbals(filter);
+            if (kerbal != null) ListAndUpgradePerks(kerbal);
 
             GUILayout.EndHorizontal();
             
             GUI.DragWindow();
         }
+
 
 
         private RosterFilter CreateFilter()
@@ -86,7 +87,8 @@ namespace ippo
         }
 
 
-        private ProtoCrewMember SelectKerbal(RosterFilter filter)
+
+        private ProtoCrewMember ListKerbals(RosterFilter filter)
         {
             // Filter the roster using the filter selected by the user
             var allKerbals = HighLogic.CurrentGame.CrewRoster.Applicants.Concat(
@@ -117,56 +119,59 @@ namespace ippo
         }
 
 
-        private void ListPerks(ProtoCrewMember kerbal)
+
+        private void ListAndUpgradePerks(ProtoCrewMember kerbal)
         {
-            // No kerbal selected, nothing to do here
-            if (kerbal == null) return;
-
-            if (CrewFilesManager.IsReady && CrewFilesManager.Server.Contains(kerbal))
-            {
-                #region Perks scrollview
-
-                ConfigNode perksNode = CrewFilesManager.Server
-                                       .GetKerbalFile(kerbal)
-                                       .GetNode(PerkGenerator.NodeName);
-                List<Perk> perks = Perk.FromNode(perksNode);
+            try 
+	        {
+                // Fetch the perks from crewfiles
+		        List<Perk> perks = Perk.FromNode(kerbal.GetPerksNode());
 
                 // List them in a selection grid with scrollview
                 perksScrollPos = GUILayout.BeginScrollView(perksScrollPos, false, false);
                 perkSelectionIdx = GUILayout.SelectionGrid(perkSelectionIdx,
                                                            perks.Select(p => p.Specialty.ToString()).ToArray(),
                                                            xCount: 1);
-                GUILayout.EndScrollView(); 
+                GUILayout.EndScrollView();
 
-                #endregion
-
-                // Only show upgrades for kerbals that are available (they are at the KSC, so they have time to study)
-                if (kerbal.rosterStatus == ProtoCrewMember.RosterStatus.Available)
-                    UpgradePerkButton(kerbal, perks[perkSelectionIdx]);
-
+                // Show the button to upgrade perks
+                UpgradePerkButton(kerbal, perks, perkSelectionIdx);
+	        }
+	        catch (ServerNotInstalledException)
+	        {
+                GUILayout.Label("CrewFiles is not installed!");
+                return;
+	        }
+            catch (ServerUnavailableException)
+            {
+                GUILayout.Label("Something is wrong with CrewFiles");
+                return;
             }
-            else
-                GUILayout.Label("There seems to be some problem with CrewFiles",
-                                GUILayout.ExpandHeight(true),
-                                GUILayout.ExpandWidth(true));
+            catch (Exception e)
+            {
+                GUILayout.Label("An exception occurred: " + e.Message);
+                return;
+            }
         }
 
 
-        private void UpgradePerkButton(ProtoCrewMember kerbal, Perk selectedPerk)
+        private void UpgradePerkButton(ProtoCrewMember kerbal, List<Perk> perks, int idx)
         {
-            // Two lines: a label with the current level
-            // and a button to upgrade to the next level
             GUILayout.BeginVertical();
 
-            GUILayout.Label("Current:\n" + selectedPerk.SkillLevel.ToString(), HighLogic.Skin.button);
 
-            SkillLevel nextLevel = GetNextLevel(selectedPerk.SkillLevel);
+            // First, show a label (styled like a button) with the current level
+            GUILayout.Label("Current:\n" + perks[idx].SkillLevel.ToString(),
+                            HighLogic.Skin.button);
 
-            if (nextLevel == selectedPerk.SkillLevel) // max level reached
+            
+            SkillLevel nextLevel = GetNextLevel(perks[idx].SkillLevel);
+
+            if (nextLevel == perks[idx].SkillLevel) // max level reached
             {
                 GUILayout.Label("Max level", HighLogic.Skin.button);
             }
-            else // Upgrade the perk
+            else // Create upgrade button
             {
                 Perk.UpgradeCost cost = DangIt.Instance.trainingCosts[nextLevel];
 
@@ -178,47 +183,10 @@ namespace ippo
                 {
                     Debug.Log("Requested upgrade to " + nextLevel.ToString());
 
-                    bool hasEnoughResources = true;
-
-                    switch (HighLogic.CurrentGame.Mode)
+                    if (CheckOutAndSpendResources(cost))
                     {
-                        // In career mode, you need both funds and science
-                        case Game.Modes.CAREER:
-                            if (Funding.Instance.Funds < cost.Funds) hasEnoughResources = false;
-                            if (ResearchAndDevelopment.Instance.Science < cost.Science) hasEnoughResources = false;
-                            break;
-                        
-                        // In science mode, you only need science
-                        case Game.Modes.SCIENCE_SANDBOX:
-                            if (ResearchAndDevelopment.Instance.Science < cost.Science) hasEnoughResources = false;
-                            break;
-
-                        // In sandbox you have no limits
-                        case Game.Modes.SANDBOX:
-                            hasEnoughResources = true;
-                            break;
-
-                        default:
-                            hasEnoughResources = true;
-                            break;
-                    }
-
-                    if (hasEnoughResources)
-                    {
-                        ConfigNode perksNode = CrewFilesManager.Server
-                                              .GetKerbalFile(kerbal)
-                                              .GetNode(PerkGenerator.NodeName);
-                        List<Perk> perks = Perk.FromNode(perksNode);
-
-                        // Subtract the resources
-                        if (Funding.Instance != null) Funding.Instance.Funds -= cost.Funds;
-                        if (ResearchAndDevelopment.Instance != null) ResearchAndDevelopment.Instance.Science -= cost.Science;
-
-                        // Increase the skill level
-                        perks.Find(p => p == selectedPerk).SkillLevel++;
-
-                        // Re-assign in CrewFiles
-                        perksNode = perks.ToNode();
+                        perks[idx].SkillLevel++;
+                        kerbal.SetPerks(perks);
                     }
                     else
                     {
@@ -229,6 +197,41 @@ namespace ippo
 
             GUILayout.EndVertical();
         }
+
+
+
+        private static bool CheckOutAndSpendResources(Perk.UpgradeCost cost)
+        {
+            switch (HighLogic.CurrentGame.Mode)
+            {
+                case Game.Modes.CAREER:
+
+                    if (Funding.Instance.Funds < cost.Funds) return false;
+                    if (ResearchAndDevelopment.Instance.Science < cost.Science) return false;
+
+                    Funding.Instance.Funds -= cost.Funds;
+                    ResearchAndDevelopment.Instance.Science -= cost.Science;
+
+                    return true;
+
+
+                case Game.Modes.SCIENCE_SANDBOX:
+
+                    if (ResearchAndDevelopment.Instance.Science < cost.Science) return false;
+                    ResearchAndDevelopment.Instance.Science -= cost.Science;
+
+                    return true;
+
+
+                case Game.Modes.SANDBOX:
+                    return true;
+
+
+                default:
+                    return true;
+            }
+        }
+
 
 
         private static SkillLevel GetNextLevel(SkillLevel current)
