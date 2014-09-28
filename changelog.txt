@@ -1,3 +1,9 @@
+=== ALPHA 4 ===
+
+PERKS SYSTEM
+Increased the MTBF of tanks to 72k hours.
+
+
 === ALPHA 3.3 ===
 
 Fixes:

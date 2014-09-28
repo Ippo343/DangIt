@@ -10,7 +10,10 @@ namespace ippo
     {
         delegate bool RosterFilter(ProtoCrewMember k);
 
-        Rect rosterRect = new Rect(300, 100, 800, 300);
+        const int togglesWidth = 120;
+        const int buttonsWidth = 200;
+        const int windowWidth = togglesWidth + 3 * buttonsWidth;
+        Rect rosterRect = new Rect(300, 100, windowWidth, 250);
 
         int kerbalSelectionIdx = 0;
         Vector2 kerbalScrollPos = new Vector2(0, 0);
@@ -29,7 +32,7 @@ namespace ippo
             // Initialize the default filters
             activeFilters.Crew = HighLogic.LoadedSceneIsFlight;
             activeFilters.Assigned = !HighLogic.LoadedSceneIsFlight;
-            activeFilters.Hired = !HighLogic.LoadedSceneIsFlight;
+            activeFilters.Available = !HighLogic.LoadedSceneIsFlight;
             activeFilters.Applicants = !HighLogic.LoadedSceneIsFlight;
 
             previousFilters = activeFilters;
@@ -55,7 +58,9 @@ namespace ippo
             // Each of these methods creates its own GUI components
             RosterFilter filter = CreateFilter();
             ProtoCrewMember kerbal = SelectKerbal(filter);
-            if (kerbal != null) ListAndUpgradePerks(kerbal);
+
+            if (kerbal != null)
+                ListAndUpgradePerks(kerbal);
 
             GUILayout.EndHorizontal();
             
@@ -66,7 +71,7 @@ namespace ippo
 
         private RosterFilter CreateFilter()
         {
-            GUILayout.BeginVertical();
+            GUILayout.BeginVertical(GUILayout.MaxWidth(togglesWidth));
 
             // Save state
             previousFilters = activeFilters;
@@ -74,7 +79,7 @@ namespace ippo
             // crew is not available when not in flight
             activeFilters.Crew = (HighLogic.LoadedSceneIsFlight) ? GUILayout.Toggle(activeFilters.Crew, "Crew") : false;
             activeFilters.Assigned = GUILayout.Toggle(activeFilters.Assigned, "Assigned");
-            activeFilters.Hired = GUILayout.Toggle(activeFilters.Hired, "Hired");
+            activeFilters.Available = GUILayout.Toggle(activeFilters.Available, "Available");
             activeFilters.Applicants = GUILayout.Toggle(activeFilters.Applicants, "Applicants");
 
             GUILayout.EndVertical();
@@ -82,7 +87,7 @@ namespace ippo
             return k =>
                 (activeFilters.Crew && (HighLogic.LoadedSceneIsFlight) ? FlightGlobals.ActiveVessel.GetVesselCrew().Contains(k) : false)
              || (activeFilters.Assigned && k.rosterStatus == ProtoCrewMember.RosterStatus.Assigned)
-             || (activeFilters.Hired && HighLogic.CurrentGame.CrewRoster.Crew.Contains(k))
+             || (activeFilters.Available && HighLogic.CurrentGame.CrewRoster.Crew.Contains(k) && k.rosterStatus == ProtoCrewMember.RosterStatus.Available)
              || (activeFilters.Applicants && HighLogic.CurrentGame.CrewRoster.Applicants.Contains(k));
         }
 
@@ -102,7 +107,7 @@ namespace ippo
 
             if (selectedKerbals.Count() > 0)
             {
-                kerbalScrollPos = GUILayout.BeginScrollView(kerbalScrollPos, GUIStyle.none);
+                kerbalScrollPos = GUILayout.BeginScrollView(kerbalScrollPos, HighLogic.Skin.scrollView, GUILayout.MaxWidth(buttonsWidth));
 
                 kerbalSelectionIdx = GUILayout.SelectionGrid(kerbalSelectionIdx,
                                                              selectedKerbals.Select(k => k.name).ToArray(),
@@ -113,7 +118,7 @@ namespace ippo
             }
             else
             {
-                GUILayout.Label("No kerbal matches your filter.", HighLogic.Skin.button);
+                GUILayout.Label("No kerbal matches your search", GUILayout.ExpandHeight(true), GUILayout.ExpandHeight(true));
                 return null;
             }
         }
@@ -128,14 +133,18 @@ namespace ippo
 		        List<Perk> perks = Perk.FromNode(kerbal.GetPerksNode());
 
                 // List them in a selection grid with scrollview
-                perksScrollPos = GUILayout.BeginScrollView(perksScrollPos, false, false);
+                perksScrollPos = GUILayout.BeginScrollView(perksScrollPos, HighLogic.Skin.scrollView, GUILayout.MaxWidth(buttonsWidth));
                 perkSelectionIdx = GUILayout.SelectionGrid(perkSelectionIdx,
                                                            perks.Select(p => p.Specialty.ToString()).ToArray(),
                                                            xCount: 1);
                 GUILayout.EndScrollView();
 
-                // Show the button to upgrade perks
-                UpgradePerkButton(kerbal, perks, perkSelectionIdx);
+                // Only show upgrade for kerbals that are hired in the KSC
+                if (kerbal.rosterStatus == ProtoCrewMember.RosterStatus.Available)
+                    UpgradePerkButton(kerbal, perks, perkSelectionIdx);
+                else
+                    GUILayout.Label(kerbal.name + "\ncannot be trained\nright now.");
+
 	        }
 	        catch (ServerNotInstalledException)
 	        {
@@ -157,7 +166,7 @@ namespace ippo
 
         private void UpgradePerkButton(ProtoCrewMember kerbal, List<Perk> perks, int idx)
         {
-            GUILayout.BeginVertical();
+            GUILayout.BeginVertical(GUILayout.MaxWidth(buttonsWidth));
 
 
             // First, show a label (styled like a button) with the current level
@@ -250,7 +259,7 @@ namespace ippo
     {
         public bool Crew;
         public bool Assigned;
-        public bool Hired;
+        public bool Available;
         public bool Applicants;
 
         #region Standard overrides
@@ -259,7 +268,7 @@ namespace ippo
         {
             return this.Crew == other.Crew &&
                    this.Assigned == other.Assigned &&
-                   this.Hired == other.Hired &&
+                   this.Available == other.Available &&
                    this.Applicants == other.Applicants;
         }
 
@@ -267,7 +276,7 @@ namespace ippo
 
         public override string ToString()
         {
-            return String.Format("(Crew: {0}, Assigned: {1}, Hired: {2}, Applicants: {3})", Crew, Assigned, Hired, Applicants);
+            return String.Format("(Crew: {0}, Assigned: {1}, Hired: {2}, Applicants: {3})", Crew, Assigned, Available, Applicants);
         }
 
         public override bool Equals(object obj)
