@@ -35,7 +35,7 @@ namespace ippo
                 return "the part has failed!";
 
 
-            // Try to check out perks
+            // The same perks that are needed for repair are also needed to inspect the element
             Part evaPart = DangIt.FindEVAPart();
             if (evaPart != null)
             {
