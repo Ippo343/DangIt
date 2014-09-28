@@ -54,7 +54,7 @@ namespace ippo
 
             // Each of these methods creates its own GUI components
             RosterFilter filter = CreateFilter();
-            ProtoCrewMember kerbal = ListKerbals(filter);
+            ProtoCrewMember kerbal = SelectKerbal(filter);
             if (kerbal != null) ListAndUpgradePerks(kerbal);
 
             GUILayout.EndHorizontal();
@@ -88,7 +88,7 @@ namespace ippo
 
 
 
-        private ProtoCrewMember ListKerbals(RosterFilter filter)
+        private ProtoCrewMember SelectKerbal(RosterFilter filter)
         {
             // Filter the roster using the filter selected by the user
             var allKerbals = HighLogic.CurrentGame.CrewRoster.Applicants.Concat(
@@ -149,7 +149,7 @@ namespace ippo
             }
             catch (Exception e)
             {
-                GUILayout.Label("An exception occurred: " + e.Message);
+                GUILayout.Label("An exception occurred: " + e.Message + e.StackTrace);
                 return;
             }
         }

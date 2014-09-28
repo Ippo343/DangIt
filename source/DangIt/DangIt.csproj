@@ -107,22 +107,23 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "D:\KSPModCopy\GameData\DangIt"
-copy "$(TargetPath)"  "D:\KSPModCopy\GameData\DangIt"
-copy "$(ProjectDir)\Data\DangIt.version"    "D:\KSPModCopy\GameData\DangIt"
+    <PostBuildEvent>mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(TargetPath)"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(SolutionDir)\References\CrewFilesInterface.dll"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(ProjectDir)\Data\DangIt.version"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
 
-mkdir "D:\KSPModCopy\GameData\DangIt\ModuleManager"
-copy  "$(ProjectDir)\Data\*.dll"   "D:\KSPModCopy\GameData\DangIt"
-copy "$(ProjectDir)\Data\ModuleManager\*"   "D:\KSPModCopy\GameData\DangIt\ModuleManager"
+mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+copy  "$(ProjectDir)\Data\*.dll"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(ProjectDir)\Data\ModuleManager\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
 
-mkdir "D:\KSPModCopy\GameData\DangIt\ModuleManager"
-copy "$(ProjectDir)\Data\ModuleManager\*"   "D:\KSPModCopy\GameData\DangIt\ModuleManager"
+mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+copy "$(ProjectDir)\Data\ModuleManager\*"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
 
-mkdir "D:\KSPModCopy\GameData\DangIt\PluginData\DangIt"
-copy "$(ProjectDir)\Data\PluginData\DangIt\*"  "D:\KSPModCopy\GameData\DangIt\PluginData\DangIt"
+mkdir ""C:\Users\mippo_000\Documents\ksp\GameData\DangIt\PluginData\DangIt"
+copy "$(ProjectDir)\Data\PluginData\DangIt\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\PluginData\DangIt"
 
-mkdir "D:\KSPModCopy\GameData\DangIt\Textures"
-copy "$(ProjectDir)\Data\Textures\*"  "D:\KSPModCopy\GameData\DangIt\Textures"</PostBuildEvent>
+mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\Textures"
+copy "$(ProjectDir)\Data\Textures\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\Textures"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
