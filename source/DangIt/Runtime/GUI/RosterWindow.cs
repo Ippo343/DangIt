@@ -139,11 +139,7 @@ namespace ippo
                                                            xCount: 1);
                 GUILayout.EndScrollView();
 
-                // Only show upgrade for kerbals that are hired in the KSC
-                if (kerbal.rosterStatus == ProtoCrewMember.RosterStatus.Available)
-                    UpgradePerkButton(kerbal, perks, perkSelectionIdx);
-                else
-                    GUILayout.Label(kerbal.name + "\ncannot be trained\nright now.");
+                UpgradePerkButton(kerbal, perks, perkSelectionIdx);
 
 	        }
 	        catch (ServerNotInstalledException)
@@ -173,33 +169,43 @@ namespace ippo
             GUILayout.Label("Current:\n" + perks[idx].SkillLevel.ToString(),
                             HighLogic.Skin.button);
 
-            
-            SkillLevel nextLevel = GetNextLevel(perks[idx].SkillLevel);
 
-            if (nextLevel == perks[idx].SkillLevel) // max level reached
+            // If the kerbal is not available to be trained, draw a greyed out button and return
+            if (!(HighLogic.CurrentGame.CrewRoster.Crew.Contains(kerbal) && kerbal.rosterStatus == ProtoCrewMember.RosterStatus.Available))
             {
-                GUILayout.Label("Max level", HighLogic.Skin.button);
+                GUI.enabled = false;
+                GUILayout.Button(kerbal.name + "\ncannot be trained\nright now.");
+                GUI.enabled = true;
             }
-            else // Create upgrade button
+            else // the kerbal can be trained: get the upgrade cost and display the button
             {
-                Perk.UpgradeCost cost = DangIt.Instance.trainingCosts[nextLevel];
+                SkillLevel nextLevel = GetNextLevel(perks[idx].SkillLevel);
 
-                string btnLabel = "Upgrade to " + nextLevel.ToString() + "\n" +
-                                  "Funds: " + cost.Funds + "\n" +
-                                  "Science: " + cost.Science;
-
-                if (GUILayout.Button(btnLabel))
+                if (nextLevel == perks[idx].SkillLevel) // max level reached
                 {
-                    Debug.Log("Requested upgrade to " + nextLevel.ToString());
+                    GUILayout.Label("Max level", HighLogic.Skin.button);
+                }
+                else // Create upgrade button
+                {
+                    Perk.UpgradeCost cost = DangIt.Instance.trainingCosts[nextLevel];
 
-                    if (CheckOutAndSpendResources(cost))
+                    string btnLabel = "Upgrade to " + nextLevel.ToString() + "\n" +
+                                      "Funds: " + cost.Funds + "\n" +
+                                      "Science: " + cost.Science;
+
+                    if (GUILayout.Button(btnLabel))
                     {
-                        perks[idx].SkillLevel++;
-                        kerbal.SetPerks(perks);
-                    }
-                    else
-                    {
-                        DangIt.Broadcast("You don't have enough resources for the training!", true);
+                        Debug.Log("Requested upgrade to " + nextLevel.ToString());
+
+                        if (CheckOutAndSpendResources(cost))
+                        {
+                            perks[idx].SkillLevel++;
+                            kerbal.SetPerks(perks);
+                        }
+                        else
+                        {
+                            DangIt.Broadcast("You cannot afford this training!", true);
+                        }
                     }
                 }
             }
