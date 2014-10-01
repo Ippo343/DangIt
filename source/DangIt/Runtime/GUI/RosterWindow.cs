@@ -109,6 +109,7 @@ namespace ippo
             {
                 kerbalScrollPos = GUILayout.BeginScrollView(kerbalScrollPos, HighLogic.Skin.scrollView, GUILayout.MaxWidth(buttonsWidth));
 
+                if (kerbalSelectionIdx > selectedKerbals.Count()) kerbalSelectionIdx = 0;
                 kerbalSelectionIdx = GUILayout.SelectionGrid(kerbalSelectionIdx,
                                                              selectedKerbals.Select(k => k.name).ToArray(),
                                                              xCount: 1);
@@ -134,6 +135,8 @@ namespace ippo
 
                 // List them in a selection grid with scrollview
                 perksScrollPos = GUILayout.BeginScrollView(perksScrollPos, HighLogic.Skin.scrollView, GUILayout.MaxWidth(buttonsWidth));
+
+                if (perkSelectionIdx > perks.Count) perkSelectionIdx = 0;
                 perkSelectionIdx = GUILayout.SelectionGrid(perkSelectionIdx,
                                                            perks.Select(p => p.Specialty.ToString()).ToArray(),
                                                            xCount: 1);
