@@ -483,7 +483,21 @@ namespace ippo
             if (evaPart.Resources.Contains(Spares.Name) && evaPart.Resources[Spares.Name].amount >= this.MaintenanceCost)
             {
                 this.Log("Spare parts check: OK! Maintenance allowed allowed");
-                DiscountAge(this.MaintenanceBonus);
+
+                int perksDistance = 0;
+                try
+                {
+                    perksDistance = evaPart.protoModuleCrew[0].GetPerks().MinDistance(this.PerkRequirements);
+                }
+                catch (Exception e)
+                {
+                    this.LogException(e);
+                    perksDistance = 0;
+                }
+
+                // The higher the skill gap, the higher the maintenance bonus is
+                DiscountAge(this.MaintenanceBonus * (perksDistance / 3));
+
                 DangIt.Broadcast("This should last a little longer now");
             }
             else

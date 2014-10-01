@@ -90,9 +90,14 @@ namespace ippo
 
         public static bool MeetsRequirement(List<Perk> requirements, List<Perk> perks)
         {
-            return requirements.All(r => MeetsRequirement(r, perks));
+            if (requirements.Count == 0)
+                return true;
+            else
+                return requirements.All(r => MeetsRequirement(r, perks));
         }
     }
+
+
 
     public static class PerksExtensions
     {
@@ -104,7 +109,32 @@ namespace ippo
                 result.AddValue("perk", p.ToString());
 
             return result;
-        }        
+        }
+
+
+        public static int MinDistance(this List<Perk> perks, List<Perk> requirements)
+        {
+            if (requirements.Count == 0)
+                return perks.Select(p => (int)p.SkillLevel).Max();
+            else
+            {
+                int min = 3;
+
+                foreach (Perk p in perks)
+                {
+                    Perk other = requirements.Where(o => o.Specialty == p.Specialty).SingleOrDefault();
+                    if (other != null)
+                    {
+                        int diff = p.SkillLevel - other.SkillLevel;
+                        min = (diff < min) ? diff : min;
+                    }
+                }
+
+                return min;
+            }            
+        }
+
+
     }
 
 }
