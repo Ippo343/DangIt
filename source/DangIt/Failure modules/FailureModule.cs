@@ -495,8 +495,15 @@ namespace ippo
                     perksDistance = 0;
                 }
 
+#if DEBUG
+                this.Log("Perk distance is " + perksDistance);
+#endif
+
+
                 // The higher the skill gap, the higher the maintenance bonus is
-                DiscountAge(this.MaintenanceBonus * (perksDistance / 3));
+                // The + 1 is there to makes it so that a maintenance bonus is always gained even when the perks match exactly
+                // It also allows Skilled kerbals to obtain 130% of the bonus when repairing an Untrained item
+                this.DiscountAge(this.MaintenanceBonus * ( (perksDistance + 1) / 3));
 
                 DangIt.Broadcast("This should last a little longer now");
             }
@@ -727,7 +734,9 @@ namespace ippo
         private void DiscountAge(float percentage)
         {
             this.Age *= (1 - percentage);
+            this.Age = Math.Max(this.Age, 0);   // prevent negative ages if the percentage is greater than 100%
         }
+
 
         #region Logging utilities
 

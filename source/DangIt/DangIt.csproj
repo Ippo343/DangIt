@@ -102,7 +102,6 @@
     <None Include="Data\PluginData\DangIt\DangIt.cfg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\ModuleManager.2.2.0.dll" />
     <Content Include="Data\Textures\appBtn.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -110,10 +109,10 @@
     <PostBuildEvent>mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
 copy "$(TargetPath)"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
 copy "$(SolutionDir)\References\CrewFilesInterface.dll"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(SolutionDir)\References\ModuleManager*.dll"  "C:\Users\mippo_000\Documents\ksp\GameData"
 copy "$(ProjectDir)\Data\DangIt.version"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
 
 mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
-copy  "$(ProjectDir)\Data\*.dll"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
 copy "$(ProjectDir)\Data\ModuleManager\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
 
 mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
