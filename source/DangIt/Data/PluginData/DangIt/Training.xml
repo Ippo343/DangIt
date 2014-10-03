@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfTrainingCost xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TrainingCost>
+    <Level>Unskilled</Level>
+    <Science>10</Science>
+    <Funds>10000</Funds>
+  </TrainingCost>
+  <TrainingCost>
+    <Level>Normal</Level>
+    <Science>50</Science>
+    <Funds>50000</Funds>
+  </TrainingCost>
+  <TrainingCost>
+    <Level>Skilled</Level>
+    <Science>120</Science>
+    <Funds>120000</Funds>
+  </TrainingCost>
+</ArrayOfTrainingCost>

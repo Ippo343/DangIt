@@ -190,7 +190,7 @@ namespace ippo
                 }
                 else // Create upgrade button
                 {
-                    Perk.UpgradeCost cost = DangIt.Instance.trainingCosts[nextLevel];
+                    TrainingCost cost = DangIt.Instance.trainingCosts.Where(t => t.Level == nextLevel).Single();
 
                     string btnLabel = "Upgrade to " + nextLevel.ToString() + "\n" +
                                       "Funds: " + cost.Funds + "\n" +
@@ -218,7 +218,7 @@ namespace ippo
 
 
 
-        private static bool CheckOutAndSpendResources(Perk.UpgradeCost cost)
+        private static bool CheckOutAndSpendResources(TrainingCost cost)
         {
             switch (HighLogic.CurrentGame.Mode)
             {

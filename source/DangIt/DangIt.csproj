@@ -58,6 +58,7 @@
     <None Include="Data\DangIt.version" />
     <Compile Include="Perks\Extensions.cs" />
     <Compile Include="Perks\Skills.cs" />
+    <Compile Include="Perks\TrainingCost.cs" />
     <Compile Include="Runtime\GUI\RosterWindow.cs" />
     <Compile Include="Runtime\GUI\SettingsWindow.cs" />
     <Compile Include="Runtime\ScenarioInjector.cs" />
@@ -99,7 +100,7 @@
     <None Include="Data\ModuleManager\Tanks.cfg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\PluginData\DangIt\DangIt.cfg" />
+    <None Include="Data\PluginData\DangIt\BlackList.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\Textures\appBtn.png" />

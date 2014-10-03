@@ -1,11 +1,12 @@
 ﻿using System;
-using System.IO;
+using IO = System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.Reflection;
 using KSP.IO;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace ippo
 {
@@ -21,7 +22,7 @@ namespace ippo
         /// </summary>
         public List<string> LeakBlackList;
 
-        public Dictionary<SkillLevel, Perk.UpgradeCost> trainingCosts;
+        public List<TrainingCost> trainingCosts;
 
         /// <summary>
         /// General settings about notifications and gameplay elements.
@@ -44,30 +45,31 @@ namespace ippo
 
 
         /// <summary>
-        /// Returns the location of the mod's configuration file.
-        /// Likely, GameData/DangIt/PluginData/DangIt/DangIt.cfg
+        /// Returns the location of the mod's configuration files
+        /// Likely, GameData/DangIt/PluginData/DangIt/
         /// </summary>
-        internal string ConfigFilePath
+        internal string GetConfigFilePath(string fileName)
         {
-            get { return IOUtils.GetFilePathFor(this.GetType(), "DangIt.cfg"); }
+            return IOUtils.GetFilePathFor(this.GetType(), fileName);
         }
 
 
         public DangIt()
         {
-            Debug.Log("[DangIt]: Instantiating runtime...");
+            Debug.Log("[DangIt]: Instantiating runtime.");
 
-            ConfigNode settingsFile = ConfigNode.Load(ConfigFilePath);
+            #region Blacklist
 
+            ConfigNode blacklistFile = ConfigNode.Load(this.GetConfigFilePath("BlackList.cfg"));
             LeakBlackList = new List<string>();
             try
             {
-                ConfigNode blackListNode = settingsFile.GetNode("BLACKLIST");
+                ConfigNode blackListNode = blacklistFile.GetNode("BLACKLIST");
                 foreach (string item in blackListNode.GetValues("ignore"))
                     LeakBlackList.Add(item);
             }
             catch (Exception e)
-            {                
+            {
                 LeakBlackList.Add("ElectricCharge");
                 LeakBlackList.Add("SolidFuel");
                 LeakBlackList.Add("SpareParts");
@@ -75,28 +77,42 @@ namespace ippo
                 this.Log("An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
             }
 
+            #endregion
 
-            trainingCosts = new Dictionary<SkillLevel, Perk.UpgradeCost>();
+
+            #region Training costs
+
+            /*  The training costs are stored in an xml file.
+             *  The list is obtained by deserializing that file.
+             *  The best solution would be a dictionary, but it's challenging to write and load with ConfigNode,
+             *  while xml serialization of a list is a piece of cake.
+             */
+            XmlSerializer serializer = new XmlSerializer(typeof(List<TrainingCost>));
             try
             {
-                ConfigNode trainingNode = settingsFile.GetNode("TRAINING");
-
-                foreach (SkillLevel level in Enum.GetValues(typeof(SkillLevel)))
-                {
-                    string item = trainingNode.GetValue(level.ToString());
-                    trainingCosts.Add(level, Perk.UpgradeCost.FromString(item));
-                }
-
+                trainingCosts = new List<TrainingCost>();
+           
+                IO.FileStream fs = new IO.FileStream(this.GetConfigFilePath("Training.xml"), IO.FileMode.Open);
+                trainingCosts = (List<TrainingCost>)serializer.Deserialize(fs);
+                fs.Close();
             }
             catch (Exception e)
             {
                 trainingCosts.Clear();
-                trainingCosts.Add(SkillLevel.Unskilled, new Perk.UpgradeCost(science: 10, funds: 10000));
-                trainingCosts.Add(SkillLevel.Normal, new Perk.UpgradeCost(science: 50, funds: 50000));
-                trainingCosts.Add(SkillLevel.Skilled, new Perk.UpgradeCost(science: 150, funds: 150000));
+                trainingCosts.Add(new TrainingCost(SkillLevel.Unskilled, science: 10, funds: 10000));
+                trainingCosts.Add(new TrainingCost(SkillLevel.Normal, science: 50, funds: 50000));
+                trainingCosts.Add(new TrainingCost(SkillLevel.Skilled, science: 120, funds: 120000));
 
-                this.Log("An exception occurred when loading the training costs dictionary and a default one has been created. " + e.Message);
-           }
+                this.Log("An exception occurred when loading the training costs list and a default one has been created. " + e.Message + e.StackTrace);
+            }
+            finally
+            {
+                IO.FileStream fs = new IO.FileStream(this.GetConfigFilePath("Training.xml"), IO.FileMode.OpenOrCreate);
+                serializer.Serialize(fs, trainingCosts);
+                fs.Close();
+            }
+
+            #endregion
 
 
             Instance = this;
