@@ -1,12 +1,9 @@
-﻿using System;
-using IO = System.IO;
+﻿using KSP.IO;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using System.Reflection;
-using KSP.IO;
-using System.Text;
 using System.Xml.Serialization;
+using UnityEngine;
+using IO = System.IO;
 
 namespace ippo
 {
@@ -16,14 +13,18 @@ namespace ippo
     /// </summary>
     public partial class DangIt : ScenarioModule
     {
-
         /// <summary>
         /// List of resources that must be ignored by tank leaks.
         /// </summary>
         public List<string> LeakBlackList;
 
+        /// <summary>
+        /// List of the costs (science and funds) that are requested to train a kerbal.
+        /// </summary>
         public List<TrainingCost> trainingCosts;
 
+
+        private DangIt.Settings currentSettings;
         /// <summary>
         /// General settings about notifications and gameplay elements.
         /// </summary>
@@ -36,17 +37,23 @@ namespace ippo
                 currentSettings = value;
             }
         }
-        private DangIt.Settings currentSettings;
+        
 
-
+        /// <summary>
+        /// Return the current running instance.
+        /// </summary>
         public static DangIt Instance { get; private set; }
 
+
+        /// <summary>
+        /// Returns true if the instance is initialized and ready to work.
+        /// </summary>
         public bool IsReady { get; private set; }        
 
 
         /// <summary>
-        /// Returns the location of the mod's configuration files
-        /// Likely, GameData/DangIt/PluginData/DangIt/
+        /// Returns the full path to a given file in the configuration folder.
+        /// Likely, GameData/DangIt/PluginData/DangIt/ + filename
         /// </summary>
         internal string GetConfigFilePath(string fileName)
         {
@@ -79,14 +86,13 @@ namespace ippo
 
             #endregion
 
-
             #region Training costs
 
-            /*  The training costs are stored in an xml file.
-             *  The list is obtained by deserializing that file.
-             *  The best solution would be a dictionary, but it's challenging to write and load with ConfigNode,
+            /*  The training costs are stored in an xml file instead of a ConfigNode because it allows easy
+             *  serialization and deserialization. The best solution would be a dictionary, but it's challenging to write and load with ConfigNode,
              *  while xml serialization of a list is a piece of cake.
              */
+
             XmlSerializer serializer = new XmlSerializer(typeof(List<TrainingCost>));
             try
             {
@@ -96,7 +102,7 @@ namespace ippo
                 trainingCosts = (List<TrainingCost>)serializer.Deserialize(fs);
                 fs.Close();
             }
-            catch (Exception e)
+            catch (Exception e) // In case of exception (e.g, file not found) create a default list.
             {
                 trainingCosts.Clear();
                 trainingCosts.Add(new TrainingCost(SkillLevel.Unskilled, science: 10, funds: 10000));
@@ -114,18 +120,18 @@ namespace ippo
 
             #endregion
 
-
+            // Now the instance is built and can be exposed, but it is not yet ready until after OnLoad
             Instance = this;
-
-            // Not yet ready: will be ready only after OnLoad
             this.IsReady = false;
 
-            // Start waiting for everything to be ready so that the settings button can be added
+            // Add the button to the stock toolbar
             this.StartCoroutine("AddAppButton");
         }
 
 
-
+        /// <summary>
+        /// Load the saved settings
+        /// </summary>
         public override void OnLoad(ConfigNode node)
         {
             if (node.HasNode("SETTINGS"))
@@ -158,9 +164,11 @@ namespace ippo
 
         public void OnDestroy()
         {
-            this.Log("Destroying instance...");
+            this.Log("Destroying instance.");
 
-            if (appBtn != null) ApplicationLauncher.Instance.RemoveModApplication(this.appBtn);
+            // Remove the button from the toolbar
+            if (appBtn != null)
+                ApplicationLauncher.Instance.RemoveModApplication(this.appBtn);
         }
 
 
