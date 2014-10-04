@@ -7,21 +7,23 @@ using UnityEngine;
 
 namespace ippo
 {
+    /// <summary>
+    /// Module that handles the spare parts so that the kerbal can grab them while on EVA.
+    /// </summary>
     public class ModuleSparesContainer : PartModule
     {
         private bool eventAdded = false;
 
         public override void OnStart(PartModule.StartState state)
         {
-            Debug.Log("DangIt: Spares Container [" + this.GetInstanceID() + "]: OnStart, state is " + state);
-
+            // Sync settings with the runtime
             this.StartCoroutine("RuntimeFetch");
 
             this.Events["TakeParts"].active = true;
         }
 
 
-
+        // Coroutine that waits for the runtime to be ready and the syncs with the settings
         IEnumerator RuntimeFetch()
         {
             // Wait for the server to be available
@@ -40,7 +42,7 @@ namespace ippo
             Part evaPart = DangIt.FindEVAPart();
 
             if (evaPart == null)
-                this.Log("ERROR: couldn't find an active EVA!");
+                throw new Exception("ERROR: couldn't find an active EVA!");
             else
                 FillEvaSuit(evaPart, this.part);
 
@@ -72,36 +74,6 @@ namespace ippo
         }
 
 
-        /*
-        [KSPEvent(guiActiveUnfocused = false, unfocusedRange = DangIt.EvaRepairDistance, guiName = "Show perks", active = false)]
-        public void ShowPerks()
-        {
-            try
-            {
-                ICrewFilesServer server = CrewFilesManager.Server;
-
-                if (server == null) throw new Exception("server is null!");
-
-                ProtoCrewMember kerbal = DangIt.FindEVAPart().vessel.GetVesselCrew().First();
-                ConfigNode kerbalFile = server.GetKerbalFile(kerbal);
-
-                if (kerbalFile == null) throw new Exception("kerbalFile is null!");
-
-                ConfigNode perksNode = kerbalFile.GetNode(PerkGenerator.NodeName);
-
-                if (perksNode == null) throw new Exception("perksNode is null!");
-
-                this.Log(kerbal.name + " has " + perksNode.CountNodes + " perks");
-            }
-            catch (Exception e)
-            {
-                this.Log(e.Message);
-                return;
-            }
-
-        }
-        */
-
 
         protected void EmptyEvaSuit(Part evaPart, Part container)
         {
@@ -120,7 +92,7 @@ namespace ippo
             {
                 DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has left " + deposit + " spares", false, 1f);
             }
-            catch (Exception)
+            catch (Exception) // The kerbal reenters before this method is called: in that case, trying to get his name will throw an exception
             {
                 DangIt.Broadcast("You left " + deposit + " spares", false, 1f);
             }

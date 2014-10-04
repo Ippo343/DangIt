@@ -7,18 +7,20 @@ using UnityEngine;
 
 namespace ippo
 {
-    class InspectionModule : PartModule
+    /// <summary>
+    /// Module that allows the kerbals to inspect a part to get some information about its state.
+    /// </summary>
+    public class InspectionModule : PartModule
     {
-
         public override void OnStart(PartModule.StartState state)
         {
+            // Sync settings with the runtime
             if (HighLogic.LoadedSceneIsFlight)
-            {
                 this.StartCoroutine("RuntimeFetch");
-            }
         }
 
 
+        // Coroutine that waits for the runtime to be ready and the syncs with the settings
         IEnumerator RuntimeFetch()
         {
             while (DangIt.Instance == null || !DangIt.Instance.IsReady)
@@ -28,6 +30,9 @@ namespace ippo
         }
 
 
+        /// <summary>
+        /// Inspect the part and produce a report with the messages collected from all the failure modules in the part.
+        /// </summary>
         [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 2f, externalToEVAOnly = true)]
         public void Inspect()
         {
@@ -35,15 +40,19 @@ namespace ippo
 
             List<FailureModule> failModules = part.Modules.OfType<FailureModule>().ToList();
 
+            // The part doesn't have any failure module:
+            // instead of a black message, return a placeholder
             if (failModules.Count == 0)
                 sb.AppendLine("This part seems to be as good as new");
-
-            foreach (FailureModule fm in failModules)
+            else
             {
-                fm.TimeOfLastInspection = DangIt.Now();
-                sb.AppendLine(fm.ScreenName + ":");
-                sb.AppendLine(fm.InspectionMessage());
-                sb.AppendLine("");
+                foreach (FailureModule fm in failModules)
+                {
+                    fm.TimeOfLastInspection = DangIt.Now();     // set the time of inspection so that the module gains the inspection bonus
+                    sb.AppendLine(fm.ScreenName + ":");
+                    sb.AppendLine(fm.InspectionMessage());
+                    sb.AppendLine("");
+                }
             }
 
             DangIt.PostMessage("Inspection results", 

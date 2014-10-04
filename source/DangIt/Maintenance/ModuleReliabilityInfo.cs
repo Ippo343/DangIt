@@ -5,13 +5,17 @@ using System.Text;
 
 namespace ippo
 {
+    /// <summary>
+    /// Module that produces the reliability info about a part to display in the VAB / SPH info tab.
+    /// It aggregates the information from all the failure modules into one, instead of many separate tabs.
+    /// </summary>
     public class ModuleReliabilityInfo : PartModule
     {
         public override string GetInfo()
         {
             List<FailureModule> fails = this.part.Modules.OfType<FailureModule>().ToList();
 
-            if (fails.Count == 0)
+            if (fails.Count == 0)   // no failure module, return a placeholder message
                 return "This part has been built to last";
             else
             {
