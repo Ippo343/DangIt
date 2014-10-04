@@ -16,7 +16,7 @@ namespace ippo
         /// <summary>
         /// This generator is run for each kerbal that doesn't already have a node with this name.
         /// </summary>
-        public bool MustRun(ScenePhase phase, ConfigNode kerbalData)
+        public bool MustRun(string phase, ConfigNode kerbalData)
         {
             return (!kerbalData.HasNode(NodeName));             
         }
@@ -26,7 +26,7 @@ namespace ippo
         /// Generates a random set of perks based on the intelligence of the kerbal.
         /// The lower the stupidity, the higher the chance of the kerbal having more skilled perks.
         /// </summary>
-        public ConfigNode Generate(ScenePhase phase, ConfigNode kerbalData)
+        public ConfigNode Generate(string phase, ConfigNode kerbalData)
         {
             ConfigNode perksNode = new ConfigNode(NodeName);
 

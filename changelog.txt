@@ -3,6 +3,7 @@
 PERKS SYSTEM
 Increased the MTBF of tanks to 72k hours.
 Fixes a bug in the tank loading.
+Fixes a bug that prevented the last resource in a tank from leaking
 
 === ALPHA 3.3 ===
 
