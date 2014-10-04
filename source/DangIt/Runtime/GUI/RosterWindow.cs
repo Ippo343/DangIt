@@ -6,7 +6,12 @@ using UnityEngine;
 
 namespace ippo
 {
-    class RosterWindow
+    /// <summary>
+    /// Perks management window: shows the available kerbals,
+    /// their perks, and allows the user to train a kerbal to increase
+    /// their skill level.
+    /// </summary>
+    public class RosterWindow
     {
         delegate bool RosterFilter(ProtoCrewMember k);
 
@@ -15,14 +20,18 @@ namespace ippo
         const int windowWidth = togglesWidth + 3 * buttonsWidth;
         Rect rosterRect = new Rect(300, 100, windowWidth, 250);
 
+        // State of the scroll that lists kerbals
         int kerbalSelectionIdx = 0;
         Vector2 kerbalScrollPos = new Vector2(0, 0);
 
+        // State of the scroll that lists the perks of a kerbal
         int perkSelectionIdx = 0;
         Vector2 perksScrollPos = new Vector2(0, 0);
 
+        // Filters that control what kerbals are shown in the list
         KerbalFilter activeFilters;
         KerbalFilter previousFilters;
+
 
         public bool Enabled { get; set; }
 
@@ -33,7 +42,7 @@ namespace ippo
             activeFilters.Crew = HighLogic.LoadedSceneIsFlight;
             activeFilters.Assigned = !HighLogic.LoadedSceneIsFlight;
             activeFilters.Available = !HighLogic.LoadedSceneIsFlight;
-            activeFilters.Applicants = !HighLogic.LoadedSceneIsFlight;
+            activeFilters.Applicants = false;
 
             previousFilters = activeFilters;
         }
@@ -68,7 +77,10 @@ namespace ippo
         }
 
 
-
+        /// <summary>
+        /// Draws the toggles that control what kerbals will be listed.
+        /// Returns a function that selects the appropriate kerbals from the list of all kerbals.
+        /// </summary>
         private RosterFilter CreateFilter()
         {
             GUILayout.BeginVertical(GUILayout.MaxWidth(togglesWidth));
@@ -76,14 +88,16 @@ namespace ippo
             // Save state
             previousFilters = activeFilters;
 
-            // crew is not available when not in flight
+            // crew is not available when not in flight (the toggle isn't drawn at all)
             activeFilters.Crew = (HighLogic.LoadedSceneIsFlight) ? GUILayout.Toggle(activeFilters.Crew, "Crew") : false;
+
             activeFilters.Assigned = GUILayout.Toggle(activeFilters.Assigned, "Assigned");
             activeFilters.Available = GUILayout.Toggle(activeFilters.Available, "Available");
             activeFilters.Applicants = GUILayout.Toggle(activeFilters.Applicants, "Applicants");
 
             GUILayout.EndVertical();
 
+            // Create the closure
             return k =>
                 (activeFilters.Crew && (HighLogic.LoadedSceneIsFlight) ? FlightGlobals.ActiveVessel.GetVesselCrew().Contains(k) : false)
              || (activeFilters.Assigned && k.rosterStatus == ProtoCrewMember.RosterStatus.Assigned)
@@ -92,16 +106,17 @@ namespace ippo
         }
 
 
-
+        /// <summary>
+        /// Draws the list of kerbals and returns the one that has been selected by the user.
+        /// </summary>
         private ProtoCrewMember SelectKerbal(RosterFilter filter)
         {
             // Filter the roster using the filter selected by the user
             var allKerbals = HighLogic.CurrentGame.CrewRoster.Applicants.Concat(
                              HighLogic.CurrentGame.CrewRoster.Crew);
-
             var selectedKerbals = allKerbals.Where(k => filter(k));
 
-            // The user has changed the toggles: reset the index so that it doesn't go out of range
+            // The user has changed the toggles: reset the index to 0
             if (activeFilters != previousFilters)
                 kerbalSelectionIdx = 0;
 
@@ -125,7 +140,9 @@ namespace ippo
         }
 
 
-
+        /// <summary>
+        /// Draws the list of perks and shows the button to upgrade them.
+        /// </summary>
         private void ListAndUpgradePerks(ProtoCrewMember kerbal)
         {
             try 
@@ -133,7 +150,6 @@ namespace ippo
                 // Fetch the perks from crewfiles
                 List<Perk> perks = kerbal.GetPerks();
 
-                // List them in a selection grid with scrollview
                 perksScrollPos = GUILayout.BeginScrollView(perksScrollPos, HighLogic.Skin.scrollView, GUILayout.MaxWidth(buttonsWidth));
 
                 if (perkSelectionIdx > perks.Count) perkSelectionIdx = 0;
@@ -142,6 +158,7 @@ namespace ippo
                                                            xCount: 1);
                 GUILayout.EndScrollView();
 
+                // Make the upgrade button
                 UpgradePerkButton(kerbal, perks, perkSelectionIdx);
 
 	        }
@@ -163,10 +180,12 @@ namespace ippo
         }
 
 
+        /// <summary>
+        /// Draws the current level of the selected perk and shows a button to upgrade it, if applicable.
+        /// </summary>
         private void UpgradePerkButton(ProtoCrewMember kerbal, List<Perk> perks, int idx)
         {
             GUILayout.BeginVertical(GUILayout.MaxWidth(buttonsWidth));
-
 
             // First, show a label (styled like a button) with the current level
             GUILayout.Label("Current:\n" + perks[idx].SkillLevel.ToString(),
@@ -174,7 +193,7 @@ namespace ippo
 
 
             // If the kerbal is not available to be trained, draw a greyed out button and return
-            if (!(HighLogic.CurrentGame.CrewRoster.Crew.Contains(kerbal) && kerbal.rosterStatus == ProtoCrewMember.RosterStatus.Available))
+            if (!(HighLogic.CurrentGame.CrewRoster.Crew.Contains(kerbal) || kerbal.rosterStatus != ProtoCrewMember.RosterStatus.Available))
             {
                 GUI.enabled = false;
                 GUILayout.Button(kerbal.name + "\ncannot be trained\nright now.");
@@ -217,7 +236,10 @@ namespace ippo
         }
 
 
-
+        /// <summary>
+        /// Checks if the player can affor the training cost.
+        /// If he can, spend the resources.
+        /// </summary>
         private static bool CheckOutAndSpendResources(TrainingCost cost)
         {
             switch (HighLogic.CurrentGame.Mode)
@@ -251,7 +273,10 @@ namespace ippo
         }
 
 
-
+        /// <summary>
+        /// Finds the next Skill Level after the current one.
+        /// If the current level is the maximum, the result will be equal to the argument.
+        /// </summary>
         private static SkillLevel GetNextLevel(SkillLevel current)
         {
             int maxLevel = Enum.GetValues(typeof(SkillLevel)).Cast<int>().Max();

@@ -45,22 +45,7 @@ namespace ippo
 
 
 
-        /// <summary>
-        /// Returns true if an engine is currently in use
-        /// </summary>
-        public static bool EngineIsActive(ModuleEngines engineModule)
-        {
-            return (engineModule.enabled &&
-                    engineModule.EngineIgnited &&
-                   (engineModule.currentThrottle > 0));
-        }
-
-        public static bool EngineIsActive(ModuleEnginesFX engineModule)
-        {
-            return (engineModule.enabled &&
-                    engineModule.EngineIgnited &&
-                   (engineModule.currentThrottle > 0));
-        }
+        
 
 
 

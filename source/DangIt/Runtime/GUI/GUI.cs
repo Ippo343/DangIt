@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using CrewFilesInterface;
 
 namespace ippo
 {
     public partial class DangIt
     {
+        
         ApplicationLauncherButton appBtn;
         RosterWindow rosterWindow = new RosterWindow();
         SettingsWindow settingsWindow = new SettingsWindow();
-
 
         void OnGUI()
         {
@@ -39,7 +35,7 @@ namespace ippo
                     HighLogic.LoadedSceneIsEditor ||
                     HighLogic.LoadedSceneIsFlight)
                 {
-
+                    // Load the icon for the button
                     Texture btnTex = GameDatabase.Instance.GetTexture("DangIt/Textures/appBtn", false);
                     if (btnTex == null)
                         throw new Exception("The button texture wasn't loaded!");
@@ -63,6 +59,7 @@ namespace ippo
             }
         }
 
+        // The AppLauncher requires a callback for some events that are not used by this plugin
         void dummyVoid() { return; }
 
 
@@ -77,8 +74,6 @@ namespace ippo
             this.settingsWindow.Enabled = false;
             this.rosterWindow.Enabled = false;
         }
-
-        
 
     }
 }
