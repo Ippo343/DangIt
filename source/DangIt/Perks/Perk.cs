@@ -17,29 +17,22 @@ namespace ippo
         }
 
 
+        /// <summary>
+        /// Return a compact string representation of the perk.
+        /// e.g: "Mechanic:Skilled"
+        /// </summary>
         public override string ToString()
         {
             return this.Specialty.ToString() + ":" + this.SkillLevel.ToString();
         }
 
 
-        public static List<Perk> FromNode(ConfigNode node)
-        {
-            List<Perk> result = new List<Perk>();
-
-            foreach (string item in node.GetValues("perk"))
-                result.Add(Perk.FromString(item));
-
-            return result;
-        }
-
-
-
+        /// <summary>
+        /// Tries to parse a string into a Perk object.
+        /// The string must have the same format as used by Perk.ToString()
+        /// </summary>
         public static Perk FromString(string nodeString)
         {
-            // String format for a perk is perk = Specialty:Level
-            // e.g: Electrician:Skilled
-            // or Mechanic:1
             char[] sep = { ':' };
             string[] parts = nodeString.Split(sep, StringSplitOptions.RemoveEmptyEntries);
 
@@ -48,10 +41,13 @@ namespace ippo
             SkillLevel level = (SkillLevel)Enum.Parse(typeof(SkillLevel), parts[1]);
 
             return new Perk(specialty, level);
-
         }
 
 
+        /// <summary>
+        /// Checks if the perks of a kerbal satisfy a list of required perks.
+        /// A requirement is met if the specialty is the same and the level is equal or higher.
+        /// </summary>
         public static bool MeetsRequirement(Perk requirement, Perk perk)
         {
             return ((requirement.Specialty == perk.Specialty) &&
@@ -71,45 +67,4 @@ namespace ippo
                 return requirements.All(r => MeetsRequirement(r, perks));
         }
     }
-
-
-
-    public static class PerksExtensions
-    {
-        public static ConfigNode ToNode(this List<Perk> perks)
-        {
-            ConfigNode result = new ConfigNode(PerkGenerator.NodeName);
-
-            foreach (Perk p in perks)
-                result.AddValue("perk", p.ToString());
-
-            return result;
-        }
-
-
-        public static int MinDistance(this List<Perk> perks, List<Perk> requirements)
-        {
-            if (requirements.Count == 0)
-                return perks.Select(p => (int)p.SkillLevel).Max();
-            else
-            {
-                int min = 3;
-
-                foreach (Perk p in perks)
-                {
-                    Perk other = requirements.Where(o => o.Specialty == p.Specialty).SingleOrDefault();
-                    if (other != null)
-                    {
-                        int diff = p.SkillLevel - other.SkillLevel;
-                        min = (diff < min) ? diff : min;
-                    }
-                }
-
-                return min;
-            }            
-        }
-
-
-    }
-
 }

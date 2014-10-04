@@ -17,32 +17,7 @@ namespace ippo
             return (float)Planetarium.GetUniversalTime();
         }
 
-
-        /// <summary>
-        /// Retrieves the perks for a given kerbal from the CrewFiles database.
-        /// If the kerbal is not found it returns an EMPTY list, not null!
-        /// </summary>
-        public static List<Perk> FetchKerbalPerks(ProtoCrewMember kerbal)
-        {
-            List<Perk> kerbalPerks = new List<Perk>();
-
-            if (CrewFilesManager.Server.Contains(kerbal))
-            {
-                // Get the kerbal's file and parse all the perks
-                ConfigNode kerbalNode = CrewFilesManager.Server.GetKerbalFile(kerbal);
-                ConfigNode perksNode = kerbalNode.GetNode(PerkGenerator.NodeName);
-
-                foreach (string item in perksNode.GetValues("perk"))
-                    kerbalPerks.Add(Perk.FromString(item));
-            }
-            else
-            {
-                Debug.Log("WARNING: the current kerbal is not in the database! Could not fetch perks");
-            }
-
-            return kerbalPerks;
-        }
-
+     
 
         /// <summary>
         /// Adds a new entry to the flight events log.

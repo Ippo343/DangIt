@@ -292,7 +292,7 @@ namespace ippo
                 if (node.HasNode(PerkGenerator.NodeName))
                 {
                     ConfigNode perksNode = node.GetNode(PerkGenerator.NodeName);
-                    this.PerkRequirements = Perk.FromNode(perksNode);
+                    this.PerkRequirements = perksNode.ToPerks();
                 }
                 else
                 {

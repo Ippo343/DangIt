@@ -131,7 +131,7 @@ namespace ippo
             try 
 	        {
                 // Fetch the perks from crewfiles
-		        List<Perk> perks = Perk.FromNode(kerbal.GetPerksNode());
+                List<Perk> perks = kerbal.GetPerks();
 
                 // List them in a selection grid with scrollview
                 perksScrollPos = GUILayout.BeginScrollView(perksScrollPos, HighLogic.Skin.scrollView, GUILayout.MaxWidth(buttonsWidth));
