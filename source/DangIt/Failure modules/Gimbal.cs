@@ -12,7 +12,7 @@ namespace ippo
         EngineManager engineManager;
 
         public override string DebugName { get { return "DangItGimbal"; } }
-        public override string InspectionName { get { return "Gimbal"; } }
+        public override string ScreenName { get { return "Gimbal"; } }
         public override string FailureMessage { get { return "Gimbal failure!"; } }
         public override string RepairMessage { get { return "Gimbal repaired."; } }
         public override string FailGuiName { get { return "Fail gimbal"; } }
@@ -22,6 +22,8 @@ namespace ippo
 
         public override bool PartIsActive()
         {
+            // The gimbal is considered active only when the engine is
+            // TODO: this should be tied to the actual deflection of the engine
             return this.engineManager.IsActive;
         }
 

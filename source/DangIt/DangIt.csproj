@@ -103,6 +103,7 @@
     <None Include="Data\PluginData\DangIt\BlackList.cfg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\PluginData\DangIt\Training.xml" />
     <Content Include="Data\Textures\appBtn.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

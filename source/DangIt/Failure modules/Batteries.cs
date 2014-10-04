@@ -9,10 +9,12 @@ namespace ippo
 {
     public class ModuleBatteryReliability : FailureModule
     {
+        // Unlike other failure modules, batteries are not PartModules
+        // We just need a reference to the ElectricCharge resource to simulate a battery short
         protected PartResource battery;
 
         public override string DebugName { get { return "DangItBattery"; } }
-        public override string InspectionName { get { return "Battery"; } }
+        public override string ScreenName { get { return "Battery"; } }
         public override string FailureMessage { get { return "A battery has short-circuited!"; } }
         public override string RepairMessage { get { return "Battery repaired."; } }
         public override string FailGuiName { get { return "Fail battery"; } }
@@ -39,16 +41,19 @@ namespace ippo
 
         protected override bool DI_FailBegin()
         {
+            // Can always fail
             return true;
         }
 
         protected override void DI_Disable()
         {
+            // Drain all the charge and disable the flow
+            // Not really realistic as short circuits go
+            // TODO: improve failure model
             battery.amount = 0;
             battery.flowMode = PartResource.FlowMode.None;
         }
-
-
+        
         protected override void DI_EvaRepair()
         {
             battery.flowMode = PartResource.FlowMode.Both;

@@ -10,6 +10,11 @@ namespace ippo
     {
         ModuleControlSurface controlSurface;
 
+        #region Previous control state
+
+        // The user might have set the control surface to ignore some control inputs
+        // We need to store the previous state in order not to override it when repairing the part
+
         [KSPField(isPersistant = true, guiActive = false)]
         protected bool ignorePitch = false;
 
@@ -18,10 +23,12 @@ namespace ippo
 
         [KSPField(isPersistant = true, guiActive = false)]
         protected bool ignoreYaw = false;
+
+        #endregion
         
 
         public override string DebugName { get { return "DangItControlSurface"; } }
-        public override string InspectionName { get { return "Control surface"; } }
+        public override string ScreenName { get { return "Control surface"; } }
         public override string FailureMessage { get { return "A control surface is stuck!"; } }
         public override string RepairMessage { get { return "Control surface repaired."; } }
         public override string FailGuiName { get { return "Fail control surface"; } }
@@ -31,11 +38,14 @@ namespace ippo
 
         public override bool PartIsActive()
         {
+            // Control surfaces are considered active when the ship's in atmosphere
+            // TODO: should this be tied to the actual deflection?
             return (this.part.vessel.atmDensity > 0);
         }
 
         protected override float LambdaMultiplier()
         {
+            // The thicker the atmosphere, the higher the chance of failure
             return (float)this.part.vessel.atmDensity;
         }
 
@@ -46,7 +56,6 @@ namespace ippo
             this.ignoreRoll = DangIt.Parse<bool>(node.GetValue("ignoreRoll"), defaultTo: false);
             this.ignoreYaw = DangIt.Parse<bool>(node.GetValue("ignoreYaw"), defaultTo: false);
         }
-
 
         protected override void DI_OnSave(ConfigNode node)
         {
@@ -67,18 +76,18 @@ namespace ippo
 
         protected override bool DI_FailBegin()
         {
+            // Can always fail
             return true;
         }
 
         protected override void DI_Disable()
         {
-            // Save the settings before overwriting them,
-            // just in the case that the user has already set the control surface to ignore some direction
+            // Remember the user's settings
             this.ignorePitch = this.controlSurface.ignorePitch;
             this.ignoreRoll = this.controlSurface.ignoreRoll;
             this.ignoreYaw = this.controlSurface.ignoreYaw;
 
-            // Make the control surface unresponsive
+            // Lock the control surface
             this.controlSurface.ignorePitch = true;
             this.controlSurface.ignoreRoll = true;
             this.controlSurface.ignoreYaw = true;
@@ -86,8 +95,6 @@ namespace ippo
             // Disable the module for good measure
             this.controlSurface.enabled = false; 
         }
-
-
 
         protected override void DI_EvaRepair()
         {

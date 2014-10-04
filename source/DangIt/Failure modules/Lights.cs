@@ -6,15 +6,12 @@ using UnityEngine;
 
 namespace ippo
 {
-    /// <summary>
-    /// Module that causes the light bulbs to "burn out"
-    /// </summary>
     public class ModuleLightsReliability : FailureModule
     {
         ModuleLight lightModule;
 
         public override string DebugName { get { return "DangItLights"; } }
-        public override string InspectionName { get { return "Light bulb"; } }
+        public override string ScreenName { get { return "Light bulb"; } }
         public override string FailureMessage { get { return "A light bulb has burned out."; } }
         public override string RepairMessage { get { return "Bulb replaced."; } }
         public override string FailGuiName { get { return "Fail light bulb"; } }
@@ -45,8 +42,11 @@ namespace ippo
         protected override void DI_Disable()
         {
             this.lightModule.LightsOff();
-            this.part.Modules.Remove(this.lightModule);
 
+            // The module needs to be entirely removed from the part,
+            // since setting enabled = false still makes it respond to the
+            // master light switch at the top of the screen.
+            this.part.Modules.Remove(this.lightModule);
         }
 
 

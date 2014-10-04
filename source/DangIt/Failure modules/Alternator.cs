@@ -12,7 +12,7 @@ namespace ippo
         ModuleAlternator alternatorModule;
 
         public override string DebugName { get { return "DangItAlternator"; } }
-        public override string InspectionName { get { return "Alternator"; } }
+        public override string ScreenName { get { return "Alternator"; } }
         public override string FailureMessage { get { return "Alternator failure!"; } }
         public override string RepairMessage { get { return "Alternator repaired."; } }
         public override string FailGuiName { get { return "Fail alternator"; } }
@@ -22,6 +22,7 @@ namespace ippo
 
         public override bool PartIsActive()
         {
+            // Alternators are active when the engine is
             return engineManager.IsActive;
         }
 
@@ -38,7 +39,7 @@ namespace ippo
 
         protected override bool DI_FailBegin()
         {
-            // Always agree to fail
+            // Can always fail
             return true;
         }
 

@@ -41,7 +41,7 @@ namespace ippo
             foreach (FailureModule fm in failModules)
             {
                 fm.TimeOfLastInspection = DangIt.Now();
-                sb.AppendLine(fm.InspectionName + ":");
+                sb.AppendLine(fm.ScreenName + ":");
                 sb.AppendLine(fm.InspectionMessage());
                 sb.AppendLine("");
             }

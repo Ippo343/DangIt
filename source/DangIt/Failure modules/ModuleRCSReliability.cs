@@ -10,7 +10,7 @@ namespace ippo
         ModuleRCS rcsModule;
 
         public override string DebugName { get { return "DangItRCS"; } }
-        public override string InspectionName { get { return "RCS Thruster"; } }
+        public override string ScreenName { get { return "RCS Thruster"; } }
         public override string FailureMessage { get { return "A thruster has stopped thrusting!"; } }
         public override string RepairMessage { get { return "Thruster back online."; } }
         public override string FailGuiName { get { return "Fail thruster"; } }
@@ -20,12 +20,8 @@ namespace ippo
 
         public override bool PartIsActive()
         {
-            foreach (float force in rcsModule.thrustForces)
-            {
-                if (force > 0) return true;
-            }
-
-            return false;
+            // A thruster block is active if any of the thrusters is firing
+            return rcsModule.thrustForces.Any(f => f > 0);
         }
 
 

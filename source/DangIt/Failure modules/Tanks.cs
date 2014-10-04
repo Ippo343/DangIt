@@ -8,13 +8,10 @@ using UnityEngine;
 
 namespace ippo
 {
-    /// <summary>
-    /// Module that causes leaks in resource tanks
-    /// </summary>
     public class ModuleTankReliability : FailureModule
     {
         public override string DebugName { get { return "DangItTank"; } }
-        public override string InspectionName { get { return "Tank"; } }
+        public override string ScreenName { get { return "Tank"; } }
         public override string FailureMessage { get { return "A tank of " + leakName + " is leaking!"; } }
         public override string RepairMessage { get { return "Duct tape applied."; } }
         public override string FailGuiName { get { return "Puncture tank"; } }
@@ -22,26 +19,40 @@ namespace ippo
         public override string MaintenanceString { get { return "Repair the insulation"; } }
 
 
+        // The leak is modeled as an exponential function
+        // by approximating the differential equation
+        // dQ(t) = - pole * Q(t)
+        // where Q is the amount of fuel left in the tank
         [KSPField(isPersistant = true, guiActive = false)]
         protected float pole = 0.01f;
 
-        // Maximum and minimum values for the decay fraction
+        
+        // Maximum and minimum values of the time constant
+        // The time constant is generated randomly between these two limits
+        // and pole = 1 / TC
         [KSPField(isPersistant = true, guiActive = false)]
         public float MaxTC = 60f;
 
         [KSPField(isPersistant = true, guiActive = false)]
         public float MinTC = 10f;
 
+        // Name of the leaking resource
         [KSPField(isPersistant = true, guiActive = false)]
         public string leakName = null;
 
+
+        // List of resources that the module will choose from when starting a new leak.
+        // This list is created when the module is started by taking all the resources
+        // in the part and excluding the ones that have been blacklisted in the configuration file
         protected List<PartResource> leakables;
 
 
+        // This method is executed once at startup during a coroutine
+        // that waits for the runtime component to be available and then triggers
+        // this method.
         protected override void DI_RuntimeFetch()
         {
-            this.leakables = null;
-
+            // At this point DangIt.Instance is not null: fetch the blacklist
             this.leakables = part.Resources.list.FindAll(r => !DangIt.Instance.LeakBlackList.Contains(r.resourceName));
 
             // If no leakables are found, just disable the module
@@ -50,7 +61,7 @@ namespace ippo
                 this.Log("The part " + this.part.name + " does not contain any leakable resource.");
                 this.Events["Fail"].active = false;
                 this.leakName = null;
-                this.enabled = false;
+                this.enabled = false; // disable the monobehaviour: this won't be updated
             }
         }
 
@@ -78,12 +89,13 @@ namespace ippo
 
         protected override void DI_OnLoad(ConfigNode node)
         {
+            this.pole = DangIt.Parse<float>("pole", 0.01f);
+            
             this.leakName = node.GetValue("leakName");
-            if (string.IsNullOrEmpty(leakName)) leakName = null;
+            if (string.IsNullOrEmpty(leakName))
+                leakName = null;
 
             this.Log("OnLoad: loaded leakName " + ((leakName == null) ? "null" : leakName));
-
-            this.pole = DangIt.Parse<float>("leakName", 0.01f);
         }
 
 
@@ -101,16 +113,19 @@ namespace ippo
             try
             {
                 if (this.HasFailed && 
-                   (!string.IsNullOrEmpty(leakName) && 
-                   (part.Resources[leakName].amount > 0)))
+                   (!string.IsNullOrEmpty(leakName) &&      
+                   (part.Resources[leakName].amount > 0)))  // ignore empty tanks
                 {
                     double amount = pole * part.Resources[leakName].amount * TimeWarp.fixedDeltaTime;
 
-                    // Check if the tank's valve has been closed
+                    // The user can disable the flow from tanks: if he does, RequestResource
+                    // won't drain anything.
+                    // In that case, we need to subtract directly the amount we want
+
                     if (part.Resources[leakName].flowState)
-                        part.RequestResource(leakName, amount); // valve open, request as usual
+                        part.RequestResource(leakName, amount);
                     else 
-                    {   // valve closed, subtract directly
+                    {
                         part.Resources[leakName].amount -= amount;
                         part.Resources[leakName].amount = Math.Max(part.Resources[leakName].amount, 0);
                     }
@@ -128,6 +143,7 @@ namespace ippo
 
         protected override bool DI_FailBegin()
         {
+            // Something has gone very wrong somewhere
             if (leakables == null)
                 throw new Exception("The list of leakables is null!");
 
@@ -137,20 +153,26 @@ namespace ippo
             if (leakables.Count > 0)
             {
                 // Choose a random severity of the leak
+                // The lower TC, the faster the leak
                 float TC = UnityEngine.Random.Range(MinTC, MaxTC);
                 this.pole = 1 / TC;
-                this.Log("Chosen TC = " + TC + " (min = " + MinTC + ", max = " + MaxTC + ")");
+
+                this.Log(string.Format("Chosen TC = {0} (min = {1}, max = {2})", TC, MinTC, MaxTC));
 
                 // Pick a random index to leak.
-                int idx = (leakables.Count == 1) ? 0 : UnityEngine.Random.Range(0, leakables.Count);
+                // Random.Range excludes the upper bound, hence the + 1
+                int idx = UnityEngine.Random.Range(0, (leakables.Count + 1));
                 this.leakName = leakables[idx].resourceName;
 
+                // Picked a resource, allow failing
                 return true;
             }
             else
             {
                 leakName = null;
                 this.Log("Zero leakable resources found on part " + this.part.partName + ", aborting FailBegin()");
+
+                // Disallow failing
                 return false;
             }
         }
@@ -171,7 +193,6 @@ namespace ippo
         }
 
 
-        /*
 #if DEBUG
         [KSPEvent(active = true, guiActive = true)]
         public void PrintStatus()
@@ -194,7 +215,6 @@ namespace ippo
             this.Log("Done");
         }
 #endif
-         */
 
     }
 }

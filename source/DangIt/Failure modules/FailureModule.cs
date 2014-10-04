@@ -9,25 +9,31 @@ using CrewFilesInterface;
 namespace ippo
 {
     /// <summary>
-    /// Base failure module: handles the aging of the part, causes the random failures
-    /// and handles the EVA repair.
+    /// Base failure module that abstracts all the common behaviour for discrete failures:
+    /// * keeps track of the part's age and failure chance
+    /// * causes random failures
+    /// * handles the EVA repair and preemptive maintenance
+    /// * Returns the message for inspections
     /// </summary>
     public abstract class FailureModule : PartModule, IPartCostModifier
     {
 
         #region Custom strings
 
-        public abstract string InspectionName { get; }
-        public abstract string DebugName { get; }
-        public abstract string RepairMessage { get; }
-        public abstract string FailureMessage { get; }
-        public abstract string FailGuiName { get; }
-        public abstract string EvaRepairGuiName { get; }
-        public abstract string MaintenanceString { get; }
+        // These strings customize the failure module, both in the log
+        // and in the messages that are shown to the user.
 
+        public abstract string ScreenName { get; }          // name shown to the user during inspections or in the editors (e.g, "Alternator")
+        public abstract string DebugName { get; }           // name used to identify the module in the debug logs
+        public abstract string RepairMessage { get; }       // message posted to the screen upon successful repair
+        public abstract string FailureMessage { get; }      // message posted to the screen upon failure
+        public abstract string FailGuiName { get; }         // gui name for the failure event (when visible)
+        public abstract string EvaRepairGuiName { get; }    // gui name for the EVA repair event
+        public abstract string MaintenanceString { get; }   
+
+ 
         /// <summary>
-        /// Returns the string that is displayed during an inspection
-        /// If the perks are not met, a generic string is returned
+        /// Returns the string that is displayed during an inspection.
         /// </summary>
         public virtual string InspectionMessage()
         {
@@ -60,7 +66,7 @@ namespace ippo
             else if (ratio < 3)
                 return "This part needs replacing soon";
             else
-                return "This part appears to be in terrible condition";
+                return "This part is in terrible condition";
         }
 
         #endregion
@@ -95,13 +101,13 @@ namespace ippo
         public float MTBF = 1000f;                                  // Original Mean Time Between Failures.
 
         [KSPField(isPersistant = true, guiActive = false)]
-        public float LifeTime = 1f;                                 // Time constant of the exponential decay
+        public float LifeTime = 100f;                               // Time constant of the exponential decay
 
         [KSPField(isPersistant = true, guiActive = false)]
         public float RepairCost = 5f;                               // Amount of spares needed to repair the part
 
         [KSPField(isPersistant = true, guiActive = false)]
-        public float RepairBonus = 0f;                              // Age discount during a repair
+        public float RepairBonus = 0f;                              // Age discount during a repair (percentage, between 0 and 1)
 
         [KSPField(isPersistant = true, guiActive = false)]
         public float MaintenanceCost = 1f;                          // Amount of spares needed to perform maintenance
@@ -110,10 +116,10 @@ namespace ippo
         public float MaintenanceBonus = 0.2f;                       // Age discount for preemptive maintenance
 
         [KSPField(isPersistant = true, guiActive = false)]
-        public float InspectionBonus = 60f;                         // Duration of the inspection discount
+        public float InspectionBonus = 60f;                         // Duration of the inspection bonus
 
         [KSPField(isPersistant = true, guiActive = false)]
-        public bool Silent = false;
+        public bool Silent = false;                                 // If this flag is true, no message is displayed when failing
 
 
         #endregion
@@ -152,17 +158,20 @@ namespace ippo
 
 
         /// <summary>
-        /// Istantenous chance of failure.
+        /// Chance that the part will fail during the next fixed update.
         /// </summary>
         public float Lambda()
         {
             return LambdaFromMTBF(this.CurrentMTBF)
                     * (1 + TemperatureMultiplier())     // the temperature increases the chance of failure
                     * LambdaMultiplier()                // optional multiplier from the child class
-                    * InspectionMultiplier();           // apply inspection bonus
+                    * InspectionLambdaMultiplier();           // temporary inspection bonus
         }
 
 
+        /// <summary>
+        /// Convert a MTBF in hours to the chance of failure during the next fixed update.
+        /// </summary>
         private float LambdaFromMTBF(float MTBF)
         {
             try
@@ -176,9 +185,15 @@ namespace ippo
             }
         }
 
-        private float InspectionMultiplier()
+
+        /// <summary>
+        /// Multiplier that reduces the chance of failure right after an inspection.
+        /// </summary>
+        private float InspectionLambdaMultiplier()
         {
             float elapsed = (DangIt.Now() - this.TimeOfLastInspection);
+
+            // Constrain it between 0 and 1
             return Math.Max(0f, Math.Min(elapsed / this.InspectionBonus, 1f));
         }
 
@@ -187,8 +202,9 @@ namespace ippo
 
 
         /// <summary>
-        /// Coroutine that waits for the runtime to be ready
-        /// and initializes the results from preference.
+        /// Coroutine that waits for the runtime to be ready before executing.
+        /// Sets the range and gui name of the Fail, EvaRepair and Maintenance events,
+        /// and then calls DI_RuntimeFetch() so that child classes can interact with the runtime.
         /// </summary>
         IEnumerator RuntimeFetch()
         {
@@ -206,8 +222,7 @@ namespace ippo
 
         /// <summary>
         /// Resets the failure state and age tracker.
-        /// This must be called only at the beginning of the flight to initialize
-        /// the age tracking.
+        /// This must be called only at the beginning of the flight to initialize the age tracking.
         /// Put your reset logic in DI_Reset()
         /// </summary>
         protected void Reset()
@@ -274,9 +289,9 @@ namespace ippo
                 this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
                 // Load the required perks, if any        
-                if (node.HasNode("PERKS"))
+                if (node.HasNode(PerkGenerator.NodeName))
                 {
-                    ConfigNode perksNode = node.GetNode("PERKS");
+                    ConfigNode perksNode = node.GetNode(PerkGenerator.NodeName);
                     this.PerkRequirements = Perk.FromNode(perksNode);
                 }
                 else
@@ -292,7 +307,9 @@ namespace ippo
                 if (HighLogic.LoadedSceneIsFlight)
                     this.DI_Start(StartState.Flying);
 
-                this.Log("OnLoad complete: loaded " + PerkRequirements.Count + " perks.");
+#if DEBUG
+                this.Log("OnLoad complete: loaded " + PerkRequirements.Count + " perks."); 
+#endif
 
                 base.OnLoad(node);
 
@@ -326,12 +343,10 @@ namespace ippo
                 // Save the perks
                 if (this.PerkRequirements.Count > 0)
                 {
-                    ConfigNode perksNode = new ConfigNode("PERKS");
-                    foreach (Perk p in this.PerkRequirements)
-                        perksNode.AddValue("perk", p.ToString());
+                    ConfigNode perksNode = this.PerkRequirements.ToNode();
 
-                    if (node.HasNode("PERKS"))
-                        node.SetNode("PERKS", perksNode);
+                    if (node.HasNode(perksNode.name))
+                        node.SetNode(perksNode.name, perksNode);
                     else
                         node.AddNode(perksNode);
                 }                
@@ -350,8 +365,7 @@ namespace ippo
 
 
         /// <summary>
-        /// Module re-start logic. OnStart will be called usually once for each scene,
-        /// editor included.
+        /// Module re-start logic. OnStart will be called usually once for each scene, editor included.
         /// Put your custom start logic in DI_Start(): if you need to act on other part's
         /// variable, this is the place to do it, not DI_Reset()
         /// </summary>
@@ -402,37 +416,33 @@ namespace ippo
                     float now = DangIt.Now();
 
                     float dt = now - LastFixedUpdate;
+                    this.LastFixedUpdate = now;
 
                     // The temperature aging is independent from the use of the part
-                    this.Age += dt * this.TemperatureMultiplier();
+                    this.Age += (dt * this.TemperatureMultiplier());
 
                     if (!PartIsActive())
-                    {
-                        this.LastFixedUpdate = now;
                         return;
-                    }
-
-                    // If control reaches this point, the part is active: add the elapsed time to the age
-                    this.Age += dt;
-
-                    this.CurrentMTBF = this.MTBF * this.ExponentialDecay();
-
-                    // If the part has not already failed, toss the dice
-                    if (!this.HasFailed)
+                    else
                     {
-                        if (UnityEngine.Random.Range(0f, 1f) < this.Lambda())
+                        this.Age += dt;
+
+                        this.CurrentMTBF = this.MTBF * this.ExponentialDecay();
+
+                        // If the part has not already failed, toss the dice
+                        if (!this.HasFailed)
                         {
-                            this.Fail();
+                            if (UnityEngine.Random.Range(0f, 1f) < this.Lambda())
+                            {
+                                this.Fail();
+                            }
                         }
+
+                        // Run custom update logic
+                        this.DI_Update();
                     }
-
-                    // Run custom update logic
-                    this.DI_Update();
-
-                    this.LastFixedUpdate = now; 
                 }
             }
-
             catch (Exception e)
             {
                 OnError(e);
@@ -455,19 +465,20 @@ namespace ippo
         }
 
 
-
+        /// <summary>
+        /// Pre-emtpive maintenance procedure.
+        /// This allows the kerbal to service a functioning part to permanently discount part of the age,
+        /// thus making it permanently more reliable.
+        /// </summary>
         [KSPEvent(active = true, guiActive = false, guiActiveUnfocused = true, unfocusedRange = 2f, externalToEVAOnly = true)]
         public void Maintenance()
         {
             this.Log("Initiating EVA maitenance");
 
-            // Get the EVA part (parts can hold resources)
             Part evaPart = DangIt.FindEVAPart();
             if (evaPart == null)
             {
-                DangIt.Broadcast("DangIt ERROR: couldn't find an active EVA!");
-                this.Log("ERROR: couldn't find an active EVA!");
-                return;
+                throw new Exception("ERROR: couldn't find an active EVA!");
             }
 
 
@@ -484,6 +495,8 @@ namespace ippo
             {
                 this.Log("Spare parts check: OK! Maintenance allowed allowed");
 
+                // Compute the minimum distance between the kerbal's perks and the required perks
+                // The distance is used to scale the maintenance bonus according to the kerbal's skills
                 int perksDistance = 0;
                 try
                 {
@@ -498,7 +511,6 @@ namespace ippo
 #if DEBUG
                 this.Log("Perk distance is " + perksDistance);
 #endif
-
 
                 // The higher the skill gap, the higher the maintenance bonus is
                 // The + 1 is there to makes it so that a maintenance bonus is always gained even when the perks match exactly
@@ -607,9 +619,7 @@ namespace ippo
                 
                 if (evaPart == null)
                 {
-                    DangIt.Broadcast("DangIt ERROR: couldn't find an active EVA!");
-                    this.Log("ERROR: couldn't find an active EVA!");
-                    return;
+                    throw new Exception("ERROR: couldn't find an active EVA!");
                 }
 
                 // Check if the kerbal is able to perform the repair
@@ -680,9 +690,10 @@ namespace ippo
             #endregion
 
             #region Perks
-            if (CrewFilesManager.CrewFilesInstalled && CrewFilesManager.Server != null)
+
+            if (CrewFilesManager.IsReady)
             {
-                if (CheckOutPerks(evaPart.protoModuleCrew[0]))
+                if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
                 {
                     allow = false;
                     reason = "perks don't match requirements";
@@ -691,23 +702,9 @@ namespace ippo
             }
             else
             {
-                #region Log the incident and notify the user
                 this.Log("WARNING: CrewFiles is not available!");
-
-                //TODO: remove this message
-                DangIt.PostMessage(
-                    "Installation error",
-
-                    "There seems to be a problem with your installation.\n" +
-                    "CrewFiles doesn't seem to be availabe.\n" +
-                    "You should probably head to the forum and drop me a line.\n" +
-                    "In the meantime, the perk system is disabled.\n\n" +
-                    "This immersion-breaking message will not be in the final release, I promise!",
-
-                    MessageSystemButton.MessageButtonColor.RED,
-                    MessageSystemButton.ButtonIcons.MESSAGE, true); 
-                #endregion
             } 
+
             #endregion
 
 
@@ -725,12 +722,13 @@ namespace ippo
         /// </summary>
         bool CheckOutPerks(ProtoCrewMember kerbal)
         {
-            List<Perk> perks = DangIt.FetchKerbalPerks(kerbal);
-            return Perk.MeetsRequirement(this.PerkRequirements, perks);
+            return Perk.MeetsRequirement(this.PerkRequirements, kerbal.GetPerks());
         }
 
 
-
+        /// <summary>
+        /// Decreases the part's age by the given percentage.
+        /// </summary>
         private void DiscountAge(float percentage)
         {
             this.Age *= (1 - percentage);
@@ -760,14 +758,6 @@ namespace ippo
             }
         }
 
-
-
-        public void LogException(Exception e)
-        {
-            this.Log("ERROR: " + e.Message + "\n" + e.StackTrace);
-        }
-
-
         /// <summary>
         /// Exception handling code: logs the exception message and then disables the module.
         /// Disabled modules are not updated.
@@ -777,11 +767,19 @@ namespace ippo
             LogException(e);
             this.enabled = false;   // prevent the module from updating
             return;
-        } 
+        }
+
+        public void LogException(Exception e)
+        {
+            this.Log("ERROR: " + e.Message + "\n" + e.StackTrace);
+        }
 
         #endregion
 
 
+        /// <summary>
+        /// Reduces the value of the part when it is recovered.
+        /// </summary>
         public float GetModuleCost()
         {
             return (this.ExponentialDecay() - 1) * this.part.partInfo.cost;

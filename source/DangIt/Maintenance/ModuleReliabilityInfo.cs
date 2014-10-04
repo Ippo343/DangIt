@@ -21,7 +21,7 @@ namespace ippo
                 {
                     double EOL = Math.Round(Math.Max(-fm.LifeTime * Math.Log(1 / fm.MTBF), 0));
 
-                    sb.AppendLine(fm.InspectionName);
+                    sb.AppendLine(fm.ScreenName);
                     sb.AppendLine(" - MTBF: " + fm.MTBF + " hours");
                     sb.AppendLine(" - Lifetime: " + fm.LifeTime + " hours");
                     sb.AppendLine(" - EOL : " + EOL + " hours");

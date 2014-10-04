@@ -6,16 +6,12 @@ using UnityEngine;
 
 namespace ippo
 {
-
-    /// <summary>
-    /// Module that causes failures in reaction wheels
-    /// </summary>
     public class ModuleReactionWheelReliability : FailureModule
     {
         ModuleReactionWheel torqueModule;
 
         public override string DebugName { get { return "DangItReactionWheel"; } }
-        public override string InspectionName { get { return "Reaction wheel"; } }
+        public override string ScreenName { get { return "Reaction wheel"; } }
         public override string FailureMessage { get { return "Reaction wheel failure!"; } }
         public override string RepairMessage { get { return "Reaction wheel repaired."; } }
         public override string FailGuiName { get { return "Fail reaction wheel"; } }
@@ -25,8 +21,10 @@ namespace ippo
 
         public override bool PartIsActive()
         {
+            // A reaction wheel is always spinning
+            // Unless the user has turned it off, consider it active even if there's no torque
             return (torqueModule.isEnabled &&
-                torqueModule.wheelState == ModuleReactionWheel.WheelState.Active);
+                    torqueModule.wheelState == ModuleReactionWheel.WheelState.Active);
         }
 
 
@@ -49,7 +47,7 @@ namespace ippo
         {
             this.torqueModule.OnToggle();
             this.torqueModule.isEnabled = false;
-            this.torqueModule.Events["OnToggle"].active = false;
+            this.torqueModule.Events["OnToggle"].active = false;    // hides the ability to turn it back on from the user
             this.torqueModule.wheelState = ModuleReactionWheel.WheelState.Broken;
         }
 
