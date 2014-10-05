@@ -16,6 +16,9 @@ namespace ippo
         /// </summary>
         public static ConfigNode GetPerksNode(this ProtoCrewMember kerbal)
         {
+            if (!CrewFilesManager.Server.Contains(kerbal))
+                CrewFilesManager.Server.RefreshDatabase();
+
             return kerbal.GetNode(PerkGenerator.NodeName);
         }
 
@@ -24,7 +27,7 @@ namespace ippo
         /// Fetch the list of perks from CrewFiles.
         /// </summary>
         public static List<Perk> GetPerks(this ProtoCrewMember kerbal)
-        {
+        {         
             ConfigNode perksNode = kerbal.GetPerksNode();
 
             if (perksNode == null)
@@ -39,6 +42,9 @@ namespace ippo
         /// </summary>
         public static void SetPerks(this ProtoCrewMember kerbal, List<Perk> perks)
         {
+            if (!CrewFilesManager.Server.Contains(kerbal))
+                CrewFilesManager.Server.RefreshDatabase();
+
             ConfigNode kerbalFile = kerbal.GetFullFile();
             ConfigNode perksNode = perks.ToNode();
 
