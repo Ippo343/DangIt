@@ -11,14 +11,9 @@ namespace ippo
     public static class Spares
     {
         /// <summary>
-        /// Amount of Spare Parts that is taken each time the button is pressed
-        /// </summary>
-        public static readonly double Increment = 1f;
-
-        /// <summary>
         /// Maximum amount that a kerbal can carry
         /// </summary>
-        public static readonly double MaxEvaAmount = 10f;
+        public static readonly double MaxEvaAmount = 15f;
 
         /// <summary>
         /// Resource name as a string

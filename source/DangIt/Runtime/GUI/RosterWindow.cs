@@ -193,7 +193,8 @@ namespace ippo
 
 
             // If the kerbal is not available to be trained, draw a greyed out button and return
-            if (!(HighLogic.CurrentGame.CrewRoster.Crew.Contains(kerbal) || kerbal.rosterStatus != ProtoCrewMember.RosterStatus.Available))
+            if ((HighLogic.CurrentGame.CrewRoster.Applicants.Contains(kerbal)            // applicants
+                || kerbal.rosterStatus == ProtoCrewMember.RosterStatus.Assigned))        // crew in flight
             {
                 GUI.enabled = false;
                 GUILayout.Button(kerbal.name + "\ncannot be trained\nright now.");
