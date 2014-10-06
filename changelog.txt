@@ -1,9 +1,10 @@
 === ALPHA 4 ===
 
 PERKS SYSTEM
-Increased the MTBF of tanks to 72k hours.
-Fixes a bug in the tank loading.
-Fixes a bug that prevented the last resource in a tank from leaking
+Complete rebalance pass.
+Fixes a bug in the tank loading that loaded the wrong value for the pole.
+Fixes a bug that prevented the last resource in a tank from leaking.
+Fixes a bug that made preemptive maintenance free.
 
 === ALPHA 3.3 ===
 

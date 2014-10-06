@@ -60,12 +60,11 @@ namespace ippo
             GUILayout.EndHorizontal();
 
             // Creates the button and returns true when it is pressed
-            if (GUILayout.Button("OK"))
+            if (GUILayout.Button("Apply"))
             {
                 // Parse the string
                 this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 2f);
                 DangIt.Instance.CurrentSettings = this.newSettings;
-                this.Enabled = false;
             }
 
             // This call allows the user to drag the window around the screen
