@@ -495,6 +495,9 @@ namespace ippo
             {
                 this.Log("Spare parts check: OK! Maintenance allowed allowed");
 
+                // Consume the spare parts
+                evaPart.RequestResource(Spares.Name, this.MaintenanceCost);
+
                 // Compute the minimum distance between the kerbal's perks and the required perks
                 // The distance is used to scale the maintenance bonus according to the kerbal's skills
                 int perksDistance = 0;
