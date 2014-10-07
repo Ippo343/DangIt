@@ -192,7 +192,6 @@ namespace ippo
         private float InspectionLambdaMultiplier()
         {
             float elapsed = (DangIt.Now() - this.TimeOfLastInspection);
-
             // Constrain it between 0 and 1
             return Math.Max(0f, Math.Min(elapsed / this.InspectionBonus, 1f));
         }
