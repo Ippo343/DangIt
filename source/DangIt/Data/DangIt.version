@@ -1,6 +1,6 @@
 {
   "NAME": "DangIt",
-  "URL": "https://raw.githubusercontent.com/Ippo343/DangIt/master/source/Data/DangIt.version",
+  "URL": "https://raw.githubusercontent.com/Ippo343/DangIt/master/source/DangIt/Data/DangIt.version",
   "DOWNLOAD": "http://beta.kerbalstuff.com/mod/7/DangIt",
   "VERSION":{
 	"MAJOR":0,
