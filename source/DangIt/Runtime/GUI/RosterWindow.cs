@@ -250,8 +250,8 @@ namespace ippo
                     if (Funding.Instance.Funds < cost.Funds) return false;
                     if (ResearchAndDevelopment.Instance.Science < cost.Science) return false;
 
-                    Funding.Instance.Funds -= cost.Funds;
-                    ResearchAndDevelopment.Instance.Science -= cost.Science;
+                    Funding.Instance.AddFunds(-cost.Funds, TransactionReasons.RnDs);
+                    ResearchAndDevelopment.Instance.AddScience(-cost.Science, TransactionReasons.RnDs);
 
                     return true;
 
@@ -259,7 +259,7 @@ namespace ippo
                 case Game.Modes.SCIENCE_SANDBOX:
 
                     if (ResearchAndDevelopment.Instance.Science < cost.Science) return false;
-                    ResearchAndDevelopment.Instance.Science -= cost.Science;
+                    ResearchAndDevelopment.Instance.AddScience(-cost.Science, TransactionReasons.RnDs);
 
                     return true;
 
