@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9B88953E-3F14-4DEA-8078-B3418A17E2F8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ippo</RootNamespace>
+    <AssemblyName>DangIt</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;LOG_WALL_OF_TEXT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="CrewFilesInterface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\CrewFilesInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\DangIt.version" />
+    <Compile Include="Perks\PerksExtensions.cs" />
+    <Compile Include="Perks\ProtoCrewMemberExtensions.cs" />
+    <Compile Include="Perks\Skills.cs" />
+    <Compile Include="Perks\TrainingCost.cs" />
+    <Compile Include="Runtime\GUI\RosterWindow.cs" />
+    <Compile Include="Runtime\GUI\SettingsWindow.cs" />
+    <Compile Include="Runtime\ScenarioInjector.cs" />
+    <Compile Include="Runtime\GUI\GUI.cs" />
+    <Compile Include="Utilities\EnginesManager.cs" />
+    <Compile Include="Failure modules\Alternator.cs" />
+    <Compile Include="Failure modules\Batteries.cs" />
+    <Compile Include="Failure modules\ControlSurface.cs" />
+    <Compile Include="Runtime\DangIt.cs" />
+    <Compile Include="Failure modules\Engines.cs" />
+    <Compile Include="Failure modules\Gimbal.cs" />
+    <Compile Include="Failure modules\Lights.cs" />
+    <Compile Include="Failure modules\FailureModule.cs" />
+    <Compile Include="Failure modules\ModuleRCSReliability.cs" />
+    <Compile Include="Maintenance\InspectionModule.cs" />
+    <Compile Include="Maintenance\ModuleReliabilityInfo.cs" />
+    <Compile Include="Perks\Generator.cs" />
+    <Compile Include="Perks\Perk.cs" />
+    <Compile Include="Runtime\Settings.cs" />
+    <Compile Include="Runtime\SparesInfo.cs" />
+    <Compile Include="Runtime\Static.cs" />
+    <Compile Include="Maintenance\SparesContainer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Failure modules\ReactionWheel.cs" />
+    <Compile Include="Failure modules\Tanks.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\ModuleManager\Information.cfg" />
+    <None Include="Data\ModuleManager\Inspection.cfg" />
+    <None Include="Data\ModuleManager\Alternator.cfg" />
+    <None Include="Data\ModuleManager\Battery.cfg" />
+    <None Include="Data\ModuleManager\ControlSurface.cfg" />
+    <None Include="Data\ModuleManager\Engines.cfg" />
+    <None Include="Data\ModuleManager\Gimbal.cfg" />
+    <None Include="Data\ModuleManager\Lights.cfg" />
+    <None Include="Data\ModuleManager\RCS.cfg" />
+    <None Include="Data\ModuleManager\ReactionWheel.cfg" />
+    <None Include="Data\ModuleManager\SpareParts.cfg" />
+    <None Include="Data\ModuleManager\Tanks.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\PluginData\DangIt\BlackList.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\PluginData\DangIt\Training.xml" />
+    <Content Include="Data\Textures\appBtn.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(TargetPath)"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(SolutionDir)\References\CrewFilesInterface.dll"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+copy "$(SolutionDir)\References\ModuleManager*.dll"  "C:\Users\mippo_000\Documents\ksp\GameData"
+copy "$(ProjectDir)\Data\DangIt.version"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+
+mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+copy "$(ProjectDir)\Data\ModuleManager\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+
+mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+copy "$(ProjectDir)\Data\ModuleManager\*"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+
+mkdir ""C:\Users\mippo_000\Documents\ksp\GameData\DangIt\PluginData\DangIt"
+copy "$(ProjectDir)\Data\PluginData\DangIt\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\PluginData\DangIt"
+
+mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\Textures"
+copy "$(ProjectDir)\Data\Textures\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\Textures"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
