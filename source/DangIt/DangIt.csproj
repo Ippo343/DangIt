@@ -93,7 +93,6 @@
     <None Include="Data\ModuleManager\Lights.cfg" />
     <None Include="Data\ModuleManager\RCS.cfg" />
     <None Include="Data\ModuleManager\ReactionWheel.cfg" />
-    <None Include="Data\ModuleManager\SpareParts.cfg" />
     <None Include="Data\ModuleManager\Tanks.cfg" />
   </ItemGroup>
   <ItemGroup>

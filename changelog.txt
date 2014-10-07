@@ -1,10 +1,19 @@
 === ALPHA 4 ===
 
-PERKS SYSTEM
-Complete rebalance pass.
-Fixes a bug in the tank loading that loaded the wrong value for the pole.
-Fixes a bug that prevented the last resource in a tank from leaking.
-Fixes a bug that made preemptive maintenance free.
+PERKS SYSTEM:
+- Each module now has its own set of perks needed to interact with it.
+- A kerbal will need to be sufficiently trained before he can inspect, maintain, or repair a part.
+- Only kerbals that are at the KSC can be trained (at the expense of science and funds): they cannot be trained in flight.
+- The set of perks they spawn with is dependent on their intelligence.
+
+Complete rebalance pass of all the reliability values.
+
+Bugfixes:
+- tanks loaded the wrong value for the pole.
+- the last resource in a tank was never selected.
+- the cost of preemptive maintenance wasn't being spent.
+
+
 
 === ALPHA 3.3 ===
 
