@@ -1,3 +1,9 @@
+=== ALPHA 4.1 ===
+
+Adds Compatibility Checker (just a warning).
+Updates blacklist for the new MKS resources.
+Blacklists IntakeAir (how did nobody notice for this long!?),
+
 === ALPHA 4 ===
 
 PERKS SYSTEM:
