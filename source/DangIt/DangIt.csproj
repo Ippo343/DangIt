@@ -60,6 +60,7 @@
     <Compile Include="Runtime\GUI\SettingsWindow.cs" />
     <Compile Include="Runtime\ScenarioInjector.cs" />
     <Compile Include="Runtime\GUI\GUI.cs" />
+    <Compile Include="Utilities\CompatibilityChecker.cs" />
     <Compile Include="Utilities\EnginesManager.cs" />
     <Compile Include="Failure modules\Alternator.cs" />
     <Compile Include="Failure modules\Batteries.cs" />
