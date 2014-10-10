@@ -1,3 +1,8 @@
+=== ALPHA 4.2 ===
+
+Fixes the cost of parts including SpareParts.
+Now comes bundled with MiniAVC, an opt-in update checker.
+
 === ALPHA 4.1 ===
 
 Adds Compatibility Checker (just a warning).
