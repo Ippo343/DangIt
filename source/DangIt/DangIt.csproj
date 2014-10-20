@@ -107,25 +107,25 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
-copy "$(TargetPath)"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
-copy "$(SolutionDir)\References\CrewFilesInterface.dll"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
-copy "$(SolutionDir)\References\ModuleManager*.dll"  "C:\Users\mippo_000\Documents\ksp\GameData"
-copy "$(SolutionDir)\References\MiniAVC.dll"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
-copy "$(ProjectDir)\Data\DangIt.version"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
-copy "$(ProjectDir)\Data\DangIt.ckan"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt"
+    <PostBuildEvent>SET GAMEDATA=C:\Users\mippo_000\Documents\ksp\GameData\
+SET DANGIT=%25GameData%25DangIt\
 
-mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
-copy "$(ProjectDir)\Data\ModuleManager\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+:: Remove the mod folder, if it already exists
+if exist "%25DANGIT%25" rmdir /S /Q "%25DANGIT%25"
 
-mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
-copy "$(ProjectDir)\Data\ModuleManager\*"   "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\ModuleManager"
+:: Create the directory in GameData
+mkdir "%25DANGIT%25"
 
-mkdir ""C:\Users\mippo_000\Documents\ksp\GameData\DangIt\PluginData\DangIt"
-copy "$(ProjectDir)\Data\PluginData\DangIt\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\PluginData\DangIt"
+:: Copy the plugin
+copy "$(TargetPath)"  "%25DANGIT%25"
 
-mkdir "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\Textures"
-copy "$(ProjectDir)\Data\Textures\*"  "C:\Users\mippo_000\Documents\ksp\GameData\DangIt\Textures"</PostBuildEvent>
+:: Reference assemblies
+copy "$(SolutionDir)\References\CrewFilesInterface.dll"  "%25DANGIT%25"
+copy "$(SolutionDir)\References\ModuleManager*.dll"  "%25GAMEDATA%25"
+copy "$(SolutionDir)\References\MiniAVC.dll"  "%25DANGIT%25"
+
+:: Mod Data (MM patches, AVC, ckan)
+xcopy /E /Y /I "$(ProjectDir)\Data"  "%25DANGIT%25"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
