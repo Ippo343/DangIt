@@ -92,31 +92,54 @@ namespace ippo
              *  serialization and deserialization. The best solution would be a dictionary, but it's challenging to write and load with ConfigNode,
              *  while xml serialization of a list is a piece of cake.
              */
-
+            trainingCosts = this.DefaultTrainingCosts();
             XmlSerializer serializer = new XmlSerializer(typeof(List<TrainingCost>));
-            try
-            {
-                trainingCosts = new List<TrainingCost>();
-           
-                IO.FileStream fs = new IO.FileStream(this.GetConfigFilePath("Training.xml"), IO.FileMode.Open);
-                trainingCosts = (List<TrainingCost>)serializer.Deserialize(fs);
-                fs.Close();
-            }
-            catch (Exception e) // In case of exception (e.g, file not found) create a default list.
-            {
-                trainingCosts.Clear();
-                trainingCosts.Add(new TrainingCost(SkillLevel.Unskilled, science: 10, funds: 10000));
-                trainingCosts.Add(new TrainingCost(SkillLevel.Normal, science: 50, funds: 50000));
-                trainingCosts.Add(new TrainingCost(SkillLevel.Skilled, science: 120, funds: 120000));
 
-                this.Log("An exception occurred when loading the training costs list and a default one has been created. " + e.Message + e.StackTrace);
-            }
-            finally
+            if (IO.File.Exists(this.GetConfigFilePath("Training.xml")))
             {
-                IO.FileStream fs = new IO.FileStream(this.GetConfigFilePath("Training.xml"), IO.FileMode.OpenOrCreate);
-                serializer.Serialize(fs, trainingCosts);
-                fs.Close();
+                IO.FileStream fs = null;
+                try
+                {                    
+                    fs = IO.File.Open(this.GetConfigFilePath("Training.xml"),
+                                      IO.FileMode.OpenOrCreate, 
+                                      IO.FileAccess.Read,
+                                      IO.FileShare.None);
+                    trainingCosts = (List<TrainingCost>)serializer.Deserialize(fs);
+                }
+                catch (Exception e)
+                {
+                    trainingCosts = this.DefaultTrainingCosts();
+                    this.Log("An exception occurred when loading the training costs list and a default one has been created. " + e.Message + e.StackTrace);
+                }
+                finally
+                {
+                    if (fs != null) fs.Close();
+                }
             }
+            else
+            {
+                this.Log("The training costs list didn't exist, trying to write the default one.");
+
+                IO.FileStream fs = null;
+                try
+                {
+                    fs = IO.File.Open(this.GetConfigFilePath("Training.xml"),
+                                      IO.FileMode.Create,
+                                      IO.FileAccess.Write,
+                                      IO.FileShare.None);
+                    serializer.Serialize(fs, trainingCosts);
+                }
+                catch (Exception e)
+                {
+                    trainingCosts = this.DefaultTrainingCosts();
+                    this.Log("An exception occurred when writing the training costs list and a default one has been created. " + e.Message + e.StackTrace);
+                }
+                finally
+                {
+                    if (fs != null) fs.Close();
+                }
+            }
+            
 
             #endregion
 
@@ -126,6 +149,18 @@ namespace ippo
 
             // Add the button to the stock toolbar
             this.StartCoroutine("AddAppButton");
+        }
+
+
+        private List<TrainingCost> DefaultTrainingCosts()
+        {
+            List<TrainingCost> result = new List<TrainingCost>();
+
+            result.Add(new TrainingCost(SkillLevel.Unskilled, science: 10, funds: 10000));
+            result.Add(new TrainingCost(SkillLevel.Normal, science: 50, funds: 50000));
+            result.Add(new TrainingCost(SkillLevel.Skilled, science: 120, funds: 120000));
+
+            return result;
         }
 
 

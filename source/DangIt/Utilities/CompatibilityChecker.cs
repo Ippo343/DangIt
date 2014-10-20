@@ -79,7 +79,7 @@ namespace ippo
 
             // TODO: Implement your own Unity compatibility check.
             //
-            return Application.unityVersion.Equals("4.5.2f1");
+            return true;
 
             /*-----------------------------------------------*\
             | IMPLEMENTERS SHOULD NOT EDIT BEYOND THIS POINT! |
