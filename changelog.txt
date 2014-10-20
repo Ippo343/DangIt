@@ -1,3 +1,11 @@
+=== ALPHA 4.3 ===
+
+Fixes a file handling exception on OSX.
+Removes the unity compatibility warning .
+Adds CKAN support.
+Improves the SpareParts cfg using SandWorm's edits.
+
+
 === ALPHA 4.2 ===
 
 Fixes the cost of parts including SpareParts.
