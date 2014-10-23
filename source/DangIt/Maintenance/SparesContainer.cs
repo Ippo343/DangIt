@@ -119,6 +119,7 @@ namespace ippo
 
             // Compute how much the kerbal can take
             double desired = Spares.MaxEvaAmount - evaPart.Resources[Spares.Name].amount;
+            desired = Math.Min(desired, Spares.MinIncrement);
             double amountTaken = Math.Min(desired, container.Resources[Spares.Name].amount);
 
             // Take it from the container and add it to the EVA

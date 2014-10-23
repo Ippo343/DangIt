@@ -19,6 +19,8 @@ namespace ippo
         /// Resource name as a string
         /// </summary>
         public static readonly string Name = "SpareParts";
+
+        public static readonly float MinIncrement = 1f;
     }
 
 }
