@@ -92,6 +92,7 @@
     <None Include="Data\ModuleManager\ControlSurface.cfg" />
     <None Include="Data\ModuleManager\Engines.cfg" />
     <None Include="Data\ModuleManager\Gimbal.cfg" />
+    <None Include="Data\ModuleManager\Engines_ion.cfg" />
     <None Include="Data\ModuleManager\Lights.cfg" />
     <None Include="Data\ModuleManager\RCS.cfg" />
     <None Include="Data\ModuleManager\ReactionWheel.cfg" />
