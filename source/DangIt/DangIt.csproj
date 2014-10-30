@@ -51,7 +51,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\DangIt.ckan" />
     <None Include="Data\DangIt.version" />
     <Compile Include="Perks\PerksExtensions.cs" />
     <Compile Include="Perks\ProtoCrewMemberExtensions.cs" />
