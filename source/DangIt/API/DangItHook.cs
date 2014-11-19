@@ -4,24 +4,33 @@ using System.Reflection;
 
 namespace ippo
 {
+    /// <summary>
+    /// Reflection wrapper to interact with DangIt
+    /// </summary>
     public static class DangItHook
-    {
-        private static bool? installed = null;
-        private static Type scenarioType = null;
+    {      
+        #region Check installation and readiness
 
-        public static int CountFailures(Vessel v)
-        {
-            return (int)scenarioType.GetMethod("CountFailures").Invoke(null, new object[] { v });
-        }
-
-        public static bool IsReady
+        /// <summary>
+        /// Checks if DangIt is installed in the game.
+        /// </summary>
+        public static bool Installed
         {
             get
             {
-                return Installed && (Instance != null);
+                if (installed == null)
+                {
+                    scenarioType = FindType();
+                    installed = !(scenarioType == null);
+                }
+
+                return (bool)installed;
             }
         }
 
+        /// <summary>
+        /// Returns the instance of the DangIt ScenarioModule
+        /// </summary>
         public static ScenarioModule Instance
         {
             get
@@ -39,21 +48,37 @@ namespace ippo
             }
         }
 
-
-        public static bool Installed
+        /// <summary>
+        /// Returns true if DangIt is installed and its instance is not null.
+        /// </summary>
+        public static bool IsReady
         {
             get
             {
-                if (installed == null)
-                {
-                    scenarioType = FindType();
-                    installed = !(scenarioType == null);
-                }
-
-                return (bool)installed;
+                return Installed && (Instance != null);
             }
         }
 
+        #endregion
+
+        #region Interact with failures
+
+        public static bool HasAnyFailures(this Vessel v)
+        {
+            return CountFailures(v) > 0;
+        }
+
+        public static int CountFailures(this Vessel v)
+        {
+            return (int)scenarioType.GetMethod("CountFailures").Invoke(null, new object[] { v });
+        }
+
+        #endregion
+
+        #region Gears and pulleys
+
+        private static bool? installed = null;
+        private static Type scenarioType = null;
 
         private static Type FindType()
         {
@@ -61,6 +86,8 @@ namespace ippo
                                  .SelectMany(a => a.assembly.GetTypes())
                                  .SingleOrDefault(t => t.FullName == "ippo.DangIt");
         }
+
+        #endregion
     }
 
 }
