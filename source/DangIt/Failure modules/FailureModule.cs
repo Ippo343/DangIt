@@ -210,7 +210,7 @@ namespace ippo
             // Wait for the server to be available
             while (DangIt.Instance == null || !DangIt.Instance.IsReady)
                 yield return null;
-
+            
             this.Events["Fail"].guiActive = DangIt.Instance.CurrentSettings.ManualFailures;
             this.Events["EvaRepair"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
             this.Events["Maintenance"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
@@ -572,7 +572,6 @@ namespace ippo
                 }
 
                 DangIt.FlightLog(this.FailureMessage);
-
             }
             catch (Exception e)
             {
@@ -643,7 +642,6 @@ namespace ippo
                     ResourceDisplay.Instance.Refresh();
 
                     DangIt.Broadcast(this.RepairMessage, true);
-
                     this.DiscountAge(this.RepairBonus);
 
                     if (discount > 0)
