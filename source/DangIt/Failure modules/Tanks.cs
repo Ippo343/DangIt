@@ -201,6 +201,7 @@ namespace ippo
             {
                 this.Log(res.resourceName + ": " + res.flowMode + ", " + res.flowState);
             }
+
         }
 
         [KSPEvent(active = true, guiActive=true)]
@@ -215,7 +216,7 @@ namespace ippo
         }
 #endif
 		public override bool DI_ShowInfoInEditor(){
-			return this.leakables.Count>0;
+			return true;
 		}
     }
 }
