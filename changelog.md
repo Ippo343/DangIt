@@ -143,7 +143,7 @@ Blacklists IntakeAir (how did nobody notice for this long!?),
 
 - Fixed (?) the lifecycle of the module with proper initialization when the flight starts (and detecting a revert to launch).
 - Fixed the part's glow not turning off.
-- 
+
 ### ALPHA 1
 
 - Initial release: primitive age tracking and some failure modules.
