@@ -568,7 +568,7 @@ namespace ippo
                                        this.FailureMessage,
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
-
+					this.audio.PlayOneShot(GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm"));
                 }
 
                 DangIt.FlightLog(this.FailureMessage);
