@@ -8,8 +8,9 @@ namespace ippo
 {
     class SettingsWindow
     {
-        private Rect settingsRect = new Rect(20, 20, 200, 150);
-        string evaDistanceString = string.Empty;    // temp variable to edit the Max Distance in the GUI
+		private Rect settingsRect = new Rect(20, 20, 300, 150);
+		string evaDistanceString = string.Empty;    // temp variable to edit the Max Distance in the GUI
+		string SoundLoopsString = string.Empty;    // temp variable to edit the Sound Loops in the GUI
 
         DangIt.Settings newSettings;
 
@@ -52,18 +53,25 @@ namespace ippo
             // Display the toggles and controls to read the new settings
             newSettings.ManualFailures = GUILayout.Toggle(newSettings.ManualFailures, "Manual failures");
             newSettings.Glow = GUILayout.Toggle(newSettings.Glow, "Glow");
-            newSettings.Messages = GUILayout.Toggle(newSettings.Messages, "Messages");
+			newSettings.Messages = GUILayout.Toggle(newSettings.Messages, "Messages");
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Max EVA distance: ");
             evaDistanceString = GUILayout.TextField(evaDistanceString);
             GUILayout.EndHorizontal();
 
+			newSettings.SoundNotifications = GUILayout.Toggle(newSettings.SoundNotifications, "Sound Notification");
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("# Loops (-1=Inf): ");
+			SoundLoopsString = GUILayout.TextField(SoundLoopsString);
+			GUILayout.EndHorizontal();
+
             // Creates the button and returns true when it is pressed
             if (GUILayout.Button("Apply"))
             {
                 // Parse the string
-                this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 2f);
+				this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 2f);
+				this.newSettings.SoundLoops = DangIt.Parse<int>(SoundLoopsString, defaultTo: 10);
                 DangIt.Instance.CurrentSettings = this.newSettings;
             }
 

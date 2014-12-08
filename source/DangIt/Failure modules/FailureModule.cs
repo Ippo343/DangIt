@@ -151,6 +151,8 @@ namespace ippo
         [KSPField(isPersistant = true, guiActive = false)]
         public bool HasFailed = false;
 
+		public int CurrentAlarmLoop = 0;
+
         #endregion
 
 
@@ -435,7 +437,16 @@ namespace ippo
                             {
                                 this.Fail();
                             }
-                        }
+						}else{
+							if (DangIt.Instance.CurrentSettings.SoundNotifications)
+							{
+								if (this.CurrentAlarmLoop!=DangIt.Instance.CurrentSettings.SoundLoops && !this.audio.isPlaying)
+								{
+									this.audio.PlayOneShot(GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm"));
+									this.CurrentAlarmLoop++;
+								}
+							}
+						}
 
                         // Run custom update logic
                         this.DI_Update();
@@ -568,7 +579,7 @@ namespace ippo
                                        this.FailureMessage,
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
-					this.audio.PlayOneShot(GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm"));
+					this.CurrentAlarmLoop=0;
                 }
 
                 DangIt.FlightLog(this.FailureMessage);
