@@ -17,6 +17,7 @@ namespace ippo
         public override string FailGuiName { get { return "Puncture tank"; } }
         public override string EvaRepairGuiName { get { return "Apply duct tape"; } }
         public override string MaintenanceString { get { return "Repair the insulation"; } }
+		public override string ExtraEditorInfo { get {return "This part can leak resources if it fails";} }
 
 
         // The leak is modeled as an exponential function
@@ -64,8 +65,6 @@ namespace ippo
                 this.enabled = false; // disable the monobehaviour: this won't be updated
             }
         }
-
-
 
         protected override void DI_Start(StartState state)
         {
@@ -215,6 +214,8 @@ namespace ippo
             this.Log("Done");
         }
 #endif
-
+		public override bool DI_ShowInfoInEditor(){
+			return this.leakables.Count>0;
+		}
     }
 }

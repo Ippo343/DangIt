@@ -1,0 +1,15 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="DangIt\Failure modules\Tanks.cs">
+    <Files>
+      <File FileName="DangIt\Failure modules\FailureModule.cs" Line="396" Column="53" />
+      <File FileName="DangIt\Maintenance\ModuleReliabilityInfo.cs" Line="49" Column="37" />
+      <File FileName="DangIt\Failure modules\Tanks.cs" Line="218" Column="33" />
+      <File FileName="DangIt\Runtime\DangIt.cs" Line="85" Column="14" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
