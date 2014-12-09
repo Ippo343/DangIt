@@ -597,8 +597,8 @@ namespace ippo
 						while (i!=DangIt.Instance.CurrentSettings.SoundLoops-1)
 						{
 							print("loop:"+i.ToString());
-							print("delay:"+(this.audio.clip.length*i).ToString());
-							this.AlarmAudio.PlayDelayed(this.audio.clip.length*i);
+							print("delay:"+(this.AlarmAudio.clip.length*i).ToString());
+							this.AlarmAudio.PlayDelayed(this.AlarmAudio.clip.length*i);
 							i++;
 						}
 					}
@@ -804,7 +804,7 @@ namespace ippo
 
         public void LogException(Exception e)
         {
-            this.Log("ERROR: " + e.Message + "\n" + e.StackTrace);
+			this.Log("ERROR ["+e.GetType().ToString()+"]: " + e.Message + "\n" + e.StackTrace);
         }
 
         #endregion

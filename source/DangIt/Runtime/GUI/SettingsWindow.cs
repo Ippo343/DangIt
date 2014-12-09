@@ -57,14 +57,14 @@ namespace ippo
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Max EVA distance: ");
-            evaDistanceString = GUILayout.TextField(evaDistanceString);
+			evaDistanceString = GUILayout.TextField(DangIt.Instance.CurrentSettings.MaxDistance.ToString());
             GUILayout.EndHorizontal();
 
 			newSettings.SoundNotifications = GUILayout.Toggle(newSettings.SoundNotifications, "Sound Notification");
 
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("# Loops (-1=Inf): ");
-			SoundLoopsString = GUILayout.TextField(SoundLoopsString);
+			SoundLoopsString = GUILayout.TextField(DangIt.Instance.CurrentSettings.SoundLoops.ToString());
 			GUILayout.EndHorizontal();
 
             // Creates the button and returns true when it is pressed
