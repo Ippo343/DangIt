@@ -169,21 +169,16 @@ namespace ippo
                 this.Log(string.Format("Chosen TC = {0} (min = {1}, max = {2})", TC, MinTC, MaxTC));
 
                 // Pick a random index to leak.
-                // Random.Range excludes the upper bound, hence the + 1
-				while (this.leakName != null) 
-				{
-					try 
-					{
-						int idx = UnityEngine.Random.Range (0, (leakables.Count + 1));
-						print ("Selected IDX: " + idx.ToString ());
-						print ("Length of leakables: " + this.leakables.Count.ToString ());
-						print ("Leakables: " + this.leakables.ToString ());
+                // Random.Range excludes the upper bound,
+				// BUT because list.Count returns the length, not the max index, we DONT need a +1
+				// e.g. [1].Count == 1 but MyListWithOneItem[1] == IndexError
 
-						this.leakName = leakables [idx].resourceName;
-					} catch (Exception e) {
-						print ("ERROR ["+e.Message+"]: Retry...");
-					}
-				}
+                int idx = UnityEngine.Random.Range(0, leakables.Count);
+				print ("Selected IDX: " + idx.ToString ());
+				print ("Length of leakables: " + this.leakables.Count.ToString ());
+				print ("Leakables: " + this.leakables.ToString ());
+
+                this.leakName = leakables[idx].resourceName;
 
                 // Picked a resource, allow failing
                 return true;
