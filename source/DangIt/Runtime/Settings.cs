@@ -18,7 +18,7 @@ namespace ippo
             public bool Messages = true;            // enable messages and screen posts
 			public bool Glow = true;                // enable the part's glow upon failure
 			public bool SoundNotifications = true;                // beep incessantly upon failure
-			public int  SoundLoops = 10;                // number of times to beep
+			public int  SoundLoops = 2;                // number of times to beep
 
             public Settings() { }
 
