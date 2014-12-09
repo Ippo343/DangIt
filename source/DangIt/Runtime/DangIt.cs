@@ -57,6 +57,7 @@ namespace ippo
 
 
         private DangIt.Settings currentSettings;
+		public  AlarmManager    alarmManager;
         /// <summary>
         /// General settings about notifications and gameplay elements.
         /// </summary>
@@ -86,7 +87,8 @@ namespace ippo
         {
             Debug.Log("[DangIt]: Instantiating runtime.");
 
-            
+			Debug.Log ("[DangIt]: Starting Alarm Controller...");
+			this.alarmManager=gameObject.AddComponent<AlarmManager> ();
 
             #region Training costs
 

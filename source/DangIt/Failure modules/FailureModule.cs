@@ -153,9 +153,6 @@ namespace ippo
         [KSPField(isPersistant = true, guiActive = false)]
         public bool HasFailed = false;
 
-		public AudioSource AlarmAudio;
-		public int currentAudioLoop;
-
         #endregion
 
 
@@ -442,7 +439,6 @@ namespace ippo
                             {
                                 this.Fail();
                             }
-							this.AlarmAudio.Stop(); //Make sure sound warning has stopped
 						}
 
                         // Run custom update logic
@@ -579,21 +575,8 @@ namespace ippo
 
 					if (DangIt.Instance.CurrentSettings.SoundNotifications)
 					{
-						print("starting alarm");
-						if (this.AlarmAudio==null)
-						{
-							print ("create source");
-							this.AlarmAudio=gameObject.AddComponent<AudioSource>(); //Thank xEvilReeperx for this!
-							this.AlarmAudio.volume=1f;
-						}
-
-						if (this.audio.clip==null)
-						{
-							print ("create clip");
-							this.AlarmAudio.clip=GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm"); //Load alarm sound
-						}
-							
-						this.currentAudioLoop=0; //Reset counter, so on logic pass we play it
+						DangIt.Instance.alarmManager.AddAlarm(this,
+							DangIt.Instance.CurrentSettings.SoundLoops);
 					}
                 }
 
@@ -604,19 +587,6 @@ namespace ippo
                 OnError(e);
             }
         }
-
-		public override void OnUpdate() //Each logic pass
-		{
-			if (this.AlarmAudio != null)
-			{
-				if (!this.AlarmAudio.isPlaying && this.currentAudioLoop != DangIt.Instance.CurrentSettings.SoundLoops && this.HasFailed)
-				{ //If we still need to play... 
-					this.AlarmAudio.Play ();
-					this.currentAudioLoop++;
-				}
-			}
-		}
-
 
         /// <summary>
         /// Sets / resets the failure of the part.
