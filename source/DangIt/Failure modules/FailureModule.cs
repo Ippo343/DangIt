@@ -153,6 +153,8 @@ namespace ippo
         [KSPField(isPersistant = true, guiActive = false)]
         public bool HasFailed = false;
 
+		public AudioSource AlarmAudio;
+
         #endregion
 
 
@@ -262,6 +264,8 @@ namespace ippo
                 this.DI_Reset();
 
                 this.HasInitted = true;
+
+
             }
             catch (Exception e)
             {
@@ -437,7 +441,8 @@ namespace ippo
                             {
                                 this.Fail();
                             }
-                        }
+							this.audio.Stop(); //Make sure sound warning has stopped
+						}
 
                         // Run custom update logic
                         this.DI_Update();
@@ -571,6 +576,31 @@ namespace ippo
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
 
+					print("starting alarm");
+					if (this.AlarmAudio==null)
+					{
+						print ("create source");
+						this.AlarmAudio=new AudioSource();
+					}
+
+					if (this.audio.clip==null)
+					{
+						print ("create clip");
+						this.AlarmAudio.clip=GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm"); //Load alarm sound
+					}
+
+					if (DangIt.Instance.CurrentSettings.SoundNotifications)
+					{
+						print ("play alarm");
+						int i=0;
+						while (i!=DangIt.Instance.CurrentSettings.SoundLoops-1)
+						{
+							print("loop:"+i.ToString());
+							print("delay:"+(this.audio.clip.length*i).ToString());
+							this.AlarmAudio.PlayDelayed(this.audio.clip.length*i);
+							i++;
+						}
+					}
                 }
 
                 DangIt.FlightLog(this.FailureMessage);
