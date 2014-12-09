@@ -17,7 +17,17 @@ namespace ippo
         public override string FailGuiName { get { return "Puncture tank"; } }
         public override string EvaRepairGuiName { get { return "Apply duct tape"; } }
         public override string MaintenanceString { get { return "Repair the insulation"; } }
-		public override string ExtraEditorInfo { get {return "This part can leak resources if it fails";} }
+		public override string ExtraEditorInfo 
+		{
+				get
+				{
+					var temp = "This part can leak one of the following resources if it fails: ";
+					foreach (PartResource pr in part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName))) {
+						temp += pr.resourceName;
+					};
+					return temp;
+				} 
+		}
 
 
         // The leak is modeled as an exponential function
@@ -216,7 +226,7 @@ namespace ippo
         }
 #endif
 		public override bool DI_ShowInfoInEditor(){
-			return true;
+			return part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName)).Count>0; //Only show if has leakable rescoures
 		}
     }
 }
