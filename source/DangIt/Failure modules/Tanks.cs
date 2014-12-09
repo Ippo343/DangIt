@@ -54,7 +54,7 @@ namespace ippo
         protected override void DI_RuntimeFetch()
         {
             // At this point DangIt.Instance is not null: fetch the blacklist
-            this.leakables = part.Resources.list.FindAll(r => !DangIt.Instance.LeakBlackList.Contains(r.resourceName));
+            this.leakables = part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName));
 
             // If no leakables are found, just disable the module
             if (leakables.Count == 0)
@@ -208,7 +208,7 @@ namespace ippo
         public void PrintBlackList()
         {
             this.Log("Printing blacklist");
-            foreach (string item in DangIt.Instance.LeakBlackList)
+            foreach (string item in DangIt.LeakBlackList)
             {
                 this.Log("Blacklisted: " + item);
             }

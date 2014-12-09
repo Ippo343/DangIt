@@ -55,6 +55,8 @@
     <Compile Include="Perks\ProtoCrewMemberExtensions.cs" />
     <Compile Include="Perks\Skills.cs" />
     <Compile Include="Perks\TrainingCost.cs" />
+    <Compile Include="API\API.cs" />
+    <Compile Include="API\DangItHook.cs" />
     <Compile Include="Runtime\GUI\RosterWindow.cs" />
     <Compile Include="Runtime\GUI\SettingsWindow.cs" />
     <Compile Include="Runtime\ScenarioInjector.cs" />
