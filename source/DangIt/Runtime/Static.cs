@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using CrewFilesInterface;
+using KSP.IO;
 
 namespace ippo
 {
@@ -17,6 +18,15 @@ namespace ippo
             return (float)Planetarium.GetUniversalTime();
         }
 
+
+        /// <summary>
+        /// Returns the full path to a given file in the configuration folder.
+        /// Likely, GameData/DangIt/PluginData/DangIt/ + filename
+        /// </summary>
+        internal static string GetConfigFilePath(string fileName)
+        {
+            return IOUtils.GetFilePathFor(typeof(DangIt), fileName);
+        }
      
 
         /// <summary>
