@@ -580,7 +580,8 @@ namespace ippo
 					if (this.AlarmAudio==null)
 					{
 						print ("create source");
-						this.AlarmAudio=new AudioSource();
+						this.AlarmAudio=gameObject.AddComponent<AudioSource>();
+						this.AlarmAudio.volume=1f;
 					}
 
 					if (this.audio.clip==null)
