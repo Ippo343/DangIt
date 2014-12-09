@@ -66,7 +66,7 @@ namespace ippo
             GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
-			GUILayout.Label("# Alarm Loops for Priorities (-1=>Inf)");
+			GUILayout.Label("# Times to beep for Priorities (-1=>Inf) of Failures");
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
