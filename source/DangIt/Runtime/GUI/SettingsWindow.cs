@@ -28,9 +28,9 @@ namespace ippo
                 {
                     this.newSettings = DangIt.Instance.CurrentSettings.ShallowClone();
 					this.evaDistanceString = newSettings.MaxDistance.ToString();
-					this.SoundLoopsString_Low = newSettings.GetSoundLoopsForPriority("LOW").ToString();
-					this.SoundLoopsString_Medium = newSettings.GetSoundLoopsForPriority("MEDIUM").ToString();
-					this.SoundLoopsString_High = newSettings.GetSoundLoopsForPriority("HIGH").ToString();
+					this.SoundLoopsString_Low = newSettings.Pri_Low_SoundLoops.ToString();
+					this.SoundLoopsString_Medium = newSettings.Pri_Medium_SoundLoops.ToString();
+					this.SoundLoopsString_High = newSettings.Pri_High_SoundLoops.ToString();
                 }
             }
         }
@@ -90,8 +90,8 @@ namespace ippo
 				// Parse the strings
 				this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 2f);
 				this.newSettings.Pri_Low_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Low, defaultTo: 0);
-				this.newSettings.Pri_Medium_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Medium, defaultTo: 0);
-				this.newSettings.Pri_High_SoundLoops = DangIt.Parse<int>(SoundLoopsString_High, defaultTo: 0);
+				this.newSettings.Pri_Medium_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Medium, defaultTo: 2);
+				this.newSettings.Pri_High_SoundLoops = DangIt.Parse<int>(SoundLoopsString_High, defaultTo: -1);
                 DangIt.Instance.CurrentSettings = this.newSettings;
             }
 

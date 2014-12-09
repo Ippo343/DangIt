@@ -17,6 +17,7 @@ namespace ippo
 		/// <param name="modeString">Priority string</param>
 		public static int PriorityIntFromString(string modeString)
 		{
+			print ("[DangIt] [Static] Translating '" + modeString + "' to int...");
 			var keys = new List<string> ();
 			keys.Add ("LOW");
 			keys.Add ("MEDIUM");
