@@ -171,6 +171,9 @@ namespace ippo
                 // Pick a random index to leak.
                 // Random.Range excludes the upper bound, hence the + 1
                 int idx = UnityEngine.Random.Range(0, (leakables.Count + 1));
+				print ("Selected IDX: " + idx.ToString ());
+				print ("Length of leakables: " + this.leakables.Count.ToString ());
+				print ("Leakables: " + this.leakables.ToString ());
                 this.leakName = leakables[idx].resourceName;
 
                 // Picked a resource, allow failing

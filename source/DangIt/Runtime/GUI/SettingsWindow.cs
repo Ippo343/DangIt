@@ -25,7 +25,8 @@ namespace ippo
                 if (value) // Copy the current settings when the window is enabled
                 {
                     this.newSettings = DangIt.Instance.CurrentSettings.ShallowClone();
-                    this.evaDistanceString = newSettings.MaxDistance.ToString();
+					this.evaDistanceString = newSettings.MaxDistance.ToString();
+					this.SoundLoopsString = newSettings.SoundLoops.ToString();
                 }
             }
         }
@@ -57,14 +58,14 @@ namespace ippo
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Max EVA distance: ");
-			evaDistanceString = GUILayout.TextField(DangIt.Instance.CurrentSettings.MaxDistance.ToString());
+            evaDistanceString = GUILayout.TextField(evaDistanceString);
             GUILayout.EndHorizontal();
 
 			newSettings.SoundNotifications = GUILayout.Toggle(newSettings.SoundNotifications, "Sound Notification");
 
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("# Loops (-1=Inf): ");
-			SoundLoopsString = GUILayout.TextField(DangIt.Instance.CurrentSettings.SoundLoops.ToString());
+			SoundLoopsString = GUILayout.TextField(SoundLoopsString);
 			GUILayout.EndHorizontal();
 
             // Creates the button and returns true when it is pressed
