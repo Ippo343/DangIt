@@ -10,7 +10,9 @@ namespace ippo
     {
 		private Rect settingsRect = new Rect(20, 20, 300, 150);
 		string evaDistanceString = string.Empty;    // temp variable to edit the Max Distance in the GUI
-		string SoundLoopsString = string.Empty;    // temp variable to edit the Sound Loops in the GUI
+		string SoundLoopsString_Low = string.Empty;    // temp variable to edit the Sound Loops in the GUI
+		string SoundLoopsString_Medium = string.Empty;    // temp variable to edit the Sound Loops in the GUI
+		string SoundLoopsString_High = string.Empty;    // temp variable to edit the Sound Loops in the GUI
 
         DangIt.Settings newSettings;
 
@@ -26,7 +28,9 @@ namespace ippo
                 {
                     this.newSettings = DangIt.Instance.CurrentSettings.ShallowClone();
 					this.evaDistanceString = newSettings.MaxDistance.ToString();
-					this.SoundLoopsString = newSettings.SoundLoops.ToString();
+					this.SoundLoopsString_Low = newSettings.GetSoundLoopsForPriority("LOW").ToString();
+					this.SoundLoopsString_Medium = newSettings.GetSoundLoopsForPriority("MEDIUM").ToString();
+					this.SoundLoopsString_High = newSettings.GetSoundLoopsForPriority("HIGH").ToString();
                 }
             }
         }
@@ -61,19 +65,33 @@ namespace ippo
             evaDistanceString = GUILayout.TextField(evaDistanceString);
             GUILayout.EndHorizontal();
 
-			newSettings.SoundNotifications = GUILayout.Toggle(newSettings.SoundNotifications, "Sound Notification");
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("# Alarm Loops for Priorities (-1=>Inf)");
+			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
-			GUILayout.Label("# Loops (-1=Inf): ");
-			SoundLoopsString = GUILayout.TextField(SoundLoopsString);
+			GUILayout.Label("LOW: ");
+			SoundLoopsString_Low = GUILayout.TextField(SoundLoopsString_Low);
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("MEDIUM: ");
+			SoundLoopsString_Medium = GUILayout.TextField(SoundLoopsString_Medium);
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("HIGH: ");
+			SoundLoopsString_High = GUILayout.TextField(SoundLoopsString_High);
 			GUILayout.EndHorizontal();
 
             // Creates the button and returns true when it is pressed
             if (GUILayout.Button("Apply"))
             {
-                // Parse the string
+				// Parse the strings
 				this.newSettings.MaxDistance = DangIt.Parse<float>(evaDistanceString, defaultTo: 2f);
-				this.newSettings.SoundLoops = DangIt.Parse<int>(SoundLoopsString, defaultTo: 10);
+				this.newSettings.Pri_Low_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Low, defaultTo: 0);
+				this.newSettings.Pri_Medium_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Medium, defaultTo: 0);
+				this.newSettings.Pri_High_SoundLoops = DangIt.Parse<int>(SoundLoopsString_High, defaultTo: 0);
                 DangIt.Instance.CurrentSettings = this.newSettings;
             }
 

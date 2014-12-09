@@ -23,6 +23,21 @@ namespace ippo
 
             public Settings() { }
 
+			public int GetSoundLoopsForPriority(string priority)
+			{
+				return GetSoundLoopsForPriority (DangIt.PriorityIntFromString (priority));
+			}
+
+			public int GetSoundLoopsForPriority(int priority)
+			{
+				if (priority == 1)
+					return Pri_Low_SoundLoops;
+				if (priority==2)
+					return Pri_Medium_SoundLoops;
+				if (priority==3)
+					return Pri_High_SoundLoops;
+				return 0;
+			}
 
             public Settings(ConfigNode node)
             {

@@ -123,6 +123,8 @@ namespace ippo
         [KSPField(isPersistant = true, guiActive = false)]
         public bool Silent = false;                                 // If this flag is true, no message is displayed when failing
 
+		[KSPField(isPersistant = true, guiActive = false)]
+		public string Priority = "MEDIUM";
 
         #endregion
 
@@ -572,12 +574,8 @@ namespace ippo
                                        this.FailureMessage,
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
-
-					if (DangIt.Instance.CurrentSettings.SoundNotifications)
-					{
-						DangIt.Instance.alarmManager.AddAlarm(this,
-							DangIt.Instance.CurrentSettings.SoundLoops);
-					}
+						
+					DangIt.Instance.alarmManager.AddAlarm(this,DangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
                 }
 
                 DangIt.FlightLog(this.FailureMessage);
