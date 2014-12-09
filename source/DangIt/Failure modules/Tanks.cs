@@ -23,7 +23,7 @@ namespace ippo
 				{
 					var temp = "This part can leak one of the following resources if it fails: ";
 					foreach (PartResource pr in part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName))) {
-						temp += pr.resourceName;
+					temp += pr.resourceName + ", ";
 					};
 					return temp;
 				} 

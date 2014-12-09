@@ -34,6 +34,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail control surface"; } }
         public override string EvaRepairGuiName { get { return "Drown in WD40"; } }
         public override string MaintenanceString { get { return "Lubricate hinges"; } }
+		public override string ExtraEditorInfo{ get { return "This part's control surfaces can become stuck if it fails"; } }
 
 
         public override bool PartIsActive()

@@ -20,6 +20,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail battery"; } }
         public override string EvaRepairGuiName { get { return "Repair battery"; } }
         public override string MaintenanceString { get { return "Replace battery"; } }
+		public override string ExtraEditorInfo{ get { return "This part can lose all electric charge if it fails"; } }
 
 
         protected override void DI_Start(StartState state)

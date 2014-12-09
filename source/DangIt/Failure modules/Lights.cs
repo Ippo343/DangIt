@@ -17,6 +17,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail light bulb"; } }
         public override string EvaRepairGuiName { get { return "Replace light bulb"; } }
         public override string MaintenanceString { get { return "Replace light bulb"; } }
+		public override string ExtraEditorInfo{ get { return "This part's bulb can burn out if it fails"; } }
 
 
         public override bool PartIsActive()

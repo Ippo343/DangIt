@@ -17,6 +17,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail reaction wheel"; } }
         public override string EvaRepairGuiName { get { return "Fix reaction wheel"; } }
         public override string MaintenanceString { get { return "Lubricate reaction wheel"; } }
+		public override string ExtraEditorInfo{ get { return "This part can stop providing torque if it fails"; } }
 
 
         public override bool PartIsActive()
