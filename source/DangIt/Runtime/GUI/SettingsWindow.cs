@@ -61,6 +61,7 @@ namespace ippo
             GUILayout.EndHorizontal();
 
 			newSettings.SoundNotifications = GUILayout.Toggle(newSettings.SoundNotifications, "Sound Notification");
+
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("# Loops (-1=Inf): ");
 			SoundLoopsString = GUILayout.TextField(SoundLoopsString);

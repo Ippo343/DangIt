@@ -50,7 +50,7 @@ namespace ippo
 				result.AddValue("Glow", Glow.ToString());
 
 				result.AddValue("SoundNotifications", Messages.ToString());
-				result.AddValue("SoundLoops", Glow.ToString());
+				result.AddValue("SoundLoops", SoundLoops.ToString());
 
                 return result;
             }
