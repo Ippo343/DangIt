@@ -16,7 +16,39 @@ namespace ippo
         /// <summary>
         /// List of resources that must be ignored by tank leaks.
         /// </summary>
-        public List<string> LeakBlackList;
+        public static List<string> LeakBlackList
+        {
+            get
+            {
+                if (_leakBlackList == null) // Load the file on the first call
+                {
+                    _leakBlackList = new List<string>();
+                    ConfigNode blacklistFile = ConfigNode.Load(DangIt.GetConfigFilePath("BlackList.cfg"));
+                    try
+                    {
+                        ConfigNode blackListNode = blacklistFile.GetNode("BLACKLIST");
+                        foreach (string item in blackListNode.GetValues("ignore"))
+                            _leakBlackList.Add(item);
+                    }
+                    catch (Exception e)
+                    {
+                        _leakBlackList.Add("ElectricCharge");
+                        _leakBlackList.Add("SolidFuel");
+                        _leakBlackList.Add("SpareParts");
+
+                        Debug.Log("[DangIt]: An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
+                    } 
+                }
+
+                return _leakBlackList;
+            }
+            set
+            {
+                _leakBlackList = value;
+            }
+        }
+        internal static List<string> _leakBlackList = null;
+
 
         /// <summary>
         /// List of the costs (science and funds) that are requested to train a kerbal.
@@ -50,41 +82,11 @@ namespace ippo
         /// </summary>
         public bool IsReady { get; private set; }        
 
-
-        /// <summary>
-        /// Returns the full path to a given file in the configuration folder.
-        /// Likely, GameData/DangIt/PluginData/DangIt/ + filename
-        /// </summary>
-        internal string GetConfigFilePath(string fileName)
-        {
-            return IOUtils.GetFilePathFor(this.GetType(), fileName);
-        }
-
-
         public DangIt()
         {
             Debug.Log("[DangIt]: Instantiating runtime.");
 
-            #region Blacklist
-
-            ConfigNode blacklistFile = ConfigNode.Load(this.GetConfigFilePath("BlackList.cfg"));
-            LeakBlackList = new List<string>();
-            try
-            {
-                ConfigNode blackListNode = blacklistFile.GetNode("BLACKLIST");
-                foreach (string item in blackListNode.GetValues("ignore"))
-                    LeakBlackList.Add(item);
-            }
-            catch (Exception e)
-            {
-                LeakBlackList.Add("ElectricCharge");
-                LeakBlackList.Add("SolidFuel");
-                LeakBlackList.Add("SpareParts");
-
-                this.Log("An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
-            }
-
-            #endregion
+            
 
             #region Training costs
 
@@ -95,12 +97,12 @@ namespace ippo
             trainingCosts = this.DefaultTrainingCosts();
             XmlSerializer serializer = new XmlSerializer(typeof(List<TrainingCost>));
 
-            if (IO.File.Exists(this.GetConfigFilePath("Training.xml")))
+            if (IO.File.Exists(DangIt.GetConfigFilePath("Training.xml")))
             {
                 IO.FileStream fs = null;
                 try
-                {                    
-                    fs = IO.File.Open(this.GetConfigFilePath("Training.xml"),
+                {
+                    fs = IO.File.Open(DangIt.GetConfigFilePath("Training.xml"),
                                       IO.FileMode.OpenOrCreate, 
                                       IO.FileAccess.Read,
                                       IO.FileShare.None);
@@ -123,7 +125,7 @@ namespace ippo
                 IO.FileStream fs = null;
                 try
                 {
-                    fs = IO.File.Open(this.GetConfigFilePath("Training.xml"),
+                    fs = IO.File.Open(DangIt.GetConfigFilePath("Training.xml"),
                                       IO.FileMode.Create,
                                       IO.FileAccess.Write,
                                       IO.FileShare.None);
