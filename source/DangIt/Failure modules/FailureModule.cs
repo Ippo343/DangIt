@@ -607,10 +607,13 @@ namespace ippo
 
 		public override void OnUpdate() //Each logic pass
 		{
-			if (!this.AlarmAudio.isPlaying && this.currentAudioLoop != DangIt.Instance.CurrentSettings.SoundLoops && this.HasFailed) //If we still need to play... 
+			if (this.AlarmAudio != null)
 			{
-				this.AlarmAudio.Play ();
-				this.currentAudioLoop++;
+				if (!this.AlarmAudio.isPlaying && this.currentAudioLoop != DangIt.Instance.CurrentSettings.SoundLoops && this.HasFailed)
+				{ //If we still need to play... 
+					this.AlarmAudio.Play ();
+					this.currentAudioLoop++;
+				}
 			}
 		}
 
