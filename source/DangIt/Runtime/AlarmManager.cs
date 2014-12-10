@@ -13,6 +13,9 @@ namespace ippo
 		public void Start()
 		{
 			print("[DangIt] [AlarmManager] Starting...");
+			print("[DangIt] [AlarmManager] Setting Volume...");
+			this.audio.panLevel = 0f; //This disable the game scaling volume with distance from source
+			this.audio.volume = 1f;
 
 			print ("[DangIt] [AlarmManager] Creating Clip");
 			this.audio.clip=GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm"); //Load alarm sound
