@@ -43,6 +43,7 @@ namespace ippo
 						var element = loops.ElementAt (0);
 						if (element.Value == 0 || !element.Key.HasFailed || element.Key.vessel!=FlightGlobals.ActiveVessel) //If there are no loops remaining, it has been repaired, or it isn't on the vessel anymore:
 						{
+							element.Key.AlarmsDoneCallback ();
 							loops.Remove (element.Key); //Stop playing it
 							print ("[DangIt] [AlarmManager] Removing FM: Remove");
 						}
@@ -56,6 +57,30 @@ namespace ippo
 					}
 				}
 			}
+		}
+
+		public void RemoveAllAlarmsForModule(FailureModule fm)
+		{
+			print ("[DangIt] [AlarmManager] Removing alarms...");
+			if (this.loops.Keys.Contains (fm))
+			{
+				fm.AlarmsDoneCallback ();
+				loops.Remove (fm);
+			}
+		}
+
+		public bool HasAlarmsForModule(FailureModule fm)
+		{
+			if (this.loops.Keys.Contains (fm))
+			{
+				int i;
+				loops.TryGetValue (fm, out i);
+				if (i != 0)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

@@ -576,7 +576,12 @@ namespace ippo
                                        MessageSystemButton.ButtonIcons.ALERT);
 						
 					DangIt.Instance.alarmManager.AddAlarm(this,DangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
-                }
+					if (DangIt.Instance.alarmManager.HasAlarmsForModule(this))
+					{
+						Events ["MuteAlarms"].active = true;
+						Events ["MuteAlarms"].guiActive = true;
+					}
+				}
 
                 DangIt.FlightLog(this.FailureMessage);
             }
@@ -790,6 +795,18 @@ namespace ippo
         {
             return (this.ExponentialDecay() - 1) * this.part.partInfo.cost;
         }
+
+		[KSPEvent(guiActive = false, active = false, guiName="Mute Alarm")]
+		public void MuteAlarms(){
+			print ("Muting alarms for... " + this.ToString ());
+			DangIt.Instance.alarmManager.RemoveAllAlarmsForModule (this);
+		}
+
+		public void AlarmsDoneCallback(){ //Called from AlarmManager when no alarms remain
+			print ("AlarmsDoneCallback called");
+			Events ["MuteAlarms"].active = false;
+			Events ["MuteAlarms"].guiActive = false;
+		}
     }
 
 }
