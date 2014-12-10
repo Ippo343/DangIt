@@ -1,3 +1,23 @@
+## ALPHA 5
+
+### ALPHA 5
+
+- New Features
+  - Sound warnings
+    - Each failure has a priority
+    - Number of alarm sound repeats configurable thru ingame GUI for each priority
+    - All alarms can be muted from the right click menu
+  - Intakes failuremodule imported from Entropy (intakes become clogged, stopping providing resources)
+  - Coolant failuremodule imported from Entropy (causes engines to generate more heat than they can dissipate, causing you to have to run below 100%)
+  - Jet engines have been buffed, should last about 10 hours
+  - Added a system for FailureModules to show extra editor info
+  - Added a system for FailureModules to hide themselves in editor
+  - Moved DangIt! blacklist to a static class
+  - Added a KSPAssembly tag
+- Fixes
+  - Tank module no longer shown for batteries
+  - Tank module no longer shown for SRBs
+
 ## ALPHA 4
 
 ### ALPHA 4.4
