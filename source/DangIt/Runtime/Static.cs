@@ -4,11 +4,27 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using CrewFilesInterface;
+using KSP.IO;
 
 namespace ippo
 {
     public partial class DangIt
     {
+		/// <summary>
+		/// Converts a string representing a priority to a int representing it
+		/// </summary>
+		/// <returns>The int representation</returns>
+		/// <param name="modeString">Priority string</param>
+		public static int PriorityIntFromString(string modeString)
+		{
+			print ("[DangIt] [Static] Translating '" + modeString + "' to int...");
+			var keys = new List<string> ();
+			keys.Add ("LOW");
+			keys.Add ("MEDIUM");
+			keys.Add ("HIGH");
+			return keys.IndexOf (modeString.ToUpper ())+1; //+1 so that LOW = 1
+		}
+
         /// <summary>
         /// Returns the in-game universal time
         /// </summary>
@@ -17,6 +33,15 @@ namespace ippo
             return (float)Planetarium.GetUniversalTime();
         }
 
+
+        /// <summary>
+        /// Returns the full path to a given file in the configuration folder.
+        /// Likely, GameData/DangIt/PluginData/DangIt/ + filename
+        /// </summary>
+        internal static string GetConfigFilePath(string fileName)
+        {
+            return IOUtils.GetFilePathFor(typeof(DangIt), fileName);
+        }
      
 
         /// <summary>

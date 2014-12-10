@@ -17,6 +17,17 @@ namespace ippo
         public override string FailGuiName { get { return "Puncture tank"; } }
         public override string EvaRepairGuiName { get { return "Apply duct tape"; } }
         public override string MaintenanceString { get { return "Repair the insulation"; } }
+		public override string ExtraEditorInfo 
+		{
+				get
+				{
+					var temp = "This part can leak one of the following resources if it fails: ";
+					foreach (PartResource pr in part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName))) {
+					temp += pr.resourceName + ", ";
+					};
+					return temp;
+				} 
+		}
 
 
         // The leak is modeled as an exponential function
@@ -53,7 +64,7 @@ namespace ippo
         protected override void DI_RuntimeFetch()
         {
             // At this point DangIt.Instance is not null: fetch the blacklist
-            this.leakables = part.Resources.list.FindAll(r => !DangIt.Instance.LeakBlackList.Contains(r.resourceName));
+            this.leakables = part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName));
 
             // If no leakables are found, just disable the module
             if (leakables.Count == 0)
@@ -64,8 +75,6 @@ namespace ippo
                 this.enabled = false; // disable the monobehaviour: this won't be updated
             }
         }
-
-
 
         protected override void DI_Start(StartState state)
         {
@@ -160,8 +169,15 @@ namespace ippo
                 this.Log(string.Format("Chosen TC = {0} (min = {1}, max = {2})", TC, MinTC, MaxTC));
 
                 // Pick a random index to leak.
-                // Random.Range excludes the upper bound, hence the + 1
-                int idx = UnityEngine.Random.Range(0, (leakables.Count + 1));
+                // Random.Range excludes the upper bound,
+				// BUT because list.Count returns the length, not the max index, we DONT need a +1
+				// e.g. [1].Count == 1 but MyListWithOneItem[1] == IndexError
+
+                int idx = UnityEngine.Random.Range(0, leakables.Count);
+				print ("Selected IDX: " + idx.ToString ());
+				print ("Length of leakables: " + this.leakables.Count.ToString ());
+				print ("Leakables: " + this.leakables.ToString ());
+
                 this.leakName = leakables[idx].resourceName;
 
                 // Picked a resource, allow failing
@@ -202,19 +218,22 @@ namespace ippo
             {
                 this.Log(res.resourceName + ": " + res.flowMode + ", " + res.flowState);
             }
+
         }
 
         [KSPEvent(active = true, guiActive=true)]
         public void PrintBlackList()
         {
             this.Log("Printing blacklist");
-            foreach (string item in DangIt.Instance.LeakBlackList)
+            foreach (string item in DangIt.LeakBlackList)
             {
                 this.Log("Blacklisted: " + item);
             }
             this.Log("Done");
         }
 #endif
-
+		public override bool DI_ShowInfoInEditor(){
+			return part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName)).Count>0; //Only show if has leakable rescoures
+		}
     }
 }

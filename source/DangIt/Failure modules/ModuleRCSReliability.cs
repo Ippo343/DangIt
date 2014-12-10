@@ -16,6 +16,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail thruster"; } }
         public override string EvaRepairGuiName { get { return "Repair thruster"; } }
         public override string MaintenanceString { get { return "Clean thruster"; } }
+		public override string ExtraEditorInfo{ get { return "This part's thrusters can stop firing if it fails"; } }
 
 
         public override bool PartIsActive()

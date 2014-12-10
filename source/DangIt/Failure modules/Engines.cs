@@ -17,6 +17,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail engine"; } }
         public override string EvaRepairGuiName { get { return "Repair engine"; } }
         public override string MaintenanceString { get { return "Clean engine"; } }
+		public override string ExtraEditorInfo{ get { return "This part's engine can stop providing thrust if it fails"; } }
 
 
         protected override float LambdaMultiplier()

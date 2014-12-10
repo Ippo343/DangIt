@@ -13,9 +13,17 @@ namespace ippo
     {
         public override string GetInfo()
         {
-            List<FailureModule> fails = this.part.Modules.OfType<FailureModule>().ToList();
+			List<FailureModule> raw_fails = this.part.Modules.OfType<FailureModule>().ToList();
 
-            if (fails.Count == 0)   // no failure module, return a placeholder message
+			List<FailureModule> fails = new List<FailureModule>();
+
+			foreach (FailureModule fm in raw_fails) {
+				if (fm.DI_ShowInfoInEditor ()) { //Make sure the module wants to show info in the editor
+					fails.Add (fm);
+				}
+			}
+
+			if (fails.Count == 0)   // no failure module, return a placeholder message
                 return "This part has been built to last";
             else
             {
@@ -23,22 +31,27 @@ namespace ippo
 
                 foreach (FailureModule fm in fails)
                 {
-                    double EOL = Math.Round(Math.Max(-fm.LifeTime * Math.Log(1 / fm.MTBF), 0));
 
-                    sb.AppendLine(fm.ScreenName);
-                    sb.AppendLine(" - MTBF: " + fm.MTBF + " hours");
-                    sb.AppendLine(" - Lifetime: " + fm.LifeTime + " hours");
-                    sb.AppendLine(" - EOL : " + EOL + " hours");
-                    sb.AppendLine(" - Repair cost: " + fm.RepairCost);
+					double EOL = Math.Round (Math.Max (-fm.LifeTime * Math.Log (1 / fm.MTBF), 0));
 
-                    if (fm.PerkRequirements != null && fm.PerkRequirements.Count > 0)
-                    {
-                        sb.AppendLine("Servicing:");
-                        foreach (Perk p in fm.PerkRequirements)
-                            sb.AppendLine(" - " + p.ToString());
-                    }
+					sb.AppendLine (fm.ScreenName);
+					sb.AppendLine (" - MTBF: " + fm.MTBF + " hours");
+					sb.AppendLine (" - Lifetime: " + fm.LifeTime + " hours");
+					sb.AppendLine (" - EOL : " + EOL + " hours");
+					sb.AppendLine (" - Repair cost: " + fm.RepairCost);
+					sb.AppendLine (" - Priority: " + fm.Priority);
 
-                    sb.AppendLine();
+					if (fm.PerkRequirements != null && fm.PerkRequirements.Count > 0) {
+						sb.AppendLine ("Servicing:");
+						foreach (Perk p in fm.PerkRequirements)
+							sb.AppendLine (" - " + p.ToString ());
+					}
+
+					if (fm.ExtraEditorInfo != "") {
+						sb.AppendLine (" - "+fm.ExtraEditorInfo); //Append any extra info the module wants to add
+					}
+
+					sb.AppendLine ();
                 }
 
                 return sb.ToString();

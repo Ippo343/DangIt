@@ -18,6 +18,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail gimbal"; } }
         public override string EvaRepairGuiName { get { return "Repair gimbal"; } }
         public override string MaintenanceString { get { return "Lubricate gimbal"; } }
+		public override string ExtraEditorInfo{ get { return "This part's gimbal can become stuck if it fails"; } }
 
 
         public override bool PartIsActive()

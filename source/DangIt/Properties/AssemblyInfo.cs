@@ -2,8 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("0.4.4.0")]
-[assembly: AssemblyFileVersion("0.4.4.0")]
+[assembly: AssemblyVersion("0.5.0.*")]
 
 [assembly: AssemblyTitle("DangIt")]
 [assembly: AssemblyDescription("Random failures mod for KSP")]
@@ -21,3 +20,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("91a53ca5-e3e3-41c1-a837-a125b9a2dff2")]
+
+[assembly: KSPAssembly("DangIt", 0, 5)] //I've called it this because it is Alpha 5. @ippo is this OK?

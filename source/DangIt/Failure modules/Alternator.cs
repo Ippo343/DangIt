@@ -18,6 +18,7 @@ namespace ippo
         public override string FailGuiName { get { return "Fail alternator"; } }
         public override string EvaRepairGuiName { get { return "Replace alternator"; } }
         public override string MaintenanceString { get { return "Replace alternator"; } }
+		public override string ExtraEditorInfo{ get { return "This part's alternator can stop providing electricity if it fails"; } }
 
 
         public override bool PartIsActive()

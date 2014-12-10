@@ -23,13 +23,14 @@ namespace ippo
         // These strings customize the failure module, both in the log
         // and in the messages that are shown to the user.
 
-        public abstract string ScreenName { get; }          // name shown to the user during inspections or in the editors (e.g, "Alternator")
-        public abstract string DebugName { get; }           // name used to identify the module in the debug logs
-        public abstract string RepairMessage { get; }       // message posted to the screen upon successful repair
-        public abstract string FailureMessage { get; }      // message posted to the screen upon failure
-        public abstract string FailGuiName { get; }         // gui name for the failure event (when visible)
-        public abstract string EvaRepairGuiName { get; }    // gui name for the EVA repair event
-        public abstract string MaintenanceString { get; }   
+		public abstract string ScreenName { get; }                   // name shown to the user during inspections or in the editors (e.g, "Alternator")
+		public abstract string DebugName { get; }                    // name used to identify the module in the debug logs
+		public abstract string RepairMessage { get; }                // message posted to the screen upon successful repair
+		public abstract string FailureMessage { get; }               // message posted to the screen upon failure
+		public abstract string FailGuiName { get; }                  // gui name for the failure event (when visible)
+		public abstract string EvaRepairGuiName { get; }             // gui name for the EVA repair event
+		public abstract string MaintenanceString { get; }            // gui name for maintinence event
+		public virtual  string ExtraEditorInfo { get {return "";} }  // extra descriptive info for the
 
  
         /// <summary>
@@ -84,7 +85,8 @@ namespace ippo
         protected abstract void DI_EvaRepair();
         protected virtual void DI_OnSave(ConfigNode node) { }
         public virtual bool PartIsActive() { return true; }
-        protected virtual float LambdaMultiplier() { return 1f; } 
+        protected virtual float LambdaMultiplier() { return 1f; }
+		public virtual bool DI_ShowInfoInEditor() { return true; }
 
         #endregion
 
@@ -121,6 +123,8 @@ namespace ippo
         [KSPField(isPersistant = true, guiActive = false)]
         public bool Silent = false;                                 // If this flag is true, no message is displayed when failing
 
+		[KSPField(isPersistant = true, guiActive = false)]
+		public string Priority = "MEDIUM";
 
         #endregion
 
@@ -210,7 +214,7 @@ namespace ippo
             // Wait for the server to be available
             while (DangIt.Instance == null || !DangIt.Instance.IsReady)
                 yield return null;
-
+            
             this.Events["Fail"].guiActive = DangIt.Instance.CurrentSettings.ManualFailures;
             this.Events["EvaRepair"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
             this.Events["Maintenance"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
@@ -260,6 +264,8 @@ namespace ippo
                 this.DI_Reset();
 
                 this.HasInitted = true;
+
+
             }
             catch (Exception e)
             {
@@ -435,7 +441,7 @@ namespace ippo
                             {
                                 this.Fail();
                             }
-                        }
+						}
 
                         // Run custom update logic
                         this.DI_Update();
@@ -568,18 +574,17 @@ namespace ippo
                                        this.FailureMessage,
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
-
+						
+					DangIt.Instance.alarmManager.AddAlarm(this,DangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
                 }
 
                 DangIt.FlightLog(this.FailureMessage);
-
             }
             catch (Exception e)
             {
                 OnError(e);
             }
         }
-
 
         /// <summary>
         /// Sets / resets the failure of the part.
@@ -643,7 +648,6 @@ namespace ippo
                     ResourceDisplay.Instance.Refresh();
 
                     DangIt.Broadcast(this.RepairMessage, true);
-
                     this.DiscountAge(this.RepairBonus);
 
                     if (discount > 0)
@@ -773,7 +777,7 @@ namespace ippo
 
         public void LogException(Exception e)
         {
-            this.Log("ERROR: " + e.Message + "\n" + e.StackTrace);
+			this.Log("ERROR ["+e.GetType().ToString()+"]: " + e.Message + "\n" + e.StackTrace);
         }
 
         #endregion

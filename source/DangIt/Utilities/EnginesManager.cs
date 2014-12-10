@@ -12,8 +12,8 @@ namespace ippo
     /// </summary>
     public class EngineManager
     {
-        List<ModuleEngines> engines;
-        List<ModuleEnginesFX> enginesFX;
+		public List<ModuleEngines> engines;
+		public List<ModuleEnginesFX> enginesFX;
 
         /// <summary>
         /// Creates an EngineManager for a part.
