@@ -41,10 +41,10 @@ namespace ippo
 					if (loops.Count > 0)
 					{
 						var element = loops.ElementAt (0);
-						if (element.Value == 0 || !element.Key.HasFailed)
+						if (element.Value == 0 || !element.Key.HasFailed || element.Key.vessel!=FlightGlobals.ActiveVessel) //If there are no loops remaining, it has been repaired, or it isn't on the vessel anymore:
 						{
-							loops.Remove (element.Key);
-							print ("[DangIt] [AlarmManager] Removing FM: All alarms run");
+							loops.Remove (element.Key); //Stop playing it
+							print ("[DangIt] [AlarmManager] Removing FM: Remove");
 						}
 						else if (!this.audio.isPlaying)
 						{
