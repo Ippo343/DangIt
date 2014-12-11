@@ -1,5 +1,9 @@
 ## ALPHA 5
 
+###ALPHA 5.1
+
+- Fixes bug in sound code that caused SEVERE lag
+
 ### ALPHA 5
 
 - New Features
