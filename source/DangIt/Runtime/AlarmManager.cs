@@ -6,6 +6,7 @@ using System.Collections.Generic;
 namespace ippo
 {
 	[RequireComponent(typeof(AudioSource))]
+	[KSPAddon(KSPAddon.Startup.Flight, false)]
 	public class AlarmManager : MonoBehaviour
 	{
 		public Dictionary<FailureModule, int> loops;

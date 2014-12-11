@@ -574,12 +574,14 @@ namespace ippo
                                        this.FailureMessage,
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
-						
-					DangIt.Instance.alarmManager.AddAlarm(this,DangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
-					if (DangIt.Instance.alarmManager.HasAlarmsForModule(this))
-					{
-						Events ["MuteAlarms"].active = true;
-						Events ["MuteAlarms"].guiActive = true;
+
+					if (FindObjectOfType<AlarmManager>()!=null){
+						FindObjectOfType<AlarmManager>().AddAlarm(this,DangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
+						if (FindObjectOfType<AlarmManager>().HasAlarmsForModule(this))
+						{
+							Events ["MuteAlarms"].active = true;
+							Events ["MuteAlarms"].guiActive = true;
+						}
 					}
 				}
 
@@ -799,7 +801,9 @@ namespace ippo
 		[KSPEvent(guiActive = false, active = false, guiName="Mute Alarm")]
 		public void MuteAlarms(){
 			print ("Muting alarms for... " + this.ToString ());
-			DangIt.Instance.alarmManager.RemoveAllAlarmsForModule (this);
+			if (FindObjectOfType<AlarmManager> () != null) {
+				FindObjectOfType<AlarmManager> ().RemoveAllAlarmsForModule (this);
+			}
 		}
 
 		public void AlarmsDoneCallback(){ //Called from AlarmManager when no alarms remain

@@ -87,9 +87,6 @@ namespace ippo
         {
             Debug.Log("[DangIt]: Instantiating runtime.");
 
-			Debug.Log ("[DangIt]: Starting Alarm Controller...");
-			this.alarmManager=gameObject.AddComponent<AlarmManager> ();
-
             #region Training costs
 
             /*  The training costs are stored in an xml file instead of a ConfigNode because it allows easy
