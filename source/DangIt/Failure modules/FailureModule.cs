@@ -660,7 +660,9 @@ namespace ippo
                     if (discount > 0)
                     {
                         DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " was able to save " + discount + " spare parts");
-                    }   
+					}
+
+					FindObjectOfType<AlarmManager>().RemoveAllAlarmsForModule(this); //Remove alarms from this module
                 }
 
                 DangIt.ResetShipGlow(this.part.vessel);

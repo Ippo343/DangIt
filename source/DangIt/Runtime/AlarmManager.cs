@@ -27,33 +27,27 @@ namespace ippo
 
 		public void AddAlarm(FailureModule fm, int number)
 		{
-			print ("[DangIt] [AlarmManager] Adding '" + number.ToString () + "' alarms from '"+fm.ToString()+"'");
-			loops.Add (fm, number);
+			if (number != 0) {
+				print ("[DangIt] [AlarmManager] Adding '" + number.ToString () + "' alarms from '" + fm.ToString () + "'");
+				loops.Add (fm, number); //subtract 1 because otherwise we play 1 extra
+			} else {
+				print ("[DangIt] [AlarmManager] No alarms added: Would have added 0 alarms");
+			}
 		}
 
 		public void Update()
 		{
-			if (this.audio != null)
-			{
-				if (!FindObjectsOfType<FailureModule> ().Any (fm => fm.HasFailed))
-				{
-					this.audio.Stop (); //Make sure we arent playing if nothing has failed
-				} else {
-					if (loops.Count > 0)
-					{
+			if (this.audio != null) {
+				if (!this.audio.isPlaying){
+					if (loops.Count > 0) {
 						var element = loops.ElementAt (0);
-						if (element.Value == 0 || !element.Key.HasFailed || element.Key.vessel!=FlightGlobals.ActiveVessel) //If there are no loops remaining, it has been repaired, or it isn't on the vessel anymore:
-						{
-							element.Key.AlarmsDoneCallback ();
-							loops.Remove (element.Key); //Stop playing it
-							print ("[DangIt] [AlarmManager] Removing FM: Remove");
-						}
-						else if (!this.audio.isPlaying)
-						{
-							loops.Remove (element.Key);
-							loops.Add (element.Key, element.Value - 1);
-							print ("[DangIt] [AlarmManager] Playing Clip");
-							audio.Play ();
+						loops.Remove (element.Key);
+						print ("[DangIt] [AlarmManager] Playing Clip");
+						audio.Play ();
+						if (element.Value != 0 && element.Value != 1) {
+							if (element.Key.vessel == FlightGlobals.ActiveVessel) {
+								loops.Add (element.Key, element.Value - 1); //Only re-add if still has alarms
+							}
 						}
 					}
 				}

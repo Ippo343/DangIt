@@ -1,5 +1,8 @@
 ## ALPHA 5
 
+###ALPHA 5.2
+- Optimizes alarm code: I suspect this will be an onging challenge
+
 ###ALPHA 5.1
 
 - Fixes bug in sound code that caused SEVERE lag
