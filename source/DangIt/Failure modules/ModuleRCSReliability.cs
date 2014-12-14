@@ -22,7 +22,7 @@ namespace ippo
         public override bool PartIsActive()
         {
             // A thruster block is active if any of the thrusters is firing
-            return rcsModule.thrustForces.Any(f => f > 0);
+            return rcsModule.thrustForces.Max() > (0.1 * rcsModule.thrusterPower);
         }
 
 
