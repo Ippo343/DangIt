@@ -795,9 +795,9 @@ namespace ippo
         /// <summary>
         /// Reduces the value of the part when it is recovered.
         /// </summary>
-        public float GetModuleCost()
+        public float GetModuleCost(float defaultCost)
         {
-            return (this.ExponentialDecay() - 1) * this.part.partInfo.cost;
+            return (this.ExponentialDecay() - 1) * defaultCost;
         }
 
 		[KSPEvent(guiActive = false, active = false, guiName="Mute Alarm")]

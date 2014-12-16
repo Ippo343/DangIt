@@ -170,8 +170,7 @@ namespace ippo
                         // If any module has failed, glow red and stop searching (just one is sufficient)
                         part.SetHighlightColor(Color.red);
                         part.SetHighlightType(Part.HighlightType.AlwaysOn);
-                        part.SetHighlight(true);
-
+                        part.SetHighlight(true, false);
                         break;
                     }
                 }

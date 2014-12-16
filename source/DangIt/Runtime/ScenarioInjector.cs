@@ -28,7 +28,6 @@ namespace ippo
                 psm = game.AddProtoScenarioModule(typeof(DangIt), GameScenes.EDITOR,
                                                                   GameScenes.FLIGHT,
                                                                   GameScenes.SPACECENTER,
-                                                                  GameScenes.SPH,
                                                                   GameScenes.TRACKSTATION);
             }
             else // make sure the scenario is targeting all the scenes
@@ -38,7 +37,6 @@ namespace ippo
                 SetTargetScene(psm, GameScenes.EDITOR);
                 SetTargetScene(psm, GameScenes.FLIGHT);
                 SetTargetScene(psm, GameScenes.SPACECENTER);
-                SetTargetScene(psm, GameScenes.SPH);
                 SetTargetScene(psm, GameScenes.TRACKSTATION);
             }
         }
