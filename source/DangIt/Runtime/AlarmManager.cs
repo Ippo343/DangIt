@@ -47,7 +47,11 @@ namespace ippo
 						if (element.Value != 0 && element.Value != 1) {
 							if (element.Key.vessel == FlightGlobals.ActiveVessel) {
 								loops.Add (element.Key, element.Value - 1); //Only re-add if still has alarms
+							} else {
+								element.Key.AlarmsDoneCallback ();
 							}
+						} else {
+							element.Key.AlarmsDoneCallback ();
 						}
 					}
 				}
