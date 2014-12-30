@@ -62,7 +62,7 @@ namespace ippo
                       FlightLogger.met_mins.ToString(fmt) + ":" +
                       FlightLogger.met_secs.ToString(fmt));
 
-            sb.Append("] ");
+			sb.Append("]: ");
 
             FlightLogger.eventLog.Add(sb.ToString() + msg);
         }
