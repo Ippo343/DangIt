@@ -85,7 +85,9 @@ namespace ippo
 
             // Add it to the spares container and drain it from the EVA part
             container.RequestResource(Spares.Name, -deposit);
-            evaPart.RequestResource(Spares.Name, deposit);
+            // Once again, MC2 breaks the RequestResource on evaPart, but with the above checks, decrementing should work just fine instead, I think! -TrypChangeling
+            //evaPart.RequestResource(Spares.Name, deposit);
+            evaPart.Resources[Spares.Name].amount -= deposit;
 
             // GUI acknowledge
             try
@@ -116,6 +118,12 @@ namespace ippo
                 evaPart.Resources.Add(node);
             }
 
+            // Override maxAmount set by other mods (such as MC2) causing taking of parts to fail -TrypChangeling
+            if (evaPart.Resources[Spares.Name].maxAmount < Spares.MaxEvaAmount)
+            {
+            	evaPart.Resources[Spares.Name].maxAmount = Spares.MaxEvaAmount;
+            }
+
 
             // Compute how much the kerbal can take
             double desired = Spares.MaxEvaAmount - evaPart.Resources[Spares.Name].amount;
@@ -124,7 +132,9 @@ namespace ippo
 
             // Take it from the container and add it to the EVA
             container.RequestResource(Spares.Name, amountTaken);
-            evaPart.RequestResource(Spares.Name, -amountTaken);
+            // RequestResource is being overridden by MC2 for some reason - however, with above checks, simply incrementing the value should work... I think! - TrypChangeling
+            // evaPart.RequestResource(Spares.Name, -amountTaken);
+            evaPart.Resources[Spares.Name].amount += amountTaken;
 
             // GUI stuff
             DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " has taken " + amountTaken + " spares", false, 1f);
