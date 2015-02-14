@@ -501,7 +501,9 @@ namespace ippo
                 this.Log("Spare parts check: OK! Maintenance allowed allowed");
 
                 // Consume the spare parts
-                evaPart.RequestResource(Spares.Name, this.MaintenanceCost);
+                // MC2 Breaks RequestResource, since amount is checked, simply decrement! Just like in SparesContainer! Whee! -TrypChangeling
+                // evaPart.RequestResource(Spares.Name, this.MaintenanceCost);
+                evaPart.Resources[Spares.Name].amount -= this.MaintenanceCost;
 
                 // Compute the minimum distance between the kerbal's perks and the required perks
                 // The distance is used to scale the maintenance bonus according to the kerbal's skills
@@ -651,7 +653,9 @@ namespace ippo
 
                     this.Log("Kerbal's intelligence: " + intelligence + ", discount: " + discount);
 
-                    evaPart.RequestResource(Spares.Name, discountedCost);
+                    // One more MC2 hack - TrypChangeling
+                    // evaPart.RequestResource(Spares.Name, discountedCost);
+                    evaPart.Resources[Spares.Name].amount -= discountedCost;
                     ResourceDisplay.Instance.Refresh();
 
                     DangIt.Broadcast(this.RepairMessage, true);
