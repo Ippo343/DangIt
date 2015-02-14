@@ -13,6 +13,7 @@ namespace ippo
 		string SoundLoopsString_Low = string.Empty;    // temp variable to edit the Sound Loops in the GUI
 		string SoundLoopsString_Medium = string.Empty;    // temp variable to edit the Sound Loops in the GUI
 		string SoundLoopsString_High = string.Empty;    // temp variable to edit the Sound Loops in the GUI
+		string SoundVolumeString = string.Empty;    // temp variable to edit the Sound Volume
 
         DangIt.Settings newSettings;
 

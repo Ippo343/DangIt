@@ -27,6 +27,8 @@ namespace ippo
 
 		public void AddAlarm(FailureModule fm, int number)
 		{
+			this.audio.volume = DangIt.Instance.CurrentSettings.GetMappedVolume(); //This seems like an OK place for this, because if I put it in the constructor...
+			                                                                       // ...you would have to reboot to change it, but I don't want to add lag by adding it to each frame in Update()
 			if (number != 0) {
 				print ("[DangIt] [AlarmManager] Adding '" + number.ToString () + "' alarms from '" + fm.ToString () + "'");
 				loops.Add (fm, number); //subtract 1 because otherwise we play 1 extra

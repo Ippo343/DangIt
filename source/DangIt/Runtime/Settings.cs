@@ -17,9 +17,10 @@ namespace ippo
             public float MaxDistance = 2f;          // maximum distance for EVA activities
             public bool Messages = true;            // enable messages and screen posts
 			public bool Glow = true;                // enable the part's glow upon failure
-			public int  Pri_Low_SoundLoops = 0;                // number of times to beep
-			public int  Pri_Medium_SoundLoops = 2;                // number of times to beep
-			public int  Pri_High_SoundLoops = -1;                // number of times to beep
+			public int  Pri_Low_SoundLoops = 0;     // number of times to beep
+			public int  Pri_Medium_SoundLoops = 2;  // number of times to beep
+			public int  Pri_High_SoundLoops = -1;   // number of times to beep
+			public int  AlarmVolume = 100;          // volume of the alarm (1-100)       
 
             public Settings() { }
 
@@ -39,6 +40,11 @@ namespace ippo
 				return 0;
 			}
 
+			public float GetMappedVolume()
+			{
+				return ((float)this.AlarmVolume / 100f);
+			}
+				
             public Settings(ConfigNode node)
             {
                 if (node != null && node.name == "SETTINGS")
@@ -50,6 +56,7 @@ namespace ippo
 					Pri_Low_SoundLoops = DangIt.Parse<int>(node.GetValue("Pri_Low_Loops"), 0);
 					Pri_Medium_SoundLoops = DangIt.Parse<int>(node.GetValue("Pri_Medium_Loops"), 0);
 					Pri_High_SoundLoops = DangIt.Parse<int>(node.GetValue("Pri_High_Loops"), 0);
+					AlarmVolume = DangIt.Parse<int>(node.GetValue("AlarmVolume"), 100);
                 }
                 else
                     throw new Exception("Invalid node!");
@@ -70,6 +77,7 @@ namespace ippo
 				result.AddValue("Pri_Medium_Loops", Pri_Medium_SoundLoops.ToString());
 				result.AddValue("Pri_High_Loops", Pri_High_SoundLoops.ToString());
 
+				result.AddValue("AlamVolume", AlarmVolume.ToString());
 
                 return result;
             }
