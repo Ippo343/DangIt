@@ -31,7 +31,7 @@ namespace ippo
 			                                                                       // ...you would have to reboot to change it, but I don't want to add lag by adding it to each frame in Update()
 			if (number != 0) {
 				print ("[DangIt] [AlarmManager] Adding '" + number.ToString () + "' alarms from '" + fm.ToString () + "'");
-				loops.Add (fm, number); //subtract 1 because otherwise we play 1 extra
+				loops.Add (fm, number);
 			} else {
 				print ("[DangIt] [AlarmManager] No alarms added: Would have added 0 alarms");
 			}
