@@ -61,10 +61,15 @@ namespace ippo
             newSettings.Glow = GUILayout.Toggle(newSettings.Glow, "Glow");
 			newSettings.Messages = GUILayout.Toggle(newSettings.Messages, "Messages");
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Max EVA distance: ");
-            evaDistanceString = GUILayout.TextField(evaDistanceString);
-            GUILayout.EndHorizontal();
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("Max EVA distance: ");
+			evaDistanceString = GUILayout.TextField(evaDistanceString);
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("Alarm Volume (0-100): ");
+			SoundVolumeString = GUILayout.TextField(SoundVolumeString);
+			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("# Times to beep for Priorities (-1=>Inf) of Failures");
@@ -93,6 +98,9 @@ namespace ippo
 				this.newSettings.Pri_Low_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Low, defaultTo: 0);
 				this.newSettings.Pri_Medium_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Medium, defaultTo: 2);
 				this.newSettings.Pri_High_SoundLoops = DangIt.Parse<int>(SoundLoopsString_High, defaultTo: -1);
+				int av = DangIt.Parse<int>(SoundVolumeString, defaultTo: 100);
+				av = (av < 0) ? 0 : (av > 100) ? 100 : av;  //This clamps it between 0 and 100
+				this.newSettings.AlarmVolume = av;
                 DangIt.Instance.CurrentSettings = this.newSettings;
             }
 
