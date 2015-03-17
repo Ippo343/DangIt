@@ -25,6 +25,12 @@ namespace ippo
 			this.loops=new Dictionary<FailureModule, int>(); //Reset counter, so on logic pass we play it
 		}
 
+		public void UpdateSettings(){
+			float scaledVolume = DangIt.Instance.CurrentSettings.AlarmVolume / 100f;
+			print ("[DangIt] [AlarmManager] Rescaling Volume (at UpdateSettings queue)..., now at " + scaledVolume);
+			this.audio.volume = scaledVolume;
+		}
+
 		public void AddAlarm(FailureModule fm, int number)
 		{
 			this.audio.volume = DangIt.Instance.CurrentSettings.GetMappedVolume(); //This seems like an OK place for this, because if I put it in the constructor...

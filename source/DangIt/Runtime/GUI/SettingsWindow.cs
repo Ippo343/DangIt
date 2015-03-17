@@ -27,16 +27,19 @@ namespace ippo
                 enabled = value;
                 if (value) // Copy the current settings when the window is enabled
                 {
-                    this.newSettings = DangIt.Instance.CurrentSettings.ShallowClone();
-					this.evaDistanceString = newSettings.MaxDistance.ToString();
-					this.SoundLoopsString_Low = newSettings.Pri_Low_SoundLoops.ToString();
-					this.SoundLoopsString_Medium = newSettings.Pri_Medium_SoundLoops.ToString();
-					this.SoundLoopsString_High = newSettings.Pri_High_SoundLoops.ToString();
+					ReInitilize ();
                 }
             }
         }
 
-
+		private void ReInitilize(){
+			this.newSettings = DangIt.Instance.CurrentSettings.ShallowClone();
+			this.evaDistanceString = newSettings.MaxDistance.ToString();
+			this.SoundLoopsString_Low = newSettings.Pri_Low_SoundLoops.ToString();
+			this.SoundLoopsString_Medium = newSettings.Pri_Medium_SoundLoops.ToString();
+			this.SoundLoopsString_High = newSettings.Pri_High_SoundLoops.ToString();
+			this.SoundVolumeString = newSettings.AlarmVolume.ToString ();
+		}
 
         public void Draw()
         {
@@ -99,9 +102,15 @@ namespace ippo
 				this.newSettings.Pri_Medium_SoundLoops = DangIt.Parse<int>(SoundLoopsString_Medium, defaultTo: 2);
 				this.newSettings.Pri_High_SoundLoops = DangIt.Parse<int>(SoundLoopsString_High, defaultTo: -1);
 				int av = DangIt.Parse<int>(SoundVolumeString, defaultTo: 100);
-				av = (av < 0) ? 0 : (av > 100) ? 100 : av;  //This clamps it between 0 and 100
+				//av = (av < 0) ? 0 : (av > 100) ? 100 : av;  //This clamps it between 0 and 100 (or not)
+				if (av < 1) {
+					av = 1;
+				} else if (av > 100) {
+					av = 100;
+				}
 				this.newSettings.AlarmVolume = av;
                 DangIt.Instance.CurrentSettings = this.newSettings;
+				ReInitilize ();
             }
 
             // This call allows the user to drag the window around the screen

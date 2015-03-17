@@ -68,6 +68,9 @@ namespace ippo
             {
                 this.Log("Applying new settings:\n" + value.ToNode().ToString());
                 currentSettings = value;
+				if (FindObjectOfType<AlarmManager> () != null) {
+					FindObjectOfType<AlarmManager> ().UpdateSettings ();
+				}
             }
         }
         

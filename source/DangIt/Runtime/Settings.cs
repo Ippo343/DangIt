@@ -77,7 +77,7 @@ namespace ippo
 				result.AddValue("Pri_Medium_Loops", Pri_Medium_SoundLoops.ToString());
 				result.AddValue("Pri_High_Loops", Pri_High_SoundLoops.ToString());
 
-				result.AddValue("AlamVolume", AlarmVolume.ToString());
+				result.AddValue("AlarmVolume", AlarmVolume.ToString());
 
                 return result;
             }
