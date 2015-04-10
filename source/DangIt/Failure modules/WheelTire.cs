@@ -12,12 +12,12 @@ namespace ippo
 
 		public override string DebugName { get { return "DangItWheel_Tire"; } }
 		public override string ScreenName { get { return "Tire"; } }
-		public override string FailureMessage { get { return "A motor burned out!"; } }
+		public override string FailureMessage { get { return "A tire popped!"; } }
 		public override string RepairMessage { get { return "Tire replaced."; } }
 		public override string FailGuiName { get { return "Pop tire"; } }
 		public override string EvaRepairGuiName { get { return "Replace tire"; } }
 		public override string MaintenanceString { get { return "Clean and Fill Tire"; } }
-		public override string ExtraEditorInfo{ get { return "This part's tire can pop out if it fails"; } }
+		public override string ExtraEditorInfo{ get { return "This part's tire can pop if it fails"; } }
 
 
 		public override bool PartIsActive()
@@ -31,6 +31,9 @@ namespace ippo
 			if (HighLogic.LoadedSceneIsFlight)
 			{
 				this.wheel = this.part.Modules.OfType<ModuleWheel>().Single();
+			}
+			if (!this.wheel.damageable) {
+				this.enabled = false;
 			}
 		}
 
@@ -60,7 +63,7 @@ namespace ippo
 
 		protected override void DI_EvaRepair()
 		{
-			this.wheel.wheels [0].repairWheel ();
+			this.wheel.wheels[0].repairWheel ();
 		}
 
 	}
