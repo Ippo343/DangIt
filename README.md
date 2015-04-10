@@ -1,7 +1,7 @@
 # DANG IT!
 *A Random Failures Mod for Kerbal Space Program*
 
-Poorly cobbled together by Ippo (m.ippolito@outlook.com)
+Nicely cobbled together by Ippo (m.ippolito@outlook.com)
 and rescued from oblivion by 602p: contact me on the KSP forums at Coffeeman or at <louis@goessling.com>
 
 Please note that this mod is still (deep) in *Alpha*. Bugs might happen (even nasty ones), and future updates might be incompatible with previous versions, at any time.
