@@ -32,7 +32,7 @@ namespace ippo
             }
         }
 
-		private void ReInitilize(){
+		private void ReInitilize(){ //Set our string data mirrors at start, and when we change settings
 			this.newSettings = DangIt.Instance.CurrentSettings.ShallowClone();
 			this.evaDistanceString = newSettings.MaxDistance.ToString();
 			this.SoundLoopsString_Low = newSettings.Pri_Low_SoundLoops.ToString();
@@ -110,7 +110,7 @@ namespace ippo
 				}
 				this.newSettings.AlarmVolume = av;
                 DangIt.Instance.CurrentSettings = this.newSettings;
-				ReInitilize ();
+				ReInitilize (); //Reinit string data in case you entered a invalid value (or went over cap in volume)
             }
 
             // This call allows the user to drag the window around the screen
