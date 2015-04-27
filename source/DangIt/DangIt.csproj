@@ -36,9 +36,6 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\References\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="CrewFilesInterface">
-      <HintPath>..\References\CrewFilesInterface.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,14 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\DangIt.version" />
-    <Compile Include="Perks\PerksExtensions.cs" />
-    <Compile Include="Perks\ProtoCrewMemberExtensions.cs" />
-    <Compile Include="Perks\Skills.cs" />
-    <Compile Include="Perks\TrainingCost.cs" />
     <Compile Include="API\API.cs" />
     <Compile Include="API\DangItHook.cs" />
     <Compile Include="Runtime\AlarmManager.cs" />
-    <Compile Include="Runtime\GUI\RosterWindow.cs" />
     <Compile Include="Runtime\GUI\SettingsWindow.cs" />
     <Compile Include="Runtime\ScenarioInjector.cs" />
     <Compile Include="Runtime\GUI\GUI.cs" />
@@ -75,8 +67,6 @@
     <Compile Include="Failure modules\ModuleRCSReliability.cs" />
     <Compile Include="Maintenance\InspectionModule.cs" />
     <Compile Include="Maintenance\ModuleReliabilityInfo.cs" />
-    <Compile Include="Perks\Generator.cs" />
-    <Compile Include="Perks\Perk.cs" />
     <Compile Include="Runtime\Settings.cs" />
     <Compile Include="Runtime\SparesInfo.cs" />
     <Compile Include="Runtime\Static.cs" />

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using CrewFilesInterface;
 
 namespace ippo
 {
@@ -41,14 +40,14 @@ namespace ippo
             if (this.HasFailed)
                 return "the part has failed!";
 
-
-            // The same perks that are needed for repair are also needed to inspect the element
-            Part evaPart = DangIt.FindEVAPart();
-            if (evaPart != null)
-            {
-                if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
-                    return evaPart.protoModuleCrew[0].name + " isn't quite sure about this...";
-            }
+            //TODO: engineer level
+            //// The same perks that are needed for repair are also needed to inspect the element
+            //Part evaPart = DangIt.FindEVAPart();
+            //if (evaPart != null)
+            //{
+            //    if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
+            //        return evaPart.protoModuleCrew[0].name + " isn't quite sure about this...";
+            //}
 
 
             // Perks check out, return a message based on the age
@@ -91,10 +90,11 @@ namespace ippo
         #endregion
 
 
+        //TODO: replace with engineer level
         /// <summary>
         /// List of perks that are necessary to repair the component
         /// </summary>
-        public List<Perk> PerkRequirements = new List<Perk>();
+        //public List<Perk> PerkRequirements = new List<Perk>();
 
 
         #region Fields from the cfg file
@@ -293,16 +293,17 @@ namespace ippo
                 this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
                 this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
-                // Load the required perks, if any        
-                if (node.HasNode(PerkGenerator.NodeName))
-                {
-                    ConfigNode perksNode = node.GetNode(PerkGenerator.NodeName);
-                    this.PerkRequirements = perksNode.ToPerks();
-                }
-                else
-                {
-                    this.PerkRequirements = new List<Perk>();
-                }
+                //TODO: reimplement with engineer level
+                //// Load the required perks, if any        
+                //if (node.HasNode(PerkGenerator.NodeName))
+                //{
+                //    ConfigNode perksNode = node.GetNode(PerkGenerator.NodeName);
+                //    this.PerkRequirements = perksNode.ToPerks();
+                //}
+                //else
+                //{
+                //    this.PerkRequirements = new List<Perk>();
+                //}
 
                 // Run the subclass' custom onload
                 this.DI_OnLoad(node);
@@ -311,10 +312,6 @@ namespace ippo
                 // so that modules can be rescanned
                 if (HighLogic.LoadedSceneIsFlight)
                     this.DI_Start(StartState.Flying);
-
-#if DEBUG
-                this.Log("OnLoad complete: loaded " + PerkRequirements.Count + " perks."); 
-#endif
 
                 base.OnLoad(node);
 
@@ -345,16 +342,17 @@ namespace ippo
                 node.SetValue("LifeTimeSecs", LifeTimeSecs.ToString());
                 node.SetValue("HasFailed", HasFailed.ToString());
 
-                // Save the perks
-                if (this.PerkRequirements.Count > 0)
-                {
-                    ConfigNode perksNode = this.PerkRequirements.ToNode();
+                //TODO: reimplement with engineer level
+                //// Save the perks
+                //if (this.PerkRequirements.Count > 0)
+                //{
+                //    ConfigNode perksNode = this.PerkRequirements.ToNode();
 
-                    if (node.HasNode(perksNode.name))
-                        node.SetNode(perksNode.name, perksNode);
-                    else
-                        node.AddNode(perksNode);
-                }                
+                //    if (node.HasNode(perksNode.name))
+                //        node.SetNode(perksNode.name, perksNode);
+                //    else
+                //        node.AddNode(perksNode);
+                //}                
 
                 // Run the subclass' custom onsave
                 this.DI_OnSave(node);
@@ -486,13 +484,13 @@ namespace ippo
                 throw new Exception("ERROR: couldn't find an active EVA!");
             }
 
-
-            // You need the right perks to perform maintenance
-            if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
-            {
-                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " isn't really qualified for this...", true);
-                return;
-            }
+            //TODO: engineer level
+            //// You need the right perks to perform maintenance
+            //if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
+            //{
+            //    DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " isn't really qualified for this...", true);
+            //    return;
+            //}
 
 
             // Check if he is carrying enough spares
@@ -505,27 +503,24 @@ namespace ippo
                 // evaPart.RequestResource(Spares.Name, this.MaintenanceCost);
                 evaPart.Resources[Spares.Name].amount -= this.MaintenanceCost;
 
-                // Compute the minimum distance between the kerbal's perks and the required perks
-                // The distance is used to scale the maintenance bonus according to the kerbal's skills
-                int perksDistance = 0;
-                try
-                {
-                    perksDistance = evaPart.protoModuleCrew[0].GetPerks().MinDistance(this.PerkRequirements);
-                }
-                catch (Exception e)
-                {
-                    this.LogException(e);
-                    perksDistance = 0;
-                }
+                //TODO: engineer level
+                //// Compute the minimum distance between the kerbal's perks and the required perks
+                //// The distance is used to scale the maintenance bonus according to the kerbal's skills
+                //int perksDistance = 0;
+                //try
+                //{
+                //    perksDistance = evaPart.protoModuleCrew[0].GetPerks().MinDistance(this.PerkRequirements);
+                //}
+                //catch (Exception e)
+                //{
+                //    this.LogException(e);
+                //    perksDistance = 0;
+                //}
 
-#if DEBUG
-                this.Log("Perk distance is " + perksDistance);
-#endif
-
-                // The higher the skill gap, the higher the maintenance bonus is
-                // The + 1 is there to makes it so that a maintenance bonus is always gained even when the perks match exactly
-                // It also allows Skilled kerbals to obtain 130% of the bonus when repairing an Untrained item
-                this.DiscountAge(this.MaintenanceBonus * ( (perksDistance + 1) / 3));
+                //// The higher the skill gap, the higher the maintenance bonus is
+                //// The + 1 is there to makes it so that a maintenance bonus is always gained even when the perks match exactly
+                //// It also allows Skilled kerbals to obtain 130% of the bonus when repairing an Untrained item
+                //this.DiscountAge(this.MaintenanceBonus * ( (perksDistance + 1) / 3));
 
                 DangIt.Broadcast("This should last a little longer now");
             }
@@ -708,23 +703,24 @@ namespace ippo
             } 
             #endregion
 
-            #region Perks
+            //TODO: engineer level
+            //#region Perks
 
-            if (CrewFilesManager.IsReady)
-            {
-                if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
-                {
-                    allow = false;
-                    reason = "perks don't match requirements";
-                    DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
-                }
-            }
-            else
-            {
-                this.Log("WARNING: CrewFiles is not available!");
-            } 
+            //if (CrewFilesManager.IsReady)
+            //{
+            //    if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
+            //    {
+            //        allow = false;
+            //        reason = "perks don't match requirements";
+            //        DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
+            //    }
+            //}
+            //else
+            //{
+            //    this.Log("WARNING: CrewFiles is not available!");
+            //} 
 
-            #endregion
+            //#endregion
 
 
             if (allow)
@@ -736,13 +732,14 @@ namespace ippo
         }
 
 
-        /// <summary>
-        /// Checks if a kerbal has the required perks to interact with this module
-        /// </summary>
-        bool CheckOutPerks(ProtoCrewMember kerbal)
-        {
-            return Perk.MeetsRequirement(this.PerkRequirements, kerbal.GetPerks());
-        }
+        //TODO: engineer level
+        ///// <summary>
+        ///// Checks if a kerbal has the required perks to interact with this module
+        ///// </summary>
+        //bool CheckOutPerks(ProtoCrewMember kerbal)
+        //{
+        //    return Perk.MeetsRequirement(this.PerkRequirements, kerbal.GetPerks());
+        //}
 
 
         /// <summary>

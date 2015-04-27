@@ -49,8 +49,9 @@ namespace ippo
             // Disable the gimbal module
             this.gimbalModule.enabled = false;
 
-            this.gimbalModule.LockGimbal();
-            this.gimbalModule.Events["FreeGimbal"].active = false; 
+            //TODO: API has changed, this does not compile
+            //this.gimbalModule.LockGimbal();
+            //this.gimbalModule.Events["FreeGimbal"].active = false; 
         }
 
 
@@ -58,7 +59,8 @@ namespace ippo
         {
             // Restore the gimbaling module
             this.gimbalModule.enabled = true;
-            this.gimbalModule.FreeGimbal();
+            //TODO: API has changed, does not compile
+            //this.gimbalModule.FreeGimbal();
             this.gimbalModule.Events["LockGimbal"].active = true; 
         }
 
