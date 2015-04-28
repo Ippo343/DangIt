@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Experience;
 
 namespace ippo
 {
@@ -16,6 +17,10 @@ namespace ippo
     /// </summary>
     public abstract class FailureModule : PartModule, IPartCostModifier
     {
+        /// <summary>
+        /// Name of the config node with the experience requirements
+        /// </summary>
+        private readonly string expNodeName = "EXPERIENCE";
 
         #region Custom strings
 
@@ -40,16 +45,14 @@ namespace ippo
             if (this.HasFailed)
                 return "the part has failed!";
 
-            //TODO: engineer level
-            //// The same perks that are needed for repair are also needed to inspect the element
-            //Part evaPart = DangIt.FindEVAPart();
-            //if (evaPart != null)
-            //{
-            //    if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
-            //        return evaPart.protoModuleCrew[0].name + " isn't quite sure about this...";
-            //}
-
-
+            // The same experience that is needed for repair is also needed to inspect the element
+            Part evaPart = DangIt.FindEVAPart();
+            if (evaPart != null)
+            {
+                if (!CheckOutExperience(evaPart.protoModuleCrew[0]))
+                    return evaPart.protoModuleCrew[0].name + " isn't quite sure about this...";
+            }
+            
             // Perks check out, return a message based on the age
             float ratio = this.Age / this.LifeTimeSecs;
 
@@ -90,11 +93,12 @@ namespace ippo
         #endregion
 
 
-        //TODO: replace with engineer level
         /// <summary>
-        /// List of perks that are necessary to repair the component
+        /// Skill required to service the component.
+        /// The key is the name of the experience trait,
+        /// the int value is the required level.
         /// </summary>
-        //public List<Perk> PerkRequirements = new List<Perk>();
+        public KeyValuePair<string, int> ExperienceRequirements = new KeyValuePair<string, int>(string.Empty, 0);
 
 
         #region Fields from the cfg file
@@ -293,17 +297,19 @@ namespace ippo
                 this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
                 this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
-                //TODO: reimplement with engineer level
-                //// Load the required perks, if any        
-                //if (node.HasNode(PerkGenerator.NodeName))
-                //{
-                //    ConfigNode perksNode = node.GetNode(PerkGenerator.NodeName);
-                //    this.PerkRequirements = perksNode.ToPerks();
-                //}
-                //else
-                //{
-                //    this.PerkRequirements = new List<Perk>();
-                //}
+                // Load the required experience, if any        
+                if (node.HasNode(expNodeName))
+                {
+                    ConfigNode perksNode = node.GetNode(expNodeName);
+                    string name = perksNode.GetValue("name");
+                    int level = DangIt.Parse<int>(perksNode.GetValue("level"), 0);
+
+                    this.ExperienceRequirements = new KeyValuePair<string, int>(name, level);
+                }
+                else
+                {
+                    this.ExperienceRequirements = new KeyValuePair<string, int>(string.Empty, 0);
+                }
 
                 // Run the subclass' custom onload
                 this.DI_OnLoad(node);
@@ -342,17 +348,16 @@ namespace ippo
                 node.SetValue("LifeTimeSecs", LifeTimeSecs.ToString());
                 node.SetValue("HasFailed", HasFailed.ToString());
 
-                //TODO: reimplement with engineer level
-                //// Save the perks
-                //if (this.PerkRequirements.Count > 0)
-                //{
-                //    ConfigNode perksNode = this.PerkRequirements.ToNode();
+                // Save the experience level
+                if (!string.IsNullOrEmpty(this.ExperienceRequirements.Key))
+                {
+                    ConfigNode perksNode = this.ExperienceToNode(this.ExperienceRequirements);
 
-                //    if (node.HasNode(perksNode.name))
-                //        node.SetNode(perksNode.name, perksNode);
-                //    else
-                //        node.AddNode(perksNode);
-                //}                
+                    if (node.HasNode(perksNode.name))
+                        node.SetNode(perksNode.name, perksNode);
+                    else
+                        node.AddNode(perksNode);
+                }                
 
                 // Run the subclass' custom onsave
                 this.DI_OnSave(node);
@@ -363,6 +368,16 @@ namespace ippo
             {
                 this.OnError(e);
             }
+        }
+
+        private ConfigNode ExperienceToNode(KeyValuePair<string, int> keyValuePair)
+        {
+            ConfigNode node = new ConfigNode(expNodeName);
+
+            node.AddValue("name", keyValuePair.Key);
+            node.AddValue("level", keyValuePair.Value);
+
+            return node;
         }
 
 
@@ -484,13 +499,11 @@ namespace ippo
                 throw new Exception("ERROR: couldn't find an active EVA!");
             }
 
-            //TODO: engineer level
-            //// You need the right perks to perform maintenance
-            //if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
-            //{
-            //    DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " isn't really qualified for this...", true);
-            //    return;
-            //}
+            if (!CheckOutExperience(evaPart.protoModuleCrew[0]))
+            {
+                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " isn't really qualified for this...", true);
+                return;
+            }
 
 
             // Check if he is carrying enough spares
@@ -503,24 +516,12 @@ namespace ippo
                 // evaPart.RequestResource(Spares.Name, this.MaintenanceCost);
                 evaPart.Resources[Spares.Name].amount -= this.MaintenanceCost;
 
-                //TODO: engineer level
-                //// Compute the minimum distance between the kerbal's perks and the required perks
-                //// The distance is used to scale the maintenance bonus according to the kerbal's skills
-                //int perksDistance = 0;
-                //try
-                //{
-                //    perksDistance = evaPart.protoModuleCrew[0].GetPerks().MinDistance(this.PerkRequirements);
-                //}
-                //catch (Exception e)
-                //{
-                //    this.LogException(e);
-                //    perksDistance = 0;
-                //}
+                // Distance between the kerbal's perks and the required perks, used to scale the maintenance bonus according to the kerbal's skills
+                int expDistance = evaPart.protoModuleCrew[0].experienceLevel - this.ExperienceRequirements.Value;             
 
-                //// The higher the skill gap, the higher the maintenance bonus is
+                //// The higher the skill gap, the higher the maintenance bonus
                 //// The + 1 is there to makes it so that a maintenance bonus is always gained even when the perks match exactly
-                //// It also allows Skilled kerbals to obtain 130% of the bonus when repairing an Untrained item
-                //this.DiscountAge(this.MaintenanceBonus * ( (perksDistance + 1) / 3));
+                this.DiscountAge(this.MaintenanceBonus * ( (expDistance + 1) / 3));
 
                 DangIt.Broadcast("This should last a little longer now");
             }
@@ -641,7 +642,7 @@ namespace ippo
 
                     DangIt.FlightLog(this.RepairMessage);
 
-                    //TODO: perks repair boni
+                    //TODO: experience repair boni
                     float intelligence = 1 - evaPart.protoModuleCrew[0].stupidity;
                     float discountedCost = (float)Math.Round( RepairCost * (1 - UnityEngine.Random.Range(0f, intelligence)) );
                     float discount = RepairCost - discountedCost;
@@ -703,24 +704,13 @@ namespace ippo
             } 
             #endregion
 
-            //TODO: engineer level
-            //#region Perks
 
-            //if (CrewFilesManager.IsReady)
-            //{
-            //    if (!CheckOutPerks(evaPart.protoModuleCrew[0]))
-            //    {
-            //        allow = false;
-            //        reason = "perks don't match requirements";
-            //        DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
-            //    }
-            //}
-            //else
-            //{
-            //    this.Log("WARNING: CrewFiles is not available!");
-            //} 
-
-            //#endregion
+            if (!CheckOutExperience(evaPart.protoModuleCrew[0]))
+            {
+                allow = false;
+                reason = "perks don't match requirements";
+                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
+            }
 
 
             if (allow)
@@ -732,14 +722,15 @@ namespace ippo
         }
 
 
-        //TODO: engineer level
-        ///// <summary>
-        ///// Checks if a kerbal has the required perks to interact with this module
-        ///// </summary>
-        //bool CheckOutPerks(ProtoCrewMember kerbal)
-        //{
-        //    return Perk.MeetsRequirement(this.PerkRequirements, kerbal.GetPerks());
-        //}
+        /// <summary>
+        /// Checks if a kerbal has the required experience to interact with this module
+        /// </summary>
+        bool CheckOutExperience(ProtoCrewMember kerbal)
+        {
+            // Haskell made me fond of unreadable one-line functional expressions.
+            return string.IsNullOrEmpty(this.ExperienceRequirements.Key)                  // empty string means no restrictions
+                   || ((kerbal.experienceTrait.TypeName == this.ExperienceRequirements.Key) && (kerbal.experienceLevel >= this.ExperienceRequirements.Value));
+        }
 
 
         /// <summary>

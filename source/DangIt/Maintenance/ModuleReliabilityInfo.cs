@@ -41,16 +41,17 @@ namespace ippo
 					sb.AppendLine (" - Repair cost: " + fm.RepairCost);
 					sb.AppendLine (" - Priority: " + fm.Priority);
 
-                    //TODO: replace with engineer level
-                    //if (fm.PerkRequirements != null && fm.PerkRequirements.Count > 0) {
-                    //    sb.AppendLine ("Servicing:");
-                    //    foreach (Perk p in fm.PerkRequirements)
-                    //        sb.AppendLine (" - " + p.ToString ());
-                    //}
-
 					if (fm.ExtraEditorInfo != "") {
-						sb.AppendLine (" - "+fm.ExtraEditorInfo); //Append any extra info the module wants to add
+						sb.AppendLine (" - " + fm.ExtraEditorInfo); //Append any extra info the module wants to add
 					}
+
+                    if (!string.IsNullOrEmpty(fm.ExperienceRequirements.Key))
+                    {
+                        sb.AppendLine(string.Format(
+                            "Servicing requires a level {0} {1}",
+                            fm.ExperienceRequirements.Value,
+                            fm.ExperienceRequirements.Key));
+                    }
 
 					sb.AppendLine ();
                 }
