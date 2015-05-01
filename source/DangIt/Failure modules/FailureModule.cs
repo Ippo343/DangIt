@@ -696,7 +696,7 @@ namespace ippo
             #endregion
 
             #region Part temperature
-            if (this.part.temperature > 100)
+            if (this.part.temperature > 400) // KSP's temperatures appear to be in kelvin now
             {
                 allow = false;
                 reason = "part is too hot (" + part.temperature.ToString() + " degrees)";
