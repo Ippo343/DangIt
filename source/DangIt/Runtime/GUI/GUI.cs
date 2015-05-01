@@ -28,9 +28,7 @@ namespace ippo
 
             try
             {
-                if (HighLogic.LoadedScene == GameScenes.SPACECENTER ||
-                    HighLogic.LoadedSceneIsEditor ||
-                    HighLogic.LoadedSceneIsFlight)
+                if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                 {
                     // Load the icon for the button
                     Texture btnTex = GameDatabase.Instance.GetTexture("DangIt/Textures/appBtn", false);
