@@ -52,8 +52,6 @@ namespace ippo
             |    BEGIN IMPLEMENTATION-SPECIFIC EDITS HERE.    |
             \*-----------------------------------------------*/
 
-            // TODO: Implement your own compatibility check.
-            //
             // If you want to disable some behavior when incompatible, other parts of the plugin
             // should query this method:
             //
@@ -77,8 +75,6 @@ namespace ippo
             |    BEGIN IMPLEMENTATION-SPECIFIC EDITS HERE.    |
             \*-----------------------------------------------*/
 
-            // TODO: Implement your own Unity compatibility check.
-            //
             return true;
 
             /*-----------------------------------------------*\
