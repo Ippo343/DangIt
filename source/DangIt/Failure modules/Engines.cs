@@ -22,12 +22,10 @@ namespace ippo
 
         protected override float LambdaMultiplier()
         {
-            // The engines are rated to work around 50% throttle
-            // The multiplier is parabolic with a 25% increase at the extremes and
-            // a 25% decrease at 50% throttle
-            // TODO: find a better function for this
+            // Engines are designed to operate at max throttle
+            // this introduces a heavy penalty for low throttle values
             float x = this.engines.CurrentThrottle;
-            return (2*x*x - 2*x + 1.25f);
+            return (5 - x);
         }
 
 
