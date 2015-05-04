@@ -8,7 +8,11 @@ namespace ippo
 {
     public class ModuleEngineReliability : FailureModule
     {
-        EngineManager engines;
+		EngineManager engines;
+		ModuleSurfaceFX surfaceFX;
+
+		[KSPField(isPersistant = true, guiActive = false)]
+		float oldSurfaceFXMaxDistance = -1f;
 
         public override string DebugName { get { return "DangItEngines"; } }
         public override string ScreenName { get { return "Engine"; } }
@@ -41,6 +45,10 @@ namespace ippo
             {
                 // An engine might actually be two engine modules (e.g: SABREs)
                 this.engines = new EngineManager(this.part);
+				// Catch if the part has a ModuleSurfaceFX
+				if (this.part.Modules.OfType<ModuleSurfaceFX> ().Any ()) {
+					surfaceFX = this.part.Modules.OfType<ModuleSurfaceFX>().Single();
+				}
             }
         }
 
@@ -54,11 +62,18 @@ namespace ippo
         protected override void DI_Disable()
         {
             this.engines.Disable();
+			if (this.surfaceFX){ // If we have a ModuleSurfaceFX, cache it's old max distance and set it to -1 to block its firing
+				this.oldSurfaceFXMaxDistance = this.surfaceFX.maxDistance;
+				this.surfaceFX.maxDistance = -1;
+			}
         }
 
         protected override void DI_EvaRepair()
         {
             this.engines.Enable();
+			if (this.surfaceFX) { // Reenable FX
+				this.surfaceFX.maxDistance = this.oldSurfaceFXMaxDistance;
+			}
         }
 
     }
