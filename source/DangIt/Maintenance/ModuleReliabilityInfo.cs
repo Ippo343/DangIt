@@ -48,7 +48,7 @@ namespace ippo
                     if (!string.IsNullOrEmpty(fm.ExperienceRequirements.Key))
                     {
                         sb.AppendLine(string.Format(
-                            "Servicing requires a level {0} {1}",
+							" - Servicing requires a level {0} {1}",
                             fm.ExperienceRequirements.Value,
                             fm.ExperienceRequirements.Key));
                     }
