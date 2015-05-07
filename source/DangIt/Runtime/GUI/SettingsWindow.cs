@@ -61,7 +61,8 @@ namespace ippo
         {
             // Display the toggles and controls to read the new settings
             newSettings.ManualFailures = GUILayout.Toggle(newSettings.ManualFailures, "Manual failures");
-            newSettings.Glow = GUILayout.Toggle(newSettings.Glow, "Glow");
+			newSettings.Glow = GUILayout.Toggle(newSettings.Glow, "Glow");
+			newSettings.RequireExperience = GUILayout.Toggle(newSettings.RequireExperience, "Check Experience");
 			newSettings.Messages = GUILayout.Toggle(newSettings.Messages, "Messages");
 
 			GUILayout.BeginHorizontal();

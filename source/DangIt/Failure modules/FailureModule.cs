@@ -692,7 +692,7 @@ namespace ippo
 			this.Log ("this.PerksRequirementValue      = " + this.PerksRequirementValue);
 			this.Log ("kerbal.experienceTrait.TypeName = " + kerbal.experienceTrait.TypeName);
 			this.Log ("kerbal.experienceLevel          = " + kerbal.experienceLevel);
-			return string.IsNullOrEmpty(this.PerksRequirementName)                  // empty string means no restrictions
+			return !DangIt.Instance.CurrentSettings.RequireExperience || string.IsNullOrEmpty(this.PerksRequirementName)                  // empty string means no restrictions
 				|| ((kerbal.experienceTrait.TypeName == this.PerksRequirementName) && (kerbal.experienceLevel >= this.PerksRequirementValue));
         }
 
