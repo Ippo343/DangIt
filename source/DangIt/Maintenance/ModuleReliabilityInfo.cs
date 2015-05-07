@@ -45,12 +45,12 @@ namespace ippo
 						sb.AppendLine (" - " + fm.ExtraEditorInfo); //Append any extra info the module wants to add
 					}
 
-                    if (!string.IsNullOrEmpty(fm.ExperienceRequirements.Key))
+					if (!string.IsNullOrEmpty(fm.PerksRequirementName))
                     {
                         sb.AppendLine(string.Format(
 							" - Servicing requires a level {0} {1}",
-                            fm.ExperienceRequirements.Value,
-                            fm.ExperienceRequirements.Key));
+							fm.PerksRequirementValue,
+							fm.PerksRequirementName));
                     }
 
 					sb.AppendLine ();

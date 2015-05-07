@@ -17,10 +17,6 @@ namespace ippo
     /// </summary>
     public abstract class FailureModule : PartModule, IPartCostModifier
     {
-        /// <summary>
-        /// Name of the config node with the experience requirements
-        /// </summary>
-        private readonly string expNodeName = "EXPERIENCE";
 
         #region Custom strings
 
@@ -93,14 +89,6 @@ namespace ippo
         #endregion
 
 
-        /// <summary>
-        /// Skill required to service the component.
-        /// The key is the name of the experience trait,
-        /// the int value is the required level.
-        /// </summary>
-        public KeyValuePair<string, int> ExperienceRequirements = new KeyValuePair<string, int>(string.Empty, 0);
-
-
         #region Fields from the cfg file
 
         [KSPField(isPersistant = true, guiActive = false)]
@@ -128,7 +116,13 @@ namespace ippo
         public bool Silent = false;                                 // If this flag is true, no message is displayed when failing
 
 		[KSPField(isPersistant = true, guiActive = false)]
-		public string Priority = "MEDIUM";
+		public string Priority = "MEDIUM";							// Priority of the failure as string. Used for beeping
+
+		[KSPField(isPersistant = true, guiActive = false)]
+		public string PerksRequirementName = "";					// Trait name required to fix this part. "" = Any
+
+		[KSPField(isPersistant = true, guiActive = false)]
+		public int PerksRequirementValue = 0;						// Skill level required to fix this part.
 
         #endregion
 
@@ -297,20 +291,6 @@ namespace ippo
                 this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
                 this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
-                // Load the required experience, if any        
-                if (node.HasNode(expNodeName))
-                {
-                    ConfigNode perksNode = node.GetNode(expNodeName);
-                    string name = perksNode.GetValue("name");
-                    int level = DangIt.Parse<int>(perksNode.GetValue("level"), 0);
-
-                    this.ExperienceRequirements = new KeyValuePair<string, int>(name, level);
-                }
-                else
-                {
-                    this.ExperienceRequirements = new KeyValuePair<string, int>(string.Empty, 0);
-                }
-
                 // Run the subclass' custom onload
                 this.DI_OnLoad(node);
 
@@ -346,18 +326,7 @@ namespace ippo
                 node.SetValue("LastFixedUpdate", LastFixedUpdate.ToString());
                 node.SetValue("CurrentMTBF", CurrentMTBF.ToString());
                 node.SetValue("LifeTimeSecs", LifeTimeSecs.ToString());
-                node.SetValue("HasFailed", HasFailed.ToString());
-
-                // Save the experience level
-                if (!string.IsNullOrEmpty(this.ExperienceRequirements.Key))
-                {
-                    ConfigNode perksNode = this.ExperienceToNode(this.ExperienceRequirements);
-
-                    if (node.HasNode(perksNode.name))
-                        node.SetNode(perksNode.name, perksNode);
-                    else
-                        node.AddNode(perksNode);
-                }                
+                node.SetValue("HasFailed", HasFailed.ToString());              
 
                 // Run the subclass' custom onsave
                 this.DI_OnSave(node);
@@ -368,16 +337,6 @@ namespace ippo
             {
                 this.OnError(e);
             }
-        }
-
-        private ConfigNode ExperienceToNode(KeyValuePair<string, int> keyValuePair)
-        {
-            ConfigNode node = new ConfigNode(expNodeName);
-
-            node.AddValue("name", keyValuePair.Key);
-            node.AddValue("level", keyValuePair.Value);
-
-            return node;
         }
 
 
@@ -517,7 +476,7 @@ namespace ippo
                 evaPart.Resources[Spares.Name].amount -= this.MaintenanceCost;
 
                 // Distance between the kerbal's perks and the required perks, used to scale the maintenance bonus according to the kerbal's skills
-                int expDistance = evaPart.protoModuleCrew[0].experienceLevel - this.ExperienceRequirements.Value;             
+				int expDistance = evaPart.protoModuleCrew[0].experienceLevel - this.PerksRequirementValue;             
 
                 //// The higher the skill gap, the higher the maintenance bonus
                 //// The + 1 is there to makes it so that a maintenance bonus is always gained even when the perks match exactly
@@ -728,8 +687,13 @@ namespace ippo
         bool CheckOutExperience(ProtoCrewMember kerbal)
         {
             // Haskell made me fond of unreadable one-line functional expressions.
-            return string.IsNullOrEmpty(this.ExperienceRequirements.Key)                  // empty string means no restrictions
-                   || ((kerbal.experienceTrait.TypeName == this.ExperienceRequirements.Key) && (kerbal.experienceLevel >= this.ExperienceRequirements.Value));
+			this.Log ("Checking Experience");
+			this.Log ("this.PerksRequirementName       = " + this.PerksRequirementName);
+			this.Log ("this.PerksRequirementValue      = " + this.PerksRequirementValue);
+			this.Log ("kerbal.experienceTrait.TypeName = " + kerbal.experienceTrait.TypeName);
+			this.Log ("kerbal.experienceLevel          = " + kerbal.experienceLevel);
+			return string.IsNullOrEmpty(this.PerksRequirementName)                  // empty string means no restrictions
+				|| ((kerbal.experienceTrait.TypeName == this.PerksRequirementName) && (kerbal.experienceLevel >= this.PerksRequirementValue));
         }
 
 
