@@ -52,8 +52,6 @@ namespace ippo
             |    BEGIN IMPLEMENTATION-SPECIFIC EDITS HERE.    |
             \*-----------------------------------------------*/
 
-            // TODO: Implement your own compatibility check.
-            //
             // If you want to disable some behavior when incompatible, other parts of the plugin
             // should query this method:
             //
@@ -64,7 +62,7 @@ namespace ippo
             // Even if you don't lock down functionality, you should return true if your users 
             // can expect a future update to be available.
             //
-            return Versioning.version_major == 0 && Versioning.version_minor == 90;
+            return Versioning.version_major == 1 && Versioning.version_minor == 0;
 
             /*-----------------------------------------------*\
             | IMPLEMENTERS SHOULD NOT EDIT BEYOND THIS POINT! |
@@ -77,8 +75,6 @@ namespace ippo
             |    BEGIN IMPLEMENTATION-SPECIFIC EDITS HERE.    |
             \*-----------------------------------------------*/
 
-            // TODO: Implement your own Unity compatibility check.
-            //
             return true;
 
             /*-----------------------------------------------*\

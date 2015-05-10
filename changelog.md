@@ -1,3 +1,15 @@
+## ALPHA 6
+
+### ALPHA 6.0
+- Compatible with KSP 1.0.2
+- Add FailureModules for steering and tires
+- Rework experience system using the Stock XP system.
+ - Configurable in the Module
+ - Unfortunatley at this point nothing is refunded for having bought upgrades to Kerbal Experience. Sorry! (You can hack your funds up, it's ok, you have my permission :P )
+ - Toggalable in settings
+- Fully compatible with MissionController
+- Tweaks to engine reliability calculation
+
 ## ALPHA 5
 
 ### ALPHA 5.3

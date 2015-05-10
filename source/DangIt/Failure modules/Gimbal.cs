@@ -47,19 +47,16 @@ namespace ippo
         protected override void DI_Disable()
         {
             // Disable the gimbal module
-            this.gimbalModule.enabled = false;
-
-            this.gimbalModule.LockGimbal();
-            this.gimbalModule.Events["FreeGimbal"].active = false; 
+			this.gimbalModule.gimbalLock = true;
+			this.gimbalModule.Fields ["gimbalLock"].guiActive = false;
         }
 
 
         protected override void DI_EvaRepair()
         {
             // Restore the gimbaling module
-            this.gimbalModule.enabled = true;
-            this.gimbalModule.FreeGimbal();
-            this.gimbalModule.Events["LockGimbal"].active = true; 
+			this.gimbalModule.gimbalLock = false;
+			this.gimbalModule.Fields ["gimbalLock"].guiActive = true;
         }
 
     }

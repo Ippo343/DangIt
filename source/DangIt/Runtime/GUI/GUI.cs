@@ -5,10 +5,8 @@ using UnityEngine;
 namespace ippo
 {
     public partial class DangIt
-    {
-        
+    {        
         ApplicationLauncherButton appBtn;
-        RosterWindow rosterWindow = new RosterWindow();
         SettingsWindow settingsWindow = new SettingsWindow();
 
         void OnGUI()
@@ -16,7 +14,6 @@ namespace ippo
             GUI.skin = HighLogic.Skin;
 
             if (settingsWindow.Enabled) settingsWindow.Draw();
-            if (rosterWindow.Enabled) rosterWindow.Draw();
         }
 
 
@@ -31,9 +28,7 @@ namespace ippo
 
             try
             {
-                if (HighLogic.LoadedScene == GameScenes.SPACECENTER ||
-                    HighLogic.LoadedSceneIsEditor ||
-                    HighLogic.LoadedSceneIsFlight)
+                if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                 {
                     // Load the icon for the button
                     Texture btnTex = GameDatabase.Instance.GetTexture("DangIt/Textures/appBtn", false);
@@ -66,13 +61,11 @@ namespace ippo
         void onAppBtnToggleOn()
         {
             this.settingsWindow.Enabled = true;
-            this.rosterWindow.Enabled = true;
         }
 
         void onAppBtnToggleOff()
         {
             this.settingsWindow.Enabled = false;
-            this.rosterWindow.Enabled = false;
         }
 
     }

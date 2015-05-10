@@ -41,14 +41,17 @@ namespace ippo
 					sb.AppendLine (" - Repair cost: " + fm.RepairCost);
 					sb.AppendLine (" - Priority: " + fm.Priority);
 
-					if (fm.PerkRequirements != null && fm.PerkRequirements.Count > 0) {
-						sb.AppendLine ("Servicing:");
-						foreach (Perk p in fm.PerkRequirements)
-							sb.AppendLine (" - " + p.ToString ());
+					if (fm.ExtraEditorInfo != "") {
+						sb.AppendLine (" - " + fm.ExtraEditorInfo); //Append any extra info the module wants to add
 					}
 
-					if (fm.ExtraEditorInfo != "") {
-						sb.AppendLine (" - "+fm.ExtraEditorInfo); //Append any extra info the module wants to add
+					if (!string.IsNullOrEmpty (fm.PerksRequirementName)) {
+						sb.AppendLine (string.Format (
+							" - Servicing requires a level {0} {1}",
+							fm.PerksRequirementValue,
+							fm.PerksRequirementName));
+					} else {
+						sb.AppendLine (" - No special requirements for servicing");
 					}
 
 					sb.AppendLine ();

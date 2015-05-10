@@ -25,7 +25,7 @@ namespace ippo
 					foreach (PartResource pr in part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName))) {
 					temp += pr.resourceName + ", ";
 					};
-					return temp;
+				return temp.TrimEnd(' ').TrimEnd(',');
 				} 
 		}
 
