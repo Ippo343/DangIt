@@ -1,5 +1,8 @@
 ## ALPHA 6
 
+### ALPHA 6.0.1
+- Fix Ablator Leaking (Thanks @Corax)
+
 ### ALPHA 6.0
 - Compatible with KSP 1.0.2
 - Add FailureModules for steering and tires
