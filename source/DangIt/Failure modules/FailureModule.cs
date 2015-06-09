@@ -217,6 +217,9 @@ namespace ippo
             this.Events["EvaRepair"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
             this.Events["Maintenance"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
 
+			this.Fields["Age"].guiName = DebugName + " Age";
+			this.Fields["Age"].guiActive = DangIt.Instance.CurrentSettings.DebugStats;
+
             DI_RuntimeFetch();
         }
 

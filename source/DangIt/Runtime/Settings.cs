@@ -21,7 +21,8 @@ namespace ippo
 			public int  Pri_Low_SoundLoops = 0;     // number of times to beep
 			public int  Pri_Medium_SoundLoops = 2;  // number of times to beep
 			public int  Pri_High_SoundLoops = -1;   // number of times to beep
-			public int  AlarmVolume = 100;          // volume of the alarm (1-100)       
+			public int  AlarmVolume = 100;          // volume of the alarm (1-100)   
+			public bool DebugStats = false;			// show debug stats of the part in the right-click menu
 
             public Settings() { }
 
@@ -59,6 +60,7 @@ namespace ippo
 					Pri_High_SoundLoops = DangIt.Parse<int>(node.GetValue("Pri_High_Loops"), 0);
 					AlarmVolume = DangIt.Parse<int>(node.GetValue("AlarmVolume"), 100);
 					RequireExperience = DangIt.Parse<bool>(node.GetValue("RequireExperience"), true);
+					DebugStats = DangIt.Parse<bool>(node.GetValue("DebugStats"), false);
                 }
                 else
                     throw new Exception("Invalid node!");
@@ -82,6 +84,7 @@ namespace ippo
 				result.AddValue("AlarmVolume", AlarmVolume.ToString());
 
 				result.AddValue ("RequireExperience", RequireExperience.ToString ());
+				result.AddValue ("DebugStats", DebugStats.ToString ());
 
                 return result;
             }
