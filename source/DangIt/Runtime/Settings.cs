@@ -97,6 +97,18 @@ namespace ippo
             {
                 return (DangIt.Settings)this.MemberwiseClone();
             }
+
+			// Get the max servicing temp from DANGIT_SETTINGS
+			public int GetMaxServicingTemp(){
+				UrlDir.UrlConfig[] node = GameDatabase.Instance.GetConfigs ("DANGIT_SETTINGS");
+				foreach (UrlDir.UrlConfig curSet in node)
+				{
+					int val = DangIt.Parse<int> (curSet.config.GetValue ("MaxServicingTemp"), 400);
+					DangIt.Instance.Log ("Found a DANGIT_SETTINGS, its MaxServiceTemp is " + val.ToString ());
+					return val;
+				}
+				return 400;
+			}
         }
     }
 }

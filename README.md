@@ -8,3 +8,4 @@ Please note that this mod is still (deep) in *Alpha*. Bugs might happen (even na
 **Use only if you are ok with testing unfinished mods!**
 
 This mod requires the latest version of Module Manager to function: you can get it [here](http://forum.kerbalspaceprogram.com/threads/55219-Module-Manager-1-5-6-%28Jan-6%29). 
+This mod bundles KSPAPIExtentions.dll inside of it's mod folder.

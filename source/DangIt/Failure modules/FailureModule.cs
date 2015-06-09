@@ -658,7 +658,7 @@ namespace ippo
             #endregion
 
             #region Part temperature
-            if (this.part.temperature > 400) // KSP's temperatures appear to be in kelvin now
+			if (this.part.temperature > DangIt.Instance.CurrentSettings.GetMaxServicingTemp())
             {
                 allow = false;
                 reason = "part is too hot (" + part.temperature.ToString() + " degrees)";
