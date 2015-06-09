@@ -467,6 +467,12 @@ namespace ippo
                 return;
             }
 
+			if (this.part.temperature > DangIt.Instance.CurrentSettings.GetMaxServicingTemp())
+			{
+				DangIt.Broadcast("This is too hot to service right now", true);
+				return;
+			} 
+
 
             // Check if he is carrying enough spares
             if (evaPart.Resources.Contains(Spares.Name) && evaPart.Resources[Spares.Name].amount >= this.MaintenanceCost)
