@@ -22,6 +22,14 @@ namespace ippo
             this.Events["TakeParts"].active = true;
         }
 
+		public void FixedUpdate(){
+			if (HighLogic.LoadedSceneIsEditor) {
+				if (this.part.Resources.Contains ("SpareParts")) {
+					this.part.Resources ["SpareParts"].amount = Math.Round (this.part.Resources ["SpareParts"].amount);
+				}
+			}
+		}
+
 
         // Coroutine that waits for the runtime to be ready and the syncs with the settings
         IEnumerator RuntimeFetch()
