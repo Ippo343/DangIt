@@ -357,7 +357,7 @@ namespace ippo
                 {
                     this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
 
-					if (!DangIt.Instance.CurrentSettings.EnabledForSave){
+					if (!DangIt.Instance.CurrentSettings.EnabledForSave){ //Disable if we've disabled DangIt
 						foreach (var e in this.Events) {
 							e.guiActive=false;
 						}
@@ -409,7 +409,7 @@ namespace ippo
                     // The temperature aging is independent from the use of the part
                     this.Age += (dt * this.TemperatureMultiplier());
 
-                    if (!PartIsActive())
+					if (!PartIsActive() || !DangIt.Instance.CurrentSettings.EnabledForSave)
                         return;
                     else
                     {
@@ -519,7 +519,7 @@ namespace ippo
         {
             try
             {
-                this.Log("Initiating Fail()");
+				this.Log("Initiating Fail()");
 
                 // First, run the custom failure logic
                 // The child class can refuse to fail in FailBegin()
