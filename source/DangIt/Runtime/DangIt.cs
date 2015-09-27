@@ -64,6 +64,7 @@ namespace ippo
             set
             {
                 this.Log("Applying new settings:\n" + value.ToNode().ToString());
+				DangIt.Instance.StartPartInfoCacheReload ();
                 currentSettings = value;
 				if (FindObjectOfType<AlarmManager> () != null) {
 					FindObjectOfType<AlarmManager> ().UpdateSettings ();

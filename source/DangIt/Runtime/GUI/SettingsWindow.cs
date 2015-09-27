@@ -115,11 +115,7 @@ namespace ippo
 					av = 100;
 				}
 				this.newSettings.AlarmVolume = av;
-				bool oldEnabledState = DangIt.Instance.CurrentSettings.EnabledForSave;
 				DangIt.Instance.CurrentSettings = this.newSettings;
-				if (oldEnabledState != this.newSettings.EnabledForSave) {
-					DangIt.Instance.StartPartInfoCacheReload ();
-				}
                 
 				ReInitilize (); //Reinit string data in case you entered a invalid value (or went over cap in volume)
             }
