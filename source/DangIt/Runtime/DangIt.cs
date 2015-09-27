@@ -1,7 +1,10 @@
 ﻿using KSP.IO;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Xml.Serialization;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using IO = System.IO;
 
@@ -139,5 +142,43 @@ namespace ippo
         {
             Debug.Log("[DangIt][Runtime]: " + msg);
         }
+
+		public void StartPartInfoCacheReload(){
+			Log ("Starting refresh of Part Info cache");
+			StartCoroutine(RefreshPartInfo());
+		}
+
+		private IEnumerator RefreshPartInfo()
+		{
+			yield return null;
+			try{
+				foreach (var ap in PartLoader.LoadedPartsList.Where(ap => ap.partPrefab.Modules != null))
+				{
+					AvailablePart.ModuleInfo target = null;
+					foreach (var mi in ap.moduleInfos) {
+						if (mi.moduleName == "Reliability Info") {
+							target = mi;
+						}
+					}
+
+					if (target != null & !this.currentSettings.EnabledForSave) {
+						ap.moduleInfos.Remove (target);
+					}
+
+					if (target == null & this.currentSettings.EnabledForSave) {
+						IEnumerable<ModuleReliabilityInfo> reliabilityModules = ap.partPrefab.Modules.OfType<ModuleReliabilityInfo>();
+						if (reliabilityModules.Count()!=0){
+							AvailablePart.ModuleInfo newModuleInfo = new AvailablePart.ModuleInfo ();
+							newModuleInfo.moduleName = "Reliability Info";
+							newModuleInfo.info = reliabilityModules.First().GetInfo();
+							ap.moduleInfos.Add (newModuleInfo);
+						}
+					}
+				}
+				Log("Refresh Finished");
+			}catch (Exception e){
+				this.Log("ERROR ["+e.GetType().ToString()+"]: " + e.Message + "\n" + e.StackTrace);
+			}
+		}
     }
 }

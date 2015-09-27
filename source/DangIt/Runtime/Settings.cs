@@ -13,6 +13,7 @@ namespace ippo
         /// </summary>
         public class Settings
         {
+			public bool EnabledForSave = true;      // is enabled for this save file
             public bool ManualFailures = false;     // initiate failures manually
             public float MaxDistance = 2f;          // maximum distance for EVA activities
             public bool Messages = true;            // enable messages and screen posts
@@ -51,6 +52,7 @@ namespace ippo
             {
                 if (node != null && node.name == "SETTINGS")
                 {
+					EnabledForSave = DangIt.Parse<bool>(node.GetValue("EnabledForSave"), true);
                     ManualFailures = DangIt.Parse<bool>(node.GetValue("ManualFailures"), false);
                     MaxDistance = DangIt.Parse<float>(node.GetValue("MaxDistance"), 1f);
                     Messages = DangIt.Parse<bool>(node.GetValue("Messages"), true);
@@ -71,6 +73,7 @@ namespace ippo
             {
                 ConfigNode result = new ConfigNode("SETTINGS");
 
+				result.AddValue("EnabledForSave", EnabledForSave.ToString ());
                 result.AddValue("ManualFailures", ManualFailures.ToString());
                 result.AddValue("MaxDistance", MaxDistance.ToString());
 

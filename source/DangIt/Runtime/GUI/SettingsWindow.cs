@@ -60,40 +60,44 @@ namespace ippo
         void SettingsWindowFcn(int windowID)
         {
             // Display the toggles and controls to read the new settings
-            newSettings.ManualFailures = GUILayout.Toggle(newSettings.ManualFailures, "Manual failures");
-			newSettings.DebugStats = GUILayout.Toggle(newSettings.DebugStats, "Show Debug Stats");
-			newSettings.Glow = GUILayout.Toggle(newSettings.Glow, "Glow");
-			newSettings.RequireExperience = GUILayout.Toggle(newSettings.RequireExperience, "Check Experience");
-			newSettings.Messages = GUILayout.Toggle(newSettings.Messages, "Messages");
+			newSettings.EnabledForSave = GUILayout.Toggle(newSettings.EnabledForSave, "Enable");
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Max EVA distance: ");
-			evaDistanceString = GUILayout.TextField(evaDistanceString);
-			GUILayout.EndHorizontal();
+			if (newSettings.EnabledForSave) {
+				newSettings.ManualFailures = GUILayout.Toggle (newSettings.ManualFailures, "Manual failures");
+				newSettings.DebugStats = GUILayout.Toggle (newSettings.DebugStats, "Show Debug Stats");
+				newSettings.Glow = GUILayout.Toggle (newSettings.Glow, "Glow");
+				newSettings.RequireExperience = GUILayout.Toggle (newSettings.RequireExperience, "Check Experience");
+				newSettings.Messages = GUILayout.Toggle (newSettings.Messages, "Messages");
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Alarm Volume (0-100): ");
-			SoundVolumeString = GUILayout.TextField(SoundVolumeString);
-			GUILayout.EndHorizontal();
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label ("Max EVA distance: ");
+				evaDistanceString = GUILayout.TextField (evaDistanceString);
+				GUILayout.EndHorizontal ();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("# Times to beep for Priorities (-1=>Inf) of Failures");
-			GUILayout.EndHorizontal();
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label ("Alarm Volume (0-100): ");
+				SoundVolumeString = GUILayout.TextField (SoundVolumeString);
+				GUILayout.EndHorizontal ();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("LOW: ");
-			SoundLoopsString_Low = GUILayout.TextField(SoundLoopsString_Low);
-			GUILayout.EndHorizontal();
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label ("# Times to beep for Priorities (-1=>Inf) of Failures");
+				GUILayout.EndHorizontal ();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("MEDIUM: ");
-			SoundLoopsString_Medium = GUILayout.TextField(SoundLoopsString_Medium);
-			GUILayout.EndHorizontal();
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label ("LOW: ");
+				SoundLoopsString_Low = GUILayout.TextField (SoundLoopsString_Low);
+				GUILayout.EndHorizontal ();
 
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("HIGH: ");
-			SoundLoopsString_High = GUILayout.TextField(SoundLoopsString_High);
-			GUILayout.EndHorizontal();
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label ("MEDIUM: ");
+				SoundLoopsString_Medium = GUILayout.TextField (SoundLoopsString_Medium);
+				GUILayout.EndHorizontal ();
+
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label ("HIGH: ");
+				SoundLoopsString_High = GUILayout.TextField (SoundLoopsString_High);
+				GUILayout.EndHorizontal ();
+			}
 
             // Creates the button and returns true when it is pressed
             if (GUILayout.Button("Apply"))
@@ -111,7 +115,12 @@ namespace ippo
 					av = 100;
 				}
 				this.newSettings.AlarmVolume = av;
-                DangIt.Instance.CurrentSettings = this.newSettings;
+				bool oldEnabledState = DangIt.Instance.CurrentSettings.EnabledForSave;
+				DangIt.Instance.CurrentSettings = this.newSettings;
+				if (oldEnabledState != this.newSettings.EnabledForSave) {
+					DangIt.Instance.StartPartInfoCacheReload ();
+				}
+                
 				ReInitilize (); //Reinit string data in case you entered a invalid value (or went over cap in volume)
             }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace ippo
 {
@@ -11,8 +12,16 @@ namespace ippo
     /// </summary>
     public class ModuleReliabilityInfo : PartModule
     {
+
         public override string GetInfo()
         {
+			if (DangIt.Instance != null) {
+				if (!DangIt.Instance.CurrentSettings.EnabledForSave) {
+					Debug.Log("EnabledForSave=0: reporting BTL");
+					return "(DangIt is disabled in this scenario)\nThis part has been built to last";
+				}
+			}
+
 			List<FailureModule> raw_fails = this.part.Modules.OfType<FailureModule>().ToList();
 
 			List<FailureModule> fails = new List<FailureModule>();
