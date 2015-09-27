@@ -220,7 +220,7 @@ namespace ippo
 			this.Fields["Age"].guiName = DebugName + " Age";
 			this.Fields["Age"].guiActive = DangIt.Instance.CurrentSettings.DebugStats;
 
-            DI_RuntimeFetch();
+			DI_RuntimeFetch();
         }
 
 
@@ -357,6 +357,12 @@ namespace ippo
                 {
                     this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
 
+					if (!DangIt.Instance.CurrentSettings.EnabledForSave){
+						foreach (var e in this.Events) {
+							e.guiActive=false;
+						}
+					}
+
                     // Reset the internal state at the beginning of the flight
                     // this condition also catches a revert to launch (+1 second for safety)
                     if (DangIt.Now() < (this.TimeOfLastReset + 1))
@@ -371,8 +377,10 @@ namespace ippo
                     DangIt.ResetShipGlow(this.part.vessel);
                 }
 
-                this.DI_Start(state);
-                this.StartCoroutine("RuntimeFetch");
+				if (DangIt.Instance.CurrentSettings.EnabledForSave){
+	                this.DI_Start(state);
+	                this.StartCoroutine("RuntimeFetch");
+				}
             }
             catch (Exception e)
             {
