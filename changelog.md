@@ -1,5 +1,12 @@
 ## ALPHA 6
 
+### ALPHA 6.2
+- Supports KSP 1.0.5
+- Allows fully disabling on a per-save basis
+- Fixes issue where you could use the amount tweaker to get half a spare part
+- Correctly check temp when doing maintenance
+- Correctly apply ModuleGimbalReliability to engine parts using ModuleEnginesFX 
+
 ### ALPHA 6.0.1
 - Fix Ablator Leaking (Thanks @Corax)
 
