@@ -1,5 +1,9 @@
 ## ALPHA 6
 
+### ALPHA 6.3
+ - Added Daishi's amazing (and horribly, terribly, rediculously late on Coffeeman's part -- i'm so sorry) spare parts bay
+ - Move to SpaceDock.info after KerbalStuff's implosion
+
 ### ALPHA 6.2
 - Supports KSP 1.0.5
 - Allows fully disabling on a per-save basis

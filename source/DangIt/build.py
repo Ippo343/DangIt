@@ -9,13 +9,13 @@ assert os.path.exists(assembly), "Please pass a dll as the second argument"
 contents=os.listdir(game_data)
 
 if "DangIt" in contents:
-	print "Removing DangIt dir..."
+	print("Removing DangIt dir...")
 	shutil.rmtree(game_data+"/DangIt")
 
-print "Copying Data"
+print("Copying Data")
 shutil.copytree("Data", game_data+"/DangIt")
 
-print "Copying DLL"
+print("Copying DLL")
 shutil.copyfile(assembly, game_data+"/DangIt/DangIt.dll")
 
-print "Done!"
+print("Done!")
