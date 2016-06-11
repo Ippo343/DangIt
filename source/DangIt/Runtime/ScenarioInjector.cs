@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using System.Reflection;
 
-namespace ippo
+namespace DangIt
 {
     /*
      * Check that the current game contains the runtime ScenarioModule
@@ -20,19 +20,19 @@ namespace ippo
         void Start()
         {
             var game = HighLogic.CurrentGame;
-            ProtoScenarioModule psm = game.scenarios.Find(s => s.moduleName == typeof(DangIt).Name);
+            ProtoScenarioModule psm = game.scenarios.Find(s => s.moduleName == typeof(CDangIt).Name);
 
             if (psm == null)
             {
-                Debug.Log("[DangIt]: Adding the controller to the game.");
-                psm = game.AddProtoScenarioModule(typeof(DangIt), GameScenes.EDITOR,
+                Debug.Log("[CDangIt]: Adding the controller to the game.");
+                psm = game.AddProtoScenarioModule(typeof(CDangIt), GameScenes.EDITOR,
                                                                   GameScenes.FLIGHT,
                                                                   GameScenes.SPACECENTER,
                                                                   GameScenes.TRACKSTATION);
             }
             else // make sure the scenario is targeting all the scenes
             {
-                Debug.Log("[DangIt]: The runtime is already installed (OK).");
+                Debug.Log("[CDangIt]: The runtime is already installed (OK).");
 
                 SetTargetScene(psm, GameScenes.EDITOR);
                 SetTargetScene(psm, GameScenes.FLIGHT);

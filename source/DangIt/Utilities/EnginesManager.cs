@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ippo
+namespace DangIt
 {
     /// <summary>
     /// Helper class that can manage multiple engine modules in the same part,

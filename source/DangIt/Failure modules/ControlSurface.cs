@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using DangIt.Utilities;
 
-namespace ippo
+namespace DangIt
 {
     public class ModuleControlSurfaceReliability : FailureModule
     {
@@ -53,9 +54,9 @@ namespace ippo
 
         protected override void DI_OnLoad(ConfigNode node)
         {
-            this.ignorePitch = DangIt.Parse<bool>(node.GetValue("ignorePitch"), defaultTo: false);
-            this.ignoreRoll = DangIt.Parse<bool>(node.GetValue("ignoreRoll"), defaultTo: false);
-            this.ignoreYaw = DangIt.Parse<bool>(node.GetValue("ignoreYaw"), defaultTo: false);
+            this.ignorePitch = CUtils.Parse<bool>(node.GetValue("ignorePitch"), defaultTo: false);
+            this.ignoreRoll = CUtils.Parse<bool>(node.GetValue("ignoreRoll"), defaultTo: false);
+            this.ignoreYaw = CUtils.Parse<bool>(node.GetValue("ignoreYaw"), defaultTo: false);
         }
 
         protected override void DI_OnSave(ConfigNode node)

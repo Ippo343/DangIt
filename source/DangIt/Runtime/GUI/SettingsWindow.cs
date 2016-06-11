@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DangIt.Utilities;
 using UnityEngine;
 
-namespace ippo
+namespace DangIt
 {
     class SettingsWindow
     {
@@ -18,7 +15,7 @@ namespace ippo
 		bool lastEnabledValue;
 		bool waitingForConfirm=false;
 
-        DangIt.Settings newSettings;
+        CDangIt.Settings newSettings;
 
 
         private bool enabled;
@@ -36,7 +33,7 @@ namespace ippo
         }
 
 		private void ReInitilize(){ //Set our string data mirrors at start, and when we change settings
-			this.newSettings = DangIt.Instance.CurrentSettings.ShallowClone();
+			this.newSettings = CDangIt.Instance.CurrentSettings.ShallowClone();
 			this.evaDistanceString = newSettings.MaxDistance.ToString();
 			this.SoundLoopsString_Low = newSettings.Pri_Low_SoundLoops.ToString();
 			this.SoundLoopsString_Medium = newSettings.Pri_Medium_SoundLoops.ToString();
@@ -65,7 +62,7 @@ namespace ippo
         {
 			if (waitingForConfirm) {
 				GUILayout.BeginVertical ();
-				GUILayout.Label ("WARNING! Changing the state of DangIt! while ships are in flight is not supported.");
+				GUILayout.Label ("WARNING! Changing the state of CDangIt! while ships are in flight is not supported.");
 				GUILayout.Label ("There is no gaurentee that ships will remain in a stable state after toggle, ESPECIALLY if they currently have failed parts.");
 				GUILayout.Label ("It is reccomended that this option is only changed immediatley after the start of a game AND while no ships are in flight");
 				GUILayout.Label ("You currently have " + (FlightGlobals.Vessels.Count-1).ToString () + " vessels in flight. Are you sure you want to proceed?");
@@ -74,7 +71,7 @@ namespace ippo
 				if (GUILayout.Button ("Yes")) {
 					lastEnabledValue = newSettings.EnabledForSave;
 					waitingForConfirm = false;
-					DangIt.Instance.CurrentSettings = this.newSettings;
+					CDangIt.Instance.CurrentSettings = this.newSettings;
 				}
 				if (GUILayout.Button ("No")) {
 					newSettings.EnabledForSave = lastEnabledValue;
@@ -126,17 +123,17 @@ namespace ippo
 					SoundLoopsString_High = GUILayout.TextField (SoundLoopsString_High);
 					GUILayout.EndHorizontal ();
 				} else {
-					GUILayout.Label ("DangIt! is disabled");
+					GUILayout.Label ("CDangIt! is disabled");
 				}
 
 				// Creates the button and returns true when it is pressed
 				if (GUILayout.Button ("Apply")) {
 					// Parse the strings
-					this.newSettings.MaxDistance = DangIt.Parse<float> (evaDistanceString, defaultTo: 2f);
-					this.newSettings.Pri_Low_SoundLoops = DangIt.Parse<int> (SoundLoopsString_Low, defaultTo: 0);
-					this.newSettings.Pri_Medium_SoundLoops = DangIt.Parse<int> (SoundLoopsString_Medium, defaultTo: 2);
-					this.newSettings.Pri_High_SoundLoops = DangIt.Parse<int> (SoundLoopsString_High, defaultTo: -1);
-					int av = DangIt.Parse<int> (SoundVolumeString, defaultTo: 100);
+					this.newSettings.MaxDistance = CUtils.Parse<float> (evaDistanceString, defaultTo: 2f);
+					this.newSettings.Pri_Low_SoundLoops = CUtils.Parse<int> (SoundLoopsString_Low, defaultTo: 0);
+					this.newSettings.Pri_Medium_SoundLoops = CUtils.Parse<int> (SoundLoopsString_Medium, defaultTo: 2);
+					this.newSettings.Pri_High_SoundLoops = CUtils.Parse<int> (SoundLoopsString_High, defaultTo: -1);
+					int av = CUtils.Parse<int> (SoundVolumeString, defaultTo: 100);
 					//av = (av < 0) ? 0 : (av > 100) ? 100 : av;  //This clamps it between 0 and 100 (or not)
 					if (av < 1) {
 						av = 1;
@@ -144,7 +141,7 @@ namespace ippo
 						av = 100;
 					}
 					this.newSettings.AlarmVolume = av;
-					DangIt.Instance.CurrentSettings = this.newSettings;
+					CDangIt.Instance.CurrentSettings = this.newSettings;
 	                
 					ReInitilize (); //Reinit string data in case you entered a invalid value (or went over cap in volume)
 				}

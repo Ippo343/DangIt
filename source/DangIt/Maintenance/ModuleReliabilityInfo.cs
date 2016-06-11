@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace ippo
+namespace DangIt
 {
     /// <summary>
     /// Module that produces the reliability info about a part to display in the VAB / SPH info tab.

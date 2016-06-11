@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+using DangIt.Utilities;
 
-namespace ippo
+namespace DangIt
 {
-    public partial class DangIt
+    public partial class CDangIt
     {
         /// <summary>
         /// General user settings about notifications and gameplay elements
@@ -29,16 +26,16 @@ namespace ippo
 
 			public int GetSoundLoopsForPriority(string priority)
 			{
-				return GetSoundLoopsForPriority (DangIt.PriorityIntFromString (priority));
+				return this.GetSoundLoopsForPriority (CUtils.PriorityIntValues[priority]);
 			}
 
 			public int GetSoundLoopsForPriority(int priority)
 			{
-				if (priority == 1)
+                if (priority == 1)
 					return Pri_Low_SoundLoops;
-				if (priority==2)
+				if (priority == 2)
 					return Pri_Medium_SoundLoops;
-				if (priority==3)
+				if (priority == 3)
 					return Pri_High_SoundLoops;
 				return 0;
 			}
@@ -52,17 +49,17 @@ namespace ippo
             {
                 if (node != null && node.name == "SETTINGS")
                 {
-					EnabledForSave = DangIt.Parse<bool>(node.GetValue("EnabledForSave"), true);
-                    ManualFailures = DangIt.Parse<bool>(node.GetValue("ManualFailures"), false);
-                    MaxDistance = DangIt.Parse<float>(node.GetValue("MaxDistance"), 1f);
-                    Messages = DangIt.Parse<bool>(node.GetValue("Messages"), true);
-					Glow = DangIt.Parse<bool>(node.GetValue("Glow"), true);
-					Pri_Low_SoundLoops = DangIt.Parse<int>(node.GetValue("Pri_Low_Loops"), 0);
-					Pri_Medium_SoundLoops = DangIt.Parse<int>(node.GetValue("Pri_Medium_Loops"), 0);
-					Pri_High_SoundLoops = DangIt.Parse<int>(node.GetValue("Pri_High_Loops"), 0);
-					AlarmVolume = DangIt.Parse<int>(node.GetValue("AlarmVolume"), 100);
-					RequireExperience = DangIt.Parse<bool>(node.GetValue("RequireExperience"), true);
-					DebugStats = DangIt.Parse<bool>(node.GetValue("DebugStats"), false);
+					EnabledForSave = CUtils.Parse<bool>(node.GetValue("EnabledForSave"), true);
+                    ManualFailures = CUtils.Parse<bool>(node.GetValue("ManualFailures"), false);
+                    MaxDistance = CUtils.Parse<float>(node.GetValue("MaxDistance"), 1f);
+                    Messages = CUtils.Parse<bool>(node.GetValue("Messages"), true);
+					Glow = CUtils.Parse<bool>(node.GetValue("Glow"), true);
+					Pri_Low_SoundLoops = CUtils.Parse<int>(node.GetValue("Pri_Low_Loops"), 0);
+					Pri_Medium_SoundLoops = CUtils.Parse<int>(node.GetValue("Pri_Medium_Loops"), 0);
+					Pri_High_SoundLoops = CUtils.Parse<int>(node.GetValue("Pri_High_Loops"), 0);
+					AlarmVolume = CUtils.Parse<int>(node.GetValue("AlarmVolume"), 100);
+					RequireExperience = CUtils.Parse<bool>(node.GetValue("RequireExperience"), true);
+					DebugStats = CUtils.Parse<bool>(node.GetValue("DebugStats"), false);
                 }
                 else
                     throw new Exception("Invalid node!");
@@ -98,7 +95,7 @@ namespace ippo
             /// </summary>
             public Settings ShallowClone()
             {
-                return (DangIt.Settings)this.MemberwiseClone();
+                return (CDangIt.Settings)this.MemberwiseClone();
             }
 
 			// Get the max servicing temp from DANGIT_SETTINGS
@@ -106,8 +103,8 @@ namespace ippo
 				UrlDir.UrlConfig[] node = GameDatabase.Instance.GetConfigs ("DANGIT_SETTINGS");
 				foreach (UrlDir.UrlConfig curSet in node)
 				{
-					int val = DangIt.Parse<int> (curSet.config.GetValue ("MaxServicingTemp"), 400);
-					DangIt.Instance.Log ("Found a DANGIT_SETTINGS, its MaxServiceTemp is " + val.ToString ());
+					int val = CUtils.Parse<int> (curSet.config.GetValue ("MaxServicingTemp"), 400);
+					CDangIt.Instance.Log ("Found a DANGIT_SETTINGS, its MaxServiceTemp is " + val.ToString ());
 					return val;
 				}
 				return 400;

@@ -5,7 +5,7 @@ using System.Text;
 
 using UnityEngine;
 
-namespace ippo
+namespace DangIt
 {
     public class ModuleBatteryReliability : FailureModule
     {

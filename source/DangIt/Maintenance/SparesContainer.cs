@@ -1,11 +1,12 @@
-﻿using System;
+﻿using DangIt.Utilities;
+using KSP.UI.Screens;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace ippo
+namespace DangIt
 {
     /// <summary>
     /// Module that handles the spare parts so that the kerbal can grab them while on EVA.
@@ -35,11 +36,11 @@ namespace ippo
         IEnumerator RuntimeFetch()
         {
             // Wait for the server to be available
-            while (DangIt.Instance == null || !DangIt.Instance.IsReady)
+            while (CDangIt.Instance == null || !CDangIt.Instance.IsReady)
                 yield return null;
 
-            this.Events["TakeParts"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
-            this.Events["DepositParts"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
+            this.Events["TakeParts"].unfocusedRange = CDangIt.Instance.CurrentSettings.MaxDistance;
+            this.Events["DepositParts"].unfocusedRange = CDangIt.Instance.CurrentSettings.MaxDistance;
         }
 
 
@@ -47,7 +48,7 @@ namespace ippo
         [KSPEvent(active=true, guiActiveUnfocused=true, externalToEVAOnly=true, guiName="Take spares", unfocusedRange = 2f)]
         public void TakeParts()
         {
-            Part evaPart = DangIt.FindEVAPart();
+            Part evaPart = CUtils.FindEVAPart();
 
             if (evaPart == null)
                 throw new Exception("ERROR: couldn't find an active EVA!");
@@ -68,7 +69,7 @@ namespace ippo
         [KSPEvent(guiActiveUnfocused = true, unfocusedRange = 2f, guiName = "Deposit spares", active = false)]
         public void DepositParts()
         {
-            Part evaPart = DangIt.FindEVAPart();
+            Part evaPart = CUtils.FindEVAPart();
 
             if (evaPart == null)
                 this.Log("ERROR: couldn't find an active EVA!");
@@ -100,11 +101,11 @@ namespace ippo
             // GUI acknowledge
             try
             {
-                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has left " + deposit + " spares", false, 1f);
+                CUtils.Broadcast(evaPart.protoModuleCrew[0].name + " has left " + deposit + " spares", false, 1f);
             }
             catch (Exception) // The kerbal reenters before this method is called: in that case, trying to get his name will throw an exception
             {
-                DangIt.Broadcast("You left " + deposit + " spares", false, 1f);
+                CUtils.Broadcast("You left " + deposit + " spares", false, 1f);
             }
 
             ResourceDisplay.Instance.Refresh();
@@ -145,7 +146,7 @@ namespace ippo
             evaPart.Resources[Spares.Name].amount += amountTaken;
 
             // GUI stuff
-            DangIt.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " has taken " + amountTaken + " spares", false, 1f);
+            CUtils.Broadcast(evaPart.vessel.GetVesselCrew().First().name + " has taken " + amountTaken + " spares", false, 1f);
             ResourceDisplay.Instance.Refresh();
         }
 
@@ -170,7 +171,7 @@ namespace ippo
             Vessel v = this.part.vessel;
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("[DangIt]: ");
+            sb.Append("[CDangIt]: ");
             sb.Append("SparesContainer");
             sb.Append("[" + this.GetInstanceID() + "]");
             sb.Append(": " + msg);

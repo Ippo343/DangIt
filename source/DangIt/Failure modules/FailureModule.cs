@@ -1,12 +1,11 @@
-﻿using System;
+﻿using DangIt.Utilities;
+using KSP.UI.Screens;
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
-using Experience;
 
-namespace ippo
+namespace DangIt
 {
     /// <summary>
     /// Base failure module that abstracts all the common behaviour for discrete failures:
@@ -42,7 +41,7 @@ namespace ippo
                 return "the part has failed!";
 
             // The same experience that is needed for repair is also needed to inspect the element
-            Part evaPart = DangIt.FindEVAPart();
+            Part evaPart = CUtils.FindEVAPart();
             if (evaPart != null)
             {
                 if (!CheckOutExperience(evaPart.protoModuleCrew[0]))
@@ -193,7 +192,7 @@ namespace ippo
         /// </summary>
         private float InspectionLambdaMultiplier()
         {
-            float elapsed = (DangIt.Now() - this.TimeOfLastInspection);
+            float elapsed = (CUtils.Now() - this.TimeOfLastInspection);
             // Constrain it between 0 and 1
             return Math.Max(0f, Math.Min(elapsed / this.InspectionBonus, 1f));
         }
@@ -210,15 +209,15 @@ namespace ippo
         IEnumerator RuntimeFetch()
         {
             // Wait for the server to be available
-            while (DangIt.Instance == null || !DangIt.Instance.IsReady)
+            while (CDangIt.Instance == null || !CDangIt.Instance.IsReady)
                 yield return null;
             
-            this.Events["Fail"].guiActive = DangIt.Instance.CurrentSettings.ManualFailures;
-            this.Events["EvaRepair"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
-            this.Events["Maintenance"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
+            this.Events["Fail"].guiActive = CDangIt.Instance.CurrentSettings.ManualFailures;
+            this.Events["EvaRepair"].unfocusedRange = CDangIt.Instance.CurrentSettings.MaxDistance;
+            this.Events["Maintenance"].unfocusedRange = CDangIt.Instance.CurrentSettings.MaxDistance;
 
 			this.Fields["Age"].guiName = DebugName + " Age";
-			this.Fields["Age"].guiActive = DangIt.Instance.CurrentSettings.DebugStats;
+			this.Fields["Age"].guiActive = CDangIt.Instance.CurrentSettings.DebugStats;
 
 			DI_RuntimeFetch();
         }
@@ -235,7 +234,7 @@ namespace ippo
             {
                 this.Log("Resetting");
 
-                float now = DangIt.Now();
+                float now = CUtils.Now();
 
                 #region Internal state
 
@@ -285,14 +284,14 @@ namespace ippo
             try
             {
                 // Load all the internal state variables
-                this.HasInitted = DangIt.Parse<bool>(node.GetValue("HasInitted"), false);
-                this.Age = DangIt.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
-                this.TimeOfLastReset = DangIt.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
-                this.TimeOfLastInspection = DangIt.Parse<float>(node.GetValue("TimeOfLastInspection"), defaultTo: float.NegativeInfinity);
-                this.LastFixedUpdate = DangIt.Parse<float>(node.GetValue("LastFixedUpdate"), defaultTo: 0f);
-                this.CurrentMTBF = DangIt.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
-                this.LifeTimeSecs = DangIt.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
-                this.HasFailed = DangIt.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
+                this.HasInitted = CUtils.Parse<bool>(node.GetValue("HasInitted"), false);
+                this.Age = CUtils.Parse<float>(node.GetValue("Age"), defaultTo: 0f);
+                this.TimeOfLastReset = CUtils.Parse<float>(node.GetValue("TimeOfLastReset"), defaultTo: float.PositiveInfinity);
+                this.TimeOfLastInspection = CUtils.Parse<float>(node.GetValue("TimeOfLastInspection"), defaultTo: float.NegativeInfinity);
+                this.LastFixedUpdate = CUtils.Parse<float>(node.GetValue("LastFixedUpdate"), defaultTo: 0f);
+                this.CurrentMTBF = CUtils.Parse<float>(node.GetValue("CurrentMTBF"), defaultTo: float.PositiveInfinity);
+                this.LifeTimeSecs = CUtils.Parse<float>(node.GetValue("LifeTimeSecs"), defaultTo: float.PositiveInfinity);
+                this.HasFailed = CUtils.Parse<bool>(node.GetValue("HasFailed"), defaultTo: false);
 
                 // Run the subclass' custom onload
                 this.DI_OnLoad(node);
@@ -355,9 +354,9 @@ namespace ippo
             {
                 if (HighLogic.LoadedSceneIsFlight) // nothing to do in editor
                 {
-                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + DangIt.Now());
+                    this.Log("Starting in flight: last reset " + TimeOfLastReset + ", now " + CUtils.Now());
 
-					if (!DangIt.Instance.CurrentSettings.EnabledForSave){ //Disable if we've disabled DangIt
+					if (!CDangIt.Instance.CurrentSettings.EnabledForSave){ //Disable if we've disabled CDangIt
 						foreach (var e in this.Events) {
 							e.guiActive=false;
 						}
@@ -365,7 +364,7 @@ namespace ippo
 
                     // Reset the internal state at the beginning of the flight
                     // this condition also catches a revert to launch (+1 second for safety)
-                    if (DangIt.Now() < (this.TimeOfLastReset + 1))
+                    if (CUtils.Now() < (this.TimeOfLastReset + 1))
                         this.Reset();
 
                     // If the part was saved when it was failed,
@@ -374,10 +373,10 @@ namespace ippo
                     if (this.HasFailed)
                         this.DI_Disable();
 
-                    DangIt.ResetShipGlow(this.part.vessel);
+                    CUtils.ResetShipGlow(this.part.vessel);
                 }
 
-				if (DangIt.Instance.CurrentSettings.EnabledForSave){
+				if (CDangIt.Instance.CurrentSettings.EnabledForSave){
 	                this.DI_Start(state);
 	                this.StartCoroutine("RuntimeFetch");
 				}
@@ -401,7 +400,7 @@ namespace ippo
                 // Only update the module during flight and after the re-initialization has run
                 if (HighLogic.LoadedSceneIsFlight && this.HasInitted)
                 {
-                    float now = DangIt.Now();
+                    float now = CUtils.Now();
 
                     float dt = now - LastFixedUpdate;
                     this.LastFixedUpdate = now;
@@ -409,7 +408,7 @@ namespace ippo
                     // The temperature aging is independent from the use of the part
                     this.Age += (dt * this.TemperatureMultiplier());
 
-					if (!PartIsActive() || !DangIt.Instance.CurrentSettings.EnabledForSave)
+					if (!PartIsActive() || !CDangIt.Instance.CurrentSettings.EnabledForSave)
                         return;
                     else
                     {
@@ -463,7 +462,7 @@ namespace ippo
         {
             this.Log("Initiating EVA maitenance");
 
-            Part evaPart = DangIt.FindEVAPart();
+            Part evaPart = CUtils.FindEVAPart();
             if (evaPart == null)
             {
                 throw new Exception("ERROR: couldn't find an active EVA!");
@@ -471,13 +470,13 @@ namespace ippo
 
             if (!CheckOutExperience(evaPart.protoModuleCrew[0]))
             {
-                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " isn't really qualified for this...", true);
+                CUtils.Broadcast(evaPart.protoModuleCrew[0].name + " isn't really qualified for this...", true);
                 return;
             }
 
-			if (this.part.temperature > DangIt.Instance.CurrentSettings.GetMaxServicingTemp())
+			if (this.part.temperature > CDangIt.Instance.CurrentSettings.GetMaxServicingTemp())
 			{
-				DangIt.Broadcast("This is too hot to service right now", true);
+                CUtils.Broadcast("This is too hot to service right now", true);
 				return;
 			} 
 
@@ -499,12 +498,12 @@ namespace ippo
                 //// The + 1 is there to makes it so that a maintenance bonus is always gained even when the perks match exactly
                 this.DiscountAge(this.MaintenanceBonus * ( (expDistance + 1) / 3));
 
-                DangIt.Broadcast("This should last a little longer now");
+                CUtils.Broadcast("This should last a little longer now");
             }
             else
             {
                 this.Log("Spare parts check: failed! Maintenance NOT allowed");
-                DangIt.Broadcast("You need " + this.MaintenanceCost + " spares to maintain this.");
+                CUtils.Broadcast("You need " + this.MaintenanceCost + " spares to maintain this.");
             }
 
         }
@@ -543,14 +542,14 @@ namespace ippo
 
                 if (!this.Silent)
                 {
-                    DangIt.Broadcast(this.FailureMessage);
-                    DangIt.PostMessage("Failure!",
+                    CUtils.Broadcast(this.FailureMessage);
+                    CUtils.PostMessage("Failure!",
                                        this.FailureMessage,
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
 
 					if (FindObjectOfType<AlarmManager>()!=null){
-						FindObjectOfType<AlarmManager>().AddAlarm(this,DangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
+						FindObjectOfType<AlarmManager>().AddAlarm(this,CDangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
 						if (FindObjectOfType<AlarmManager>().HasAlarmsForModule(this))
 						{
 							Events ["MuteAlarms"].active = true;
@@ -559,7 +558,7 @@ namespace ippo
 					}
 				}
 
-                DangIt.FlightLog(this.FailureMessage);
+                CUtils.FlightLog(this.FailureMessage);
             }
             catch (Exception e)
             {
@@ -576,7 +575,7 @@ namespace ippo
             try
             {
                 this.HasFailed = state;
-                DangIt.ResetShipGlow(this.part.vessel);
+                CUtils.ResetShipGlow(this.part.vessel);
 
                 Events["Fail"].active = !state;
                 Events["EvaRepair"].active = state;
@@ -603,7 +602,7 @@ namespace ippo
                 this.Log("Initiating EVA repair");
 
                 // Get the EVA part (parts can hold resources)
-                Part evaPart = DangIt.FindEVAPart();
+                Part evaPart = CUtils.FindEVAPart();
                 
                 if (evaPart == null)
                 {
@@ -616,7 +615,7 @@ namespace ippo
                     this.DI_EvaRepair();
                     this.SetFailureState(false);
 
-                    DangIt.FlightLog(this.RepairMessage);
+                    CUtils.FlightLog(this.RepairMessage);
 
                     //TODO: experience repair boni
                     float intelligence = 1 - evaPart.protoModuleCrew[0].stupidity;
@@ -630,18 +629,18 @@ namespace ippo
                     evaPart.Resources[Spares.Name].amount -= discountedCost;
                     ResourceDisplay.Instance.Refresh();
 
-                    DangIt.Broadcast(this.RepairMessage, true);
+                    CUtils.Broadcast(this.RepairMessage, true);
                     this.DiscountAge(this.RepairBonus);
 
                     if (discount > 0)
                     {
-                        DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " was able to save " + discount + " spare parts");
+                        CUtils.Broadcast(evaPart.protoModuleCrew[0].name + " was able to save " + discount + " spare parts");
 					}
 
 					FindObjectOfType<AlarmManager>().RemoveAllAlarmsForModule(this); //Remove alarms from this module
                 }
 
-                DangIt.ResetShipGlow(this.part.vessel);
+                CUtils.ResetShipGlow(this.part.vessel);
 
             }
             catch (Exception e)
@@ -667,16 +666,16 @@ namespace ippo
             {
                 allow = false;
                 reason = "not carrying enough spares";
-                DangIt.Broadcast("You need " + this.RepairCost + " spares to repair this.", true);
+                CUtils.Broadcast("You need " + this.RepairCost + " spares to repair this.", true);
             } 
             #endregion
 
             #region Part temperature
-			if (this.part.temperature > DangIt.Instance.CurrentSettings.GetMaxServicingTemp())
+			if (this.part.temperature > CDangIt.Instance.CurrentSettings.GetMaxServicingTemp())
             {
                 allow = false;
                 reason = "part is too hot (" + part.temperature.ToString() + " degrees)";
-                DangIt.Broadcast("This is too hot to service right now", true);
+                CUtils.Broadcast("This is too hot to service right now", true);
             } 
             #endregion
 
@@ -685,7 +684,7 @@ namespace ippo
             {
                 allow = false;
                 reason = "perks don't match requirements";
-                DangIt.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
+                CUtils.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
             }
 
 
@@ -709,7 +708,7 @@ namespace ippo
 			this.Log ("this.PerksRequirementValue      = " + this.PerksRequirementValue);
 			this.Log ("kerbal.experienceTrait.TypeName = " + kerbal.experienceTrait.TypeName);
 			this.Log ("kerbal.experienceLevel          = " + kerbal.experienceLevel);
-			return !DangIt.Instance.CurrentSettings.RequireExperience || string.IsNullOrEmpty(this.PerksRequirementName)                  // empty string means no restrictions
+			return !CDangIt.Instance.CurrentSettings.RequireExperience || string.IsNullOrEmpty(this.PerksRequirementName)                  // empty string means no restrictions
 				|| ((kerbal.experienceTrait.TypeName == this.PerksRequirementName) && (kerbal.experienceLevel >= this.PerksRequirementValue));
         }
 
@@ -732,7 +731,7 @@ namespace ippo
             {
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append("[DangIt]: ");
+                sb.Append("[CDangIt]: ");
                 sb.Append(this.DebugName);
                 sb.Append("[" + this.GetInstanceID() + "]");
                 if (part.vessel != null) sb.Append("[Ship: " + part.vessel.vesselName + "]");
@@ -768,11 +767,12 @@ namespace ippo
         /// <summary>
         /// Reduces the value of the part when it is recovered.
         /// </summary>
-        public float GetModuleCost(float defaultCost)
+        public float GetModuleCost(float defaultCost, ModifierStagingSituation sit)
         {
             return (this.ExponentialDecay() - 1) * defaultCost;
         }
 
+        
 		[KSPEvent(guiActive = false, active = false, guiName="Mute Alarm")]
 		public void MuteAlarms(){
 			print ("Muting alarms for... " + this.ToString ());
@@ -786,6 +786,11 @@ namespace ippo
 			Events ["MuteAlarms"].active = false;
 			Events ["MuteAlarms"].guiActive = false;
 		}
+
+        public ModifierChangeWhen GetModuleCostChangeWhen()
+        {
+            return ModifierChangeWhen.CONSTANTLY;
+        }
     }
 
 }

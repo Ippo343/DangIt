@@ -1,10 +1,11 @@
-﻿using System;
+﻿using KSP.UI.Screens;
+using System;
 using System.Collections;
 using UnityEngine;
 
-namespace ippo
+namespace DangIt
 {
-    public partial class DangIt
+    public partial class CDangIt
     {        
         ApplicationLauncherButton appBtn;
         SettingsWindow settingsWindow = new SettingsWindow();
@@ -31,7 +32,7 @@ namespace ippo
                 if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                 {
                     // Load the icon for the button
-                    Texture btnTex = GameDatabase.Instance.GetTexture("DangIt/Textures/appBtn", false);
+                    Texture btnTex = GameDatabase.Instance.GetTexture("CDangIt/Textures/appBtn", false);
                     if (btnTex == null)
                         throw new Exception("The button texture wasn't loaded!");
                     

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using DangIt.Utilities;
+using KSP.UI.Screens;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
-namespace ippo
+namespace DangIt
 {
     /// <summary>
     /// Module that allows the kerbals to inspect a part to get some information about its state.
@@ -23,10 +23,10 @@ namespace ippo
         // Coroutine that waits for the runtime to be ready and the syncs with the settings
         IEnumerator RuntimeFetch()
         {
-            while (DangIt.Instance == null || !DangIt.Instance.IsReady)
+            while (CDangIt.Instance == null || !CDangIt.Instance.IsReady)
                 yield return null;
 
-            this.Events["Inspect"].unfocusedRange = DangIt.Instance.CurrentSettings.MaxDistance;
+            this.Events["Inspect"].unfocusedRange = CDangIt.Instance.CurrentSettings.MaxDistance;
         }
 
 
@@ -48,14 +48,14 @@ namespace ippo
             {
                 foreach (FailureModule fm in failModules)
                 {
-                    fm.TimeOfLastInspection = DangIt.Now();     // set the time of inspection so that the module gains the inspection bonus
+                    fm.TimeOfLastInspection = CUtils.Now();     // set the time of inspection so that the module gains the inspection bonus
                     sb.AppendLine(fm.ScreenName + ":");
                     sb.AppendLine(fm.InspectionMessage());
                     sb.AppendLine("");
                 }
             }
 
-            DangIt.PostMessage("Inspection results", 
+            CUtils.PostMessage("Inspection results", 
                                sb.ToString(), 
                                MessageSystemButton.MessageButtonColor.BLUE,
                                MessageSystemButton.ButtonIcons.MESSAGE,

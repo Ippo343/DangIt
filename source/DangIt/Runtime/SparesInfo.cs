@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ippo
+namespace DangIt
 {
     /// <summary>
     /// Constants related to the spare parts resource

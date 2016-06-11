@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace ippo
+namespace DangIt
 {
 	[RequireComponent(typeof(AudioSource))]
 	[KSPAddon(KSPAddon.Startup.Flight, false)]
@@ -11,35 +11,37 @@ namespace ippo
 	{
 		public Dictionary<FailureModule, int> loops;
 
+        AudioSource audio = new AudioSource();
+
 		public void Start()
 		{
-			print("[DangIt] [AlarmManager] Starting...");
-			print("[DangIt] [AlarmManager] Setting Volume...");
-			this.audio.panLevel = 0f; //This disable the game scaling volume with distance from source
+			print("[CDangIt] [AlarmManager] Starting...");
+			print("[CDangIt] [AlarmManager] Setting Volume...");
+			this.audio.spatialBlend = 0f; //This disable the game scaling volume with distance from source
 			this.audio.volume = 1f;
 
-			print ("[DangIt] [AlarmManager] Creating Clip");
-			this.audio.clip=GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm"); //Load alarm sound
+			print ("[CDangIt] [AlarmManager] Creating Clip");
+			this.audio.clip=GameDatabase.Instance.GetAudioClip("CDangIt/Sounds/alarm"); //Load alarm sound
 
-			print ("[DangIt] [AlarmManager] Creating Dictionary");
+			print ("[CDangIt] [AlarmManager] Creating Dictionary");
 			this.loops=new Dictionary<FailureModule, int>(); //Reset counter, so on logic pass we play it
 		}
 
 		public void UpdateSettings(){
-			float scaledVolume = DangIt.Instance.CurrentSettings.AlarmVolume / 100f;
-			print ("[DangIt] [AlarmManager] Rescaling Volume (at UpdateSettings queue)..., now at " + scaledVolume);
+			float scaledVolume = CDangIt.Instance.CurrentSettings.AlarmVolume / 100f;
+			print ("[CDangIt] [AlarmManager] Rescaling Volume (at UpdateSettings queue)..., now at " + scaledVolume);
 			this.audio.volume = scaledVolume;
 		}
 
 		public void AddAlarm(FailureModule fm, int number)
 		{
-			this.audio.volume = DangIt.Instance.CurrentSettings.GetMappedVolume(); //This seems like an OK place for this, because if I put it in the constructor...
+			this.audio.volume = CDangIt.Instance.CurrentSettings.GetMappedVolume(); //This seems like an OK place for this, because if I put it in the constructor...
 			                                                                       // ...you would have to reboot to change it, but I don't want to add lag by adding it to each frame in Update()
 			if (number != 0) {
-				print ("[DangIt] [AlarmManager] Adding '" + number.ToString () + "' alarms from '" + fm.ToString () + "'");
+				print ("[CDangIt] [AlarmManager] Adding '" + number.ToString () + "' alarms from '" + fm.ToString () + "'");
 				loops.Add (fm, number);
 			} else {
-				print ("[DangIt] [AlarmManager] No alarms added: Would have added 0 alarms");
+				print ("[CDangIt] [AlarmManager] No alarms added: Would have added 0 alarms");
 			}
 		}
 
@@ -50,7 +52,7 @@ namespace ippo
 					if (loops.Count > 0) {
 						var element = loops.ElementAt (0);
 						loops.Remove (element.Key);
-						print ("[DangIt] [AlarmManager] Playing Clip");
+						print ("[CDangIt] [AlarmManager] Playing Clip");
 						audio.Play ();
 						if (element.Value != 0 && element.Value != 1) {
 							if (element.Key.vessel == FlightGlobals.ActiveVessel) {
@@ -68,7 +70,7 @@ namespace ippo
 
 		public void RemoveAllAlarmsForModule(FailureModule fm)
 		{
-			print ("[DangIt] [AlarmManager] Removing alarms...");
+			print ("[CDangIt] [AlarmManager] Removing alarms...");
 			if (this.loops.Keys.Contains (fm))
 			{
 				fm.AlarmsDoneCallback ();

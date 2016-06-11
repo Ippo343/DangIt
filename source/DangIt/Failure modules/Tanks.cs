@@ -1,12 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Collections;
+﻿using DangIt.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 
-namespace ippo
+namespace DangIt
 {
     public class ModuleTankReliability : FailureModule
     {
@@ -22,7 +18,7 @@ namespace ippo
 				get
 				{
 					var temp = "This part can leak one of the following resources if it fails: ";
-					foreach (PartResource pr in part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName))) {
+					foreach (PartResource pr in part.Resources.list.FindAll(r => !CDangIt.LeakBlackList.Contains(r.resourceName))) {
 					temp += pr.resourceName + ", ";
 					};
 				return temp.TrimEnd(' ').TrimEnd(',');
@@ -63,8 +59,8 @@ namespace ippo
         // this method.
         protected override void DI_RuntimeFetch()
         {
-            // At this point DangIt.Instance is not null: fetch the blacklist
-            this.leakables = part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName));
+            // At this point CDangIt.Instance is not null: fetch the blacklist
+            this.leakables = part.Resources.list.FindAll(r => !CDangIt.LeakBlackList.Contains(r.resourceName));
 
             // If no leakables are found, just disable the module
             if (leakables.Count == 0)
@@ -98,7 +94,7 @@ namespace ippo
 
         protected override void DI_OnLoad(ConfigNode node)
         {
-            this.pole = DangIt.Parse<float>("pole", 0.01f);
+            this.pole = CUtils.Parse<float>("pole", 0.01f);
             
             this.leakName = node.GetValue("leakName");
             if (string.IsNullOrEmpty(leakName))
@@ -225,7 +221,7 @@ namespace ippo
         public void PrintBlackList()
         {
             this.Log("Printing blacklist");
-            foreach (string item in DangIt.LeakBlackList)
+            foreach (string item in CDangIt.LeakBlackList)
             {
                 this.Log("Blacklisted: " + item);
             }
@@ -233,7 +229,7 @@ namespace ippo
         }
 #endif
 		public override bool DI_ShowInfoInEditor(){
-			return part.Resources.list.FindAll(r => !DangIt.LeakBlackList.Contains(r.resourceName)).Count>0; //Only show if has leakable rescoures
+			return part.Resources.list.FindAll(r => !CDangIt.LeakBlackList.Contains(r.resourceName)).Count>0; //Only show if has leakable rescoures
 		}
     }
 }

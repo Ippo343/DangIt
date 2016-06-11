@@ -1,20 +1,18 @@
-﻿using KSP.IO;
+﻿using DangIt.Utilities;
+using KSP.UI.Screens;
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.Xml.Serialization;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using IO = System.IO;
 
-namespace ippo
+namespace DangIt
 {
     /// <summary>
     /// Mod's runtime controller and manager.
     /// Provides general utilities, definitions, and handles the user's settings.
     /// </summary>
-    public partial class DangIt : ScenarioModule
+    public partial class CDangIt : ScenarioModule
     {
         /// <summary>
         /// List of resources that must be ignored by tank leaks.
@@ -26,7 +24,7 @@ namespace ippo
                 if (_leakBlackList == null) // Load the file on the first call
                 {
                     _leakBlackList = new List<string>();
-                    ConfigNode blacklistFile = ConfigNode.Load(DangIt.GetConfigFilePath("BlackList.cfg"));
+                    ConfigNode blacklistFile = ConfigNode.Load(CUtils.GetConfigFilePath("BlackList.cfg"));
                     try
                     {
                         ConfigNode blackListNode = blacklistFile.GetNode("BLACKLIST");
@@ -39,7 +37,7 @@ namespace ippo
                         _leakBlackList.Add("SolidFuel");
                         _leakBlackList.Add("SpareParts");
 
-                        Debug.Log("[DangIt]: An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
+                        Debug.Log("[CDangIt]: An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
                     } 
                 }
 
@@ -53,7 +51,7 @@ namespace ippo
         internal static List<string> _leakBlackList = null;
 
 
-        private DangIt.Settings currentSettings;
+        private CDangIt.Settings currentSettings;
 		public  AlarmManager    alarmManager;
         /// <summary>
         /// General settings about notifications and gameplay elements.
@@ -65,7 +63,7 @@ namespace ippo
             {
                 this.Log("Applying new settings:\n" + value.ToNode().ToString());
                 currentSettings = value;
-				DangIt.Instance.StartPartInfoCacheReload ();
+				CDangIt.Instance.StartPartInfoCacheReload ();
 				if (FindObjectOfType<AlarmManager> () != null) {
 					FindObjectOfType<AlarmManager> ().UpdateSettings ();
 				}
@@ -76,7 +74,7 @@ namespace ippo
         /// <summary>
         /// Return the current running instance.
         /// </summary>
-        public static DangIt Instance { get; private set; }
+        public static CDangIt Instance { get; private set; }
 
 
         /// <summary>
@@ -84,9 +82,9 @@ namespace ippo
         /// </summary>
         public bool IsReady { get; private set; }        
 
-        public DangIt()
+        public CDangIt()
         {
-            Debug.Log("[DangIt]: Instantiating runtime.");
+            Debug.Log("[CDangIt]: Instantiating runtime.");
 
             // Now the instance is built and can be exposed, but it is not yet ready until after OnLoad
             Instance = this;
@@ -141,7 +139,7 @@ namespace ippo
 
         private void Log(string msg)
         {
-            Debug.Log("[DangIt][Runtime]: " + msg);
+            Debug.Log("[CDangIt][Runtime]: " + msg);
         }
 
 		public void StartPartInfoCacheReload(){

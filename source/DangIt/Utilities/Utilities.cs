@@ -1,29 +1,26 @@
-﻿using System;
+﻿using KSP.IO;
+using KSP.UI.Screens;
+using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using KSP.IO;
 
-namespace ippo
+namespace DangIt.Utilities
 {
-    public partial class DangIt
+    /// <summary>
+    /// A collection of various small utilities to reduce boilerplate.
+    /// </summary>
+    public static class CUtils
     {
-		/// <summary>
-		/// Converts a string representing a priority to a int representing it
-		/// </summary>
-		/// <returns>The int representation</returns>
-		/// <param name="modeString">Priority string</param>
-		public static int PriorityIntFromString(string modeString)
-		{
-			print ("[DangIt] [Static] Translating '" + modeString + "' to int...");
-			var keys = new List<string> ();
-			keys.Add ("LOW");
-			keys.Add ("MEDIUM");
-			keys.Add ("HIGH");
-			return keys.IndexOf (modeString.ToUpper ())+1; //+1 so that LOW = 1
-		}
+        /// <summary>
+        /// Maps the priority given as a string to its corresponding integer value
+        /// </summary>
+        public static readonly Dictionary<string, int> PriorityIntValues = new Dictionary<string, int>
+            {
+                { "LOW", 1 },
+                { "MEDIUM", 2 },
+                { "HIGH", 3 },
+            };
 
         /// <summary>
         /// Returns the in-game universal time
@@ -33,46 +30,24 @@ namespace ippo
             return (float)Planetarium.GetUniversalTime();
         }
 
-
         /// <summary>
         /// Returns the full path to a given file in the configuration folder.
-        /// Likely, GameData/DangIt/PluginData/DangIt/ + filename
+        /// Likely, GameData/CDangIt/PluginData/CDangIt/ + filename
         /// </summary>
         internal static string GetConfigFilePath(string fileName)
         {
-            return IOUtils.GetFilePathFor(typeof(DangIt), fileName);
+            return IOUtils.GetFilePathFor(typeof(CDangIt), fileName);
         }
      
-
         /// <summary>
         /// Adds a new entry to the flight events log.
         /// Automatically adds the MET at the beginning of the log
         /// </summary>
         public static void FlightLog(string msg)
         {
-            string fmt = "00";
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append("[");
-
-            if (FlightLogger.met_years > 0) sb.Append(FlightLogger.met_years.ToString(fmt) + ":");
-            if (FlightLogger.met_days > 0) sb.Append(FlightLogger.met_days.ToString(fmt) + ":");
-
-            sb.Append(FlightLogger.met_hours.ToString(fmt) + ":" +
-                      FlightLogger.met_mins.ToString(fmt) + ":" +
-                      FlightLogger.met_secs.ToString(fmt));
-
-			sb.Append("]: ");
-
-            FlightLogger.eventLog.Add(sb.ToString() + msg);
+            //TODO: the flightlogger doesn't give me a useful MET anymore, we need to find the MET somehow.
+            FlightLogger.eventLog.Add(msg);
         }
-
-
-
-
-        
-
-
 
         /// <summary>
         /// Broadcasts a message at the top-center of the screen
@@ -81,10 +56,9 @@ namespace ippo
         /// </summary>
         public static void Broadcast(string message, bool overrideMute = false, float time = 5f)
         {
-            if (overrideMute || DangIt.Instance.CurrentSettings.Messages)
+            if (overrideMute || CDangIt.Instance.CurrentSettings.Messages)
                 ScreenMessages.PostScreenMessage(message, time, ScreenMessageStyle.UPPER_CENTER);
         }
-
 
         /// <summary>
         /// Posts a new message to the messaging system unless notifications have been disabled in the general settings.
@@ -92,7 +66,7 @@ namespace ippo
         public static void PostMessage(string title, string message, MessageSystemButton.MessageButtonColor messageButtonColor, MessageSystemButton.ButtonIcons buttonIcons,
             bool overrideMute = false)
         {
-            if (DangIt.Instance.CurrentSettings.Messages || overrideMute)
+            if (CDangIt.Instance.CurrentSettings.Messages || overrideMute)
             {
                 MessageSystem.Message msg = new MessageSystem.Message(
                         title,
@@ -101,10 +75,7 @@ namespace ippo
                         buttonIcons);
                 MessageSystem.Instance.AddMessage(msg); 
             }
-
         }
-
-
 
         /// <summary>
         /// Tries to parse a string and convert it to the type T.
@@ -142,10 +113,9 @@ namespace ippo
         /// <param name="v"></param>
         public static void ResetShipGlow(Vessel v)
         {
-            Debug.Log("DangIt: Resetting the ship's glow");
+            Debug.Log("CDangIt: Resetting the ship's glow");
             ResetPartGlow(v.rootPart);
         }
-
 
 
         /// <summary>
@@ -159,7 +129,7 @@ namespace ippo
 
 
             // If the glow is globally disabled, don't even bother looking for failures
-            if (DangIt.Instance.CurrentSettings.Glow)
+            if (CDangIt.Instance.CurrentSettings.Glow)
             {
                 // Scan all the failure modules, if any
                 List<FailureModule> failModules = part.Modules.OfType<FailureModule>().ToList();
@@ -179,7 +149,7 @@ namespace ippo
 
             // Reset the glow for all the child parts
             foreach (Part child in part.children)
-                DangIt.ResetPartGlow(child);
+                CUtils.ResetPartGlow(child);
         }
     }
 }
