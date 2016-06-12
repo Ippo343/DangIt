@@ -13,7 +13,7 @@ namespace DangIt
     /// </summary>
     public class ModuleSparesContainer : PartModule
     {
-        private bool eventAdded = false;
+        private bool crewBoardVesselEventAdded = false;
 
         public override void OnStart(PartModule.StartState state)
         {
@@ -51,16 +51,21 @@ namespace DangIt
             Part evaPart = CUtils.FindEVAPart();
 
             if (evaPart == null)
-                throw new Exception("ERROR: couldn't find an active EVA!");
+            {
+                this.Log("Could not find an active EVA!");
+            }
             else
+            {
+                this.Log("EVA part found, adding resources");
                 FillEvaSuit(evaPart, this.part);
+            }
 
             Events["DepositParts"].active = true;
 
-            if (!eventAdded)
+            if (!this.crewBoardVesselEventAdded)
             {
                 GameEvents.onCrewBoardVessel.Add(OnCrewBoardVessel);
-                eventAdded = true;
+                this.crewBoardVesselEventAdded = true;
             }
         }
 
@@ -79,10 +84,8 @@ namespace DangIt
             Events["DepositParts"].active = false;
 
             GameEvents.onCrewBoardVessel.Remove(OnCrewBoardVessel);
-            eventAdded = false;
+            this.crewBoardVesselEventAdded = false;
         }
-
-
 
         protected void EmptyEvaSuit(Part evaPart, Part container)
         {
@@ -111,8 +114,6 @@ namespace DangIt
             ResourceDisplay.Instance.Refresh();
         }
 
-
-
         protected void FillEvaSuit(Part evaPart, Part container)
         {
             // Check if the EVA part contains the spare parts resource: if not, add a new config node
@@ -133,7 +134,6 @@ namespace DangIt
             	evaPart.Resources[Spares.Name].maxAmount = Spares.MaxEvaAmount;
             }
 
-
             // Compute how much the kerbal can take
             double desired = Spares.MaxEvaAmount - evaPart.Resources[Spares.Name].amount;
             desired = Math.Min(desired, Spares.MinIncrement);
@@ -150,12 +150,12 @@ namespace DangIt
             ResourceDisplay.Instance.Refresh();
         }
 
-
         /// <summary>
         /// When the kerbal boards a vessel, leave the spare parts in the command pod
         /// </summary>
         private void OnCrewBoardVessel(GameEvents.FromToAction<Part, Part> action)
         {
+            // TODO: boarding a part that can't store enough spare parts can make you lose them forever. Fix this.
             this.Log("OnCrewBoardVessel, emptying the EVA suit");
 
             Part evaPart = action.from;
@@ -165,20 +165,9 @@ namespace DangIt
                 EmptyEvaSuit(evaPart, container);
         }
 
-
         public void Log(string msg)
         {
-            Vessel v = this.part.vessel;
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append("[CDangIt]: ");
-            sb.Append("SparesContainer");
-            sb.Append("[" + this.GetInstanceID() + "]");
-            sb.Append(": " + msg);
-
-            Debug.Log(sb.ToString());
+            CUtils.Log("[SparesContainer]" + msg);
         }
-
-
     }
 }
