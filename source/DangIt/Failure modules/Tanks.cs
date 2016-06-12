@@ -1,6 +1,7 @@
 ﻿using DangIt.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DangIt
@@ -16,14 +17,14 @@ namespace DangIt
         public override string MaintenanceString { get { return "Repair the insulation"; } }
 		public override string ExtraEditorInfo 
 		{
-				get
-				{
-					var temp = "This part can leak one of the following resources if it fails: ";
-					foreach (PartResource pr in part.Resources.list.FindAll(r => !CDangIt.LeakBlackList.Contains(r.resourceName))) {
-					temp += pr.resourceName + ", ";
-					};
-				return temp.TrimEnd(' ').TrimEnd(',');
-				} 
+			get
+			{
+                StringBuilder sb = new StringBuilder();
+				sb.Append("This part can leak one of the following resources if it fails: ");
+                sb.Append(String.Join(", ", this.leakables.Select(pr => pr.resourceName).ToArray()));
+
+                return sb.ToString();
+			} 
 		}
 
         // The leak is modeled as an exponential function
