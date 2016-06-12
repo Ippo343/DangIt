@@ -1,6 +1,7 @@
 ﻿using DangIt.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DangIt
 {
@@ -25,14 +26,12 @@ namespace DangIt
 				} 
 		}
 
-
         // The leak is modeled as an exponential function
         // by approximating the differential equation
         // dQ(t) = - pole * Q(t)
         // where Q is the amount of fuel left in the tank
         [KSPField(isPersistant = true, guiActive = false)]
         protected float pole = 0.01f;
-
         
         // Maximum and minimum values of the time constant
         // The time constant is generated randomly between these two limits
@@ -47,12 +46,10 @@ namespace DangIt
         [KSPField(isPersistant = true, guiActive = false)]
         public string leakName = null;
 
-
         // List of resources that the module will choose from when starting a new leak.
         // This list is created when the module is started by taking all the resources
         // in the part and excluding the ones that have been blacklisted in the configuration file
         protected List<PartResource> leakables;
-
 
         // This method is executed once at startup during a coroutine
         // that waits for the runtime component to be available and then triggers
@@ -90,8 +87,6 @@ namespace DangIt
             }
         }
 
-
-
         protected override void DI_OnLoad(ConfigNode node)
         {
             this.pole = CUtils.Parse<float>("pole", 0.01f);
@@ -103,15 +98,11 @@ namespace DangIt
             this.Log("OnLoad: loaded leakName " + ((leakName == null) ? "null" : leakName));
         }
 
-
-
         protected override void DI_OnSave(ConfigNode node)
         {
             node.SetValue("leakName", (leakName == null) ? string.Empty : leakName);
             node.SetValue("pole", this.pole.ToString());
         }
-
-
 
         protected override void DI_Update()
         {
@@ -143,8 +134,6 @@ namespace DangIt
                 this.SetFailureState(false);
             }
         }
-
-
 
         protected override bool DI_FailBegin()
         {
@@ -189,21 +178,16 @@ namespace DangIt
             }
         }
 
-
-
         protected override void DI_Disable()
         {
             // nothing to do for tanks
             return;
         }
-
-
-        
+                
         protected override void DI_EvaRepair()
         {
             this.leakName = null;
         }
-
 
 #if DEBUG
         [KSPEvent(active = true, guiActive = true)]
@@ -220,12 +204,13 @@ namespace DangIt
         [KSPEvent(active = true, guiActive=true)]
         public void PrintBlackList()
         {
-            this.Log("Printing blacklist");
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Blacklisted resources:");
+
             foreach (string item in CDangIt.LeakBlackList)
-            {
-                this.Log("Blacklisted: " + item);
-            }
-            this.Log("Done");
+                sb.AppendLine(item);
+
+            this.Log(sb.ToString());
         }
 #endif
 		public override bool DI_ShowInfoInEditor(){

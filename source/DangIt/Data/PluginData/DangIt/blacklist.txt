@@ -1,0 +1,59 @@
+﻿// Stock
+ElectricCharge
+SolidFuel
+IntakeAir
+Ablator
+
+// This mod
+SpareParts
+
+// Deadly Reentry
+AblativeShielding
+
+// ExtraPlanetary Launchpads
+RocketParts
+Metal
+ScrapMetal
+Ore
+
+// Station Science
+Eurekas
+Kibbal
+Kuarqs
+
+// MKS / OKS
+PunchCards
+Machinery
+RareMetals
+ExoticMinerals
+StructuralParts
+MechanicalParts
+Recyclables
+ElectronicParts
+
+// Community Resource Pack
+Actinides
+Alumina
+Aluminium
+Antimatter
+DepletedUranium
+EnrichedUranium
+ExoticMatter
+Food
+IntakeAtm
+Lithium
+Megajoules
+Metal
+Minerals
+Ore
+Plutonium-238
+StoredCharge
+Substrate
+ThermalPower
+Uraninite
+VacuumPlasma
+WasteHeat
+
+// CRP defines a Science resource:
+// Comment this one out for maximum kerbal-ness
+Science

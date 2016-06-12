@@ -94,10 +94,9 @@
     <None Include="Data\ModuleManager\Tanks.cfg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\PluginData\DangIt\BlackList.cfg" />
+    <Content Include="Data\PluginData\DangIt\blacklist.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\PluginData\DangIt\Training.xml" />
     <Content Include="Data\Textures\appBtn.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

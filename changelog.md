@@ -1,3 +1,7 @@
+## ALPHA 7
+- Updated to KSP 1.1.2
+- The leakblacklist is now a plaintext file: one resource per line, C comments and bash comments allowed (// and #)
+
 ## ALPHA 6
 
 ### ALPHA 6.3

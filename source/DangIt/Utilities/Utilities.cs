@@ -22,6 +22,11 @@ namespace DangIt.Utilities
                 { "HIGH", 3 },
             };
 
+        public static void Log(string msg)
+        {
+            Debug.Log("[DangIt]" + msg);
+        }
+
         /// <summary>
         /// Returns the in-game universal time
         /// </summary>

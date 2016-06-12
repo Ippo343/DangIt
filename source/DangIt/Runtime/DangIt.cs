@@ -3,6 +3,7 @@ using KSP.UI.Screens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -14,42 +15,43 @@ namespace DangIt
     /// </summary>
     public partial class CDangIt : ScenarioModule
     {
+        protected static HashSet<string> _blacklist = null;
         /// <summary>
         /// List of resources that must be ignored by tank leaks.
         /// </summary>
-        public static List<string> LeakBlackList
+        public static HashSet<string> LeakBlackList
         {
             get
             {
-                if (_leakBlackList == null) // Load the file on the first call
+                if (CDangIt._blacklist == null)
                 {
-                    _leakBlackList = new List<string>();
-                    ConfigNode blacklistFile = ConfigNode.Load(CUtils.GetConfigFilePath("BlackList.cfg"));
+                    CDangIt._blacklist = new HashSet<string> { "ElectricCharge", "SolidFuel", "SpareParts" };
                     try
                     {
-                        ConfigNode blackListNode = blacklistFile.GetNode("BLACKLIST");
-                        foreach (string item in blackListNode.GetValues("ignore"))
-                            _leakBlackList.Add(item);
+                        string path = CUtils.GetConfigFilePath("blacklist.txt");
+                        CUtils.Log("Loading the leak blacklist from " + path);
+                   
+                        foreach (string resource in File.ReadAllLines(path)                     // read all lines
+                                                        .Select(l => l.Trim())                  // trim whitespace
+                                                        .Where(l => !String.IsNullOrEmpty(l))   // ignore blanks
+                                                        .Where(l => !l.StartsWith("//")         // allow C-style comments
+                                                                 && !l.StartsWith("#")))        // allow bash-style comments
+                        {
+                            CUtils.Log("Adding " + resource + " to the leak blacklist");
+                            CDangIt._blacklist.Add(resource);
+                        }
+
                     }
                     catch (Exception e)
                     {
-                        _leakBlackList.Add("ElectricCharge");
-                        _leakBlackList.Add("SolidFuel");
-                        _leakBlackList.Add("SpareParts");
-
-                        Debug.Log("[CDangIt]: An exception occurred while loading the resource blacklist and a default one has been created. " + e.Message);
-                    } 
+                        CUtils.Log("Exception while loading the leak blacklist: " + e.Message);
+                        throw;
+                    }
                 }
 
-                return _leakBlackList;
-            }
-            set
-            {
-                _leakBlackList = value;
+                return CDangIt._blacklist;
             }
         }
-        internal static List<string> _leakBlackList = null;
-
 
         private CDangIt.Settings currentSettings;
 		public  AlarmManager    alarmManager;
