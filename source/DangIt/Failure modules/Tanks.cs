@@ -47,18 +47,26 @@ namespace DangIt
         public string leakName = null;
 
         // List of resources that the module will choose from when starting a new leak.
-        // This list is created when the module is started by taking all the resources
-        // in the part and excluding the ones that have been blacklisted in the configuration file
-        protected List<PartResource> leakables;
+        protected List<PartResource> _leakables = null;
+        protected List<PartResource> leakables
+        {
+            get
+            {
+                if (this._leakables == null)
+                    this._leakables = this.part.Resources.list.FindAll(r => !CDangIt.LeakBlackList.Contains(r.resourceName));
 
-        // This method is executed once at startup during a coroutine
-        // that waits for the runtime component to be available and then triggers
-        // this method.
+                return this._leakables;
+            }
+        }
+
         protected override void DI_RuntimeFetch()
         {
-            // At this point CDangIt.Instance is not null: fetch the blacklist
-            this.leakables = part.Resources.list.FindAll(r => !CDangIt.LeakBlackList.Contains(r.resourceName));
+            // Nothing to fetch from the runtime (the leak blacklist is static)
+            return;
+        }
 
+        protected override void DI_Start(StartState state)
+        {
             // If no leakables are found, just disable the module
             if (leakables.Count == 0)
             {
@@ -67,10 +75,7 @@ namespace DangIt
                 this.leakName = null;
                 this.enabled = false; // disable the monobehaviour: this won't be updated
             }
-        }
 
-        protected override void DI_Start(StartState state)
-        {
             if (HighLogic.LoadedSceneIsFlight)
             {
                 // The part was already failed when loaded:
@@ -193,12 +198,13 @@ namespace DangIt
         [KSPEvent(active = true, guiActive = true)]
         public void PrintStatus()
         {
-            this.Log("Printing flow modes");
-            foreach (PartResource res in this.part.Resources)
-            {
-                this.Log(res.resourceName + ": " + res.flowMode + ", " + res.flowState);
-            }
+            StringBuilder sb = new StringBuilder();
 
+            sb.AppendLine("Printing flow modes");
+            foreach (PartResource res in this.part.Resources)
+                sb.AppendLine(res.resourceName + ": " + res.flowMode + ", " + res.flowState);
+
+            this.Log(sb.ToString());
         }
 
         [KSPEvent(active = true, guiActive=true)]
@@ -214,7 +220,7 @@ namespace DangIt
         }
 #endif
 		public override bool DI_ShowInfoInEditor(){
-			return part.Resources.list.FindAll(r => !CDangIt.LeakBlackList.Contains(r.resourceName)).Count>0; //Only show if has leakable rescoures
+			return this.leakables.Count > 0;  // Only show if has leakable rescoures
 		}
     }
 }

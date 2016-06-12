@@ -219,7 +219,7 @@ namespace DangIt
 			this.Fields["Age"].guiName = DebugName + " Age";
 			this.Fields["Age"].guiActive = CDangIt.Instance.CurrentSettings.DebugStats;
 
-			DI_RuntimeFetch();
+			this.DI_RuntimeFetch();
         }
 
 
@@ -310,8 +310,6 @@ namespace DangIt
             }
         }
 
-
-
         /// <summary>
         /// Saves the internal state of the failure module to the persistence file.
         /// Put your custom save logic in DI_OnSave()
@@ -340,9 +338,7 @@ namespace DangIt
                 this.OnError(e);
             }
         }
-
-
-
+        
         /// <summary>
         /// Module re-start logic. OnStart will be called usually once for each scene, editor included.
         /// Put your custom start logic in DI_Start(): if you need to act on other part's
@@ -387,8 +383,7 @@ namespace DangIt
             }
 
         }
-
-
+        
         /// <summary>
         /// Update logic on every physics frame update.
         /// Place your custom update logic in DI_Update()
@@ -436,12 +431,10 @@ namespace DangIt
             }
         }
 
-
         private float ExponentialDecay()
         {
             return (float)Math.Exp(-this.Age / this.LifeTimeSecs);
         }
-
 
         /// <summary>
         /// Increase the aging rate as the temperature increases.
@@ -450,7 +443,6 @@ namespace DangIt
         {
             return 3 * (float)Math.Pow((Math.Max(part.temperature, 0) / part.maxTemp), 5);
         }
-
 
         /// <summary>
         /// Pre-emtpive maintenance procedure.
@@ -508,7 +500,6 @@ namespace DangIt
 
         }
 
-
         /// <summary>
         /// Initiates the part's failure.
         /// Put your custom failure code in DI_Fail()
@@ -548,14 +539,27 @@ namespace DangIt
                                        MessageSystemButton.MessageButtonColor.RED,
                                        MessageSystemButton.ButtonIcons.ALERT);
 
-					if (FindObjectOfType<AlarmManager>()!=null){
-						FindObjectOfType<AlarmManager>().AddAlarm(this,CDangIt.Instance.CurrentSettings.GetSoundLoopsForPriority(Priority));
-						if (FindObjectOfType<AlarmManager>().HasAlarmsForModule(this))
-						{
-							Events ["MuteAlarms"].active = true;
-							Events ["MuteAlarms"].guiActive = true;
-						}
-					}
+                    try
+                    {
+                        if (FindObjectOfType<AlarmManager>() != null)
+                        {
+                            FindObjectOfType<AlarmManager>().AddAlarm(this, CDangIt.Instance.CurrentSettings
+                                                                                   .GetSoundLoopsForPriority(Priority));
+
+                            if (FindObjectOfType<AlarmManager>().HasAlarmsForModule(this))
+                            {
+                                Events["MuteAlarms"].active = true;
+                                Events["MuteAlarms"].guiActive = true;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // At this time the alarms are broken and don't work (no idea why yet).
+                        // By ignoring this error I can at least test the rest.
+                        // TODO: fix the alarms.
+                        this.Log("Could not set the alarms! " + e.Message);
+                    }
 				}
 
                 CUtils.FlightLog(this.FailureMessage);
