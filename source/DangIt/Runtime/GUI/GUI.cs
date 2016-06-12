@@ -32,7 +32,7 @@ namespace DangIt
                 if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                 {
                     // Load the icon for the button
-                    Texture btnTex = GameDatabase.Instance.GetTexture("CDangIt/Textures/appBtn", false);
+                    Texture btnTex = GameDatabase.Instance.GetTexture("DangIt/Textures/appBtn", false);
                     if (btnTex == null)
                         throw new Exception("The button texture wasn't loaded!");
                     
