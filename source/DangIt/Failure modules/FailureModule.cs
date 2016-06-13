@@ -16,7 +16,6 @@ namespace DangIt
     /// </summary>
     public abstract class FailureModule : PartModule, IPartCostModifier
     {
-
         #region Custom strings
 
         // These strings customize the failure module, both in the log
@@ -31,7 +30,6 @@ namespace DangIt
 		public abstract string MaintenanceString { get; }            // gui name for maintinence event
 		public virtual  string ExtraEditorInfo { get {return "";} }  // extra descriptive info for the
 
- 
         /// <summary>
         /// Returns the string that is displayed during an inspection.
         /// </summary>
@@ -69,7 +67,6 @@ namespace DangIt
 
         #endregion
 
-
         #region Methods to add the specific logic of the module
 
         protected virtual void DI_Reset() { }
@@ -86,7 +83,6 @@ namespace DangIt
 		public virtual bool DI_ShowInfoInEditor() { return true; }
 
         #endregion
-
 
         #region Fields from the cfg file
 
@@ -125,7 +121,6 @@ namespace DangIt
 
         #endregion
 
-
         #region Internal state
 
         [KSPField(isPersistant = true, guiActive = false)]
@@ -154,9 +149,9 @@ namespace DangIt
 
         #endregion
 
-
-        #region Lambda
-
+        #region Failure chance computation
+        // It's called Lambda because that's the symbol that is commonly used in reliability computations,
+        // at least according to my textbook anyway.
 
         /// <summary>
         /// Chance that the part will fail during the next fixed update.
@@ -166,9 +161,8 @@ namespace DangIt
             return LambdaFromMTBF(this.CurrentMTBF)
                     * (1 + TemperatureMultiplier())     // the temperature increases the chance of failure
                     * LambdaMultiplier()                // optional multiplier from the child class
-                    * InspectionLambdaMultiplier();           // temporary inspection bonus
+                    * InspectionLambdaMultiplier();     // temporary inspection bonus
         }
-
 
         /// <summary>
         /// Convert a MTBF in hours to the chance of failure during the next fixed update.
@@ -186,7 +180,6 @@ namespace DangIt
             }
         }
 
-
         /// <summary>
         /// Multiplier that reduces the chance of failure right after an inspection.
         /// </summary>
@@ -197,9 +190,7 @@ namespace DangIt
             return Math.Max(0f, Math.Min(elapsed / this.InspectionBonus, 1f));
         }
 
-
         #endregion
-
 
         /// <summary>
         /// Coroutine that waits for the runtime to be ready before executing.
@@ -221,7 +212,6 @@ namespace DangIt
 
 			this.DI_RuntimeFetch();
         }
-
 
         /// <summary>
         /// Resets the failure state and age tracker.
@@ -264,16 +254,12 @@ namespace DangIt
                 this.DI_Reset();
 
                 this.HasInitted = true;
-
-
             }
             catch (Exception e)
             {
                 OnError(e);
             }
         }
-
-
 
         /// <summary>
         /// Load the values from the config node of the persistence file.
@@ -381,7 +367,6 @@ namespace DangIt
             {
                 OnError(e);
             }
-
         }
         
         /// <summary>
@@ -470,8 +455,7 @@ namespace DangIt
 			{
                 CUtils.Broadcast("This is too hot to service right now", true);
 				return;
-			} 
-
+			}
 
             // Check if he is carrying enough spares
             if (evaPart.Resources.Contains(Spares.Name) && evaPart.Resources[Spares.Name].amount >= this.MaintenanceCost)
@@ -591,8 +575,6 @@ namespace DangIt
             }
         }
 
-
-
         /// <summary>
         /// Initiates the part's EVA repair.
         /// The repair won't be executed if the kerbonaut doesn't have enough spare parts.
@@ -651,9 +633,7 @@ namespace DangIt
             {
                 OnError(e);
             }
-
         }
-
 
         /// <summary>
         /// Check if a kerbal is able to repair a part,
@@ -663,7 +643,6 @@ namespace DangIt
         {
             bool allow = true;
             string reason = string.Empty;
-
 
             #region Amount of spare parts
             if (!evaPart.Resources.Contains(Spares.Name) || evaPart.Resources[Spares.Name].amount < this.RepairCost)
@@ -683,14 +662,12 @@ namespace DangIt
             } 
             #endregion
 
-
             if (!CheckOutExperience(evaPart.protoModuleCrew[0]))
             {
                 allow = false;
                 reason = "perks don't match requirements";
                 CUtils.Broadcast(evaPart.protoModuleCrew[0].name + " has no idea how to fix this...", true);
             }
-
 
             if (allow)
                 this.Log("Repair allowed!");
@@ -699,7 +676,6 @@ namespace DangIt
 
             return allow;
         }
-
 
         /// <summary>
         /// Checks if a kerbal has the required experience to interact with this module
@@ -716,7 +692,6 @@ namespace DangIt
 				|| ((kerbal.experienceTrait.TypeName == this.PerksRequirementName) && (kerbal.experienceLevel >= this.PerksRequirementValue));
         }
 
-
         /// <summary>
         /// Decreases the part's age by the given percentage.
         /// </summary>
@@ -725,7 +700,6 @@ namespace DangIt
             this.Age *= (1 - percentage);
             this.Age = Math.Max(this.Age, 0);   // prevent negative ages if the percentage is greater than 100%
         }
-
 
         #region Logging utilities
 
@@ -767,7 +741,6 @@ namespace DangIt
 
         #endregion
 
-
         /// <summary>
         /// Reduces the value of the part when it is recovered.
         /// </summary>
@@ -775,7 +748,6 @@ namespace DangIt
         {
             return (this.ExponentialDecay() - 1) * defaultCost;
         }
-
         
 		[KSPEvent(guiActive = false, active = false, guiName="Mute Alarm")]
 		public void MuteAlarms(){
@@ -785,7 +757,9 @@ namespace DangIt
 			}
 		}
 
-		public void AlarmsDoneCallback(){ //Called from AlarmManager when no alarms remain
+		public void AlarmsDoneCallback()
+        {
+            //Called from AlarmManager when no alarms remain
 			print ("AlarmsDoneCallback called");
 			Events ["MuteAlarms"].active = false;
 			Events ["MuteAlarms"].guiActive = false;
@@ -793,8 +767,8 @@ namespace DangIt
 
         public ModifierChangeWhen GetModuleCostChangeWhen()
         {
+            // TODO: I don't have the faintest idea what this does
             return ModifierChangeWhen.CONSTANTLY;
         }
     }
-
 }

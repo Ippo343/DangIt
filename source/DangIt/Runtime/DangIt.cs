@@ -78,7 +78,6 @@ namespace DangIt
         /// </summary>
         public static CDangIt Instance { get; private set; }
 
-
         /// <summary>
         /// Returns true if the instance is initialized and ready to work.
         /// </summary>
@@ -86,7 +85,7 @@ namespace DangIt
 
         public CDangIt()
         {
-            Debug.Log("[CDangIt]: Instantiating runtime.");
+            Debug.Log("[DangIt]: Instantiating runtime.");
 
             // Now the instance is built and can be exposed, but it is not yet ready until after OnLoad
             Instance = this;
@@ -112,7 +111,6 @@ namespace DangIt
             this.IsReady = true;
         }
 
-
         public override void OnSave(ConfigNode node)
         {
             this.Log("Saving settings...");
@@ -127,8 +125,6 @@ namespace DangIt
             }
         }
 
-
-
         public void OnDestroy()
         {
             this.Log("Destroying instance.");
@@ -138,13 +134,13 @@ namespace DangIt
                 ApplicationLauncher.Instance.RemoveModApplication(this.appBtn);
         }
 
-
         private void Log(string msg)
         {
-            Debug.Log("[CDangIt][Runtime]: " + msg);
+            Debug.Log("[DangIt][Runtime]: " + msg);
         }
 
-		public void StartPartInfoCacheReload(){
+		public void StartPartInfoCacheReload()
+        {
 			Log ("Starting refresh of Part Info cache");
 			StartCoroutine(RefreshPartInfo());
 		}
@@ -152,7 +148,8 @@ namespace DangIt
 		private IEnumerator RefreshPartInfo()
 		{
 			yield return null;
-			try{
+			try
+            {
 				foreach (var ap in PartLoader.LoadedPartsList.Where(ap => ap.partPrefab.Modules != null))
 				{
 					AvailablePart.ModuleInfo target = null;
@@ -176,8 +173,10 @@ namespace DangIt
 						}
 					}
 				}
-				Log("Refresh Finished");
-			}catch (Exception e){
+				this.Log("Refresh Finished");
+			}
+            catch (Exception e)
+            {
 				this.Log("ERROR ["+e.GetType().ToString()+"]: " + e.Message + "\n" + e.StackTrace);
 			}
 		}

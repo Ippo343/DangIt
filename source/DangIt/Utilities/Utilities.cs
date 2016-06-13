@@ -99,8 +99,6 @@ namespace DangIt.Utilities
             }
         }
 
-
-
         /// <summary>
         /// Finds the active EVA vessel and returns its root part, or null if no EVA is found.
         /// </summary>
@@ -110,18 +108,25 @@ namespace DangIt.Utilities
             return ((idx < 0) ? null : FlightGlobals.Vessels[idx].rootPart);
         }
 
-
         /// <summary>
         /// Resets the glow on all the vessel.
         /// Parts that have failed will glow red unless they are set to fail silently.
         /// </summary>
-        /// <param name="v"></param>
-        public static void ResetShipGlow(Vessel v)
+        public static void ResetShipGlow(Vessel vessel)
         {
-            Debug.Log("CDangIt: Resetting the ship's glow");
-            ResetPartGlow(v.rootPart);
+            try
+            {
+                if (vessel.Parts != null)
+                {
+                    ResetPartGlow(vessel.rootPart);
+                }                
+            }
+            catch (Exception e)
+            {
+                CUtils.Log("Could not reset the glow for vessel." + e.Message);
+            }
+            
         }
-
 
         /// <summary>
         /// Resets the glow on a single part and then recursively on all its children.
@@ -132,25 +137,17 @@ namespace DangIt.Utilities
             // Set the highlight to default
             part.SetHighlightDefault();
 
-
             // If the glow is globally disabled, don't even bother looking for failures
             if (CDangIt.Instance.CurrentSettings.Glow)
             {
-                // Scan all the failure modules, if any
-                List<FailureModule> failModules = part.Modules.OfType<FailureModule>().ToList();
-                for (int i = 0; i < failModules.Count; i++)
+                if (part.Modules.OfType<FailureModule>().Any(fm => fm.HasFailed && !fm.Silent))               
                 {
-                    if (failModules[i].HasFailed && !failModules[i].Silent)
-                    {
-                        // If any module has failed, glow red and stop searching (just one is sufficient)
-                        part.SetHighlightColor(Color.red);
-                        part.SetHighlightType(Part.HighlightType.AlwaysOn);
-                        part.SetHighlight(true, false);
-                        break;
-                    }
+                    // If any module has failed, glow red and stop searching (just one is sufficient)
+                    part.SetHighlightColor(Color.red);
+                    part.SetHighlightType(Part.HighlightType.AlwaysOn);
+                    part.SetHighlight(true, false);
                 }
             }
-
 
             // Reset the glow for all the child parts
             foreach (Part child in part.children)

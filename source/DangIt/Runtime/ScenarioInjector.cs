@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using UnityEngine;
-using System.Reflection;
 
 namespace DangIt
 {
@@ -24,7 +20,7 @@ namespace DangIt
 
             if (psm == null)
             {
-                Debug.Log("[CDangIt]: Adding the controller to the game.");
+                Debug.Log("[DangIt]: Adding the controller to the game.");
                 psm = game.AddProtoScenarioModule(typeof(CDangIt), GameScenes.EDITOR,
                                                                   GameScenes.FLIGHT,
                                                                   GameScenes.SPACECENTER,
@@ -32,7 +28,7 @@ namespace DangIt
             }
             else // make sure the scenario is targeting all the scenes
             {
-                Debug.Log("[CDangIt]: The runtime is already installed (OK).");
+                Debug.Log("[DangIt]: The runtime is already installed (OK).");
 
                 SetTargetScene(psm, GameScenes.EDITOR);
                 SetTargetScene(psm, GameScenes.FLIGHT);
@@ -41,7 +37,6 @@ namespace DangIt
             }
         }
 
-
         private static void SetTargetScene(ProtoScenarioModule psm, GameScenes scene)
         {
             if (!psm.targetScenes.Any(s => s == scene))
@@ -49,8 +44,5 @@ namespace DangIt
                 psm.targetScenes.Add(scene);
             }
         }
-
     }
-
-
 }
