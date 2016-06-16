@@ -1,35 +1,36 @@
-﻿using System;
-using UnityEngine;
-using System.Linq;
+﻿using DangIt.Utilities;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace DangIt
 {
-	[RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(AudioSource))]
 	[KSPAddon(KSPAddon.Startup.Flight, false)]
 	public class AlarmManager : MonoBehaviour
 	{
 		public Dictionary<FailureModule, int> loops;
-
-        AudioSource audio = new AudioSource();
+        AudioSource audio;
 
 		public void Start()
 		{
-			print("[CDangIt] [AlarmManager] Starting...");
-			print("[CDangIt] [AlarmManager] Setting Volume...");
+            print("[DangIt] [AlarmManager] Starting...");
+            this.audio = this.gameObject.AddComponent<AudioSource>();
+            
+            print("[DangIt] [AlarmManager] Creating Clip");
+            this.audio.clip = GameDatabase.Instance.GetAudioClip("DangIt/Sounds/alarm");  //Load alarm sound
+            
+            print("[DangIt] [AlarmManager] Setting Volume...");
 			this.audio.spatialBlend = 0f; //This disable the game scaling volume with distance from source
-			this.audio.volume = 1f;
+			this.audio.volume = 1f;            
 
-			print ("[CDangIt] [AlarmManager] Creating Clip");
-			this.audio.clip=GameDatabase.Instance.GetAudioClip("CDangIt/Sounds/alarm"); //Load alarm sound
-
-			print ("[CDangIt] [AlarmManager] Creating Dictionary");
+			print ("[DangIt] [AlarmManager] Creating Dictionary");
 			this.loops=new Dictionary<FailureModule, int>(); //Reset counter, so on logic pass we play it
 		}
 
 		public void UpdateSettings(){
 			float scaledVolume = CDangIt.Instance.CurrentSettings.AlarmVolume / 100f;
-			print ("[CDangIt] [AlarmManager] Rescaling Volume (at UpdateSettings queue)..., now at " + scaledVolume);
+			print ("[DangIt][AlarmManager] Rescaling Volume (at UpdateSettings queue)..., now at " + scaledVolume);
 			this.audio.volume = scaledVolume;
 		}
 
@@ -38,10 +39,10 @@ namespace DangIt
 			this.audio.volume = CDangIt.Instance.CurrentSettings.GetMappedVolume(); //This seems like an OK place for this, because if I put it in the constructor...
 			                                                                       // ...you would have to reboot to change it, but I don't want to add lag by adding it to each frame in Update()
 			if (number != 0) {
-				print ("[CDangIt] [AlarmManager] Adding '" + number.ToString () + "' alarms from '" + fm.ToString () + "'");
+				CUtils.Log("[AlarmManager] Adding '" + number.ToString () + "' alarms from '" + fm.ToString () + "'");
 				loops.Add (fm, number);
 			} else {
-				print ("[CDangIt] [AlarmManager] No alarms added: Would have added 0 alarms");
+                CUtils.Log("[AlarmManager] No alarms added: Would have added 0 alarms");
 			}
 		}
 
@@ -52,7 +53,7 @@ namespace DangIt
 					if (loops.Count > 0) {
 						var element = loops.ElementAt (0);
 						loops.Remove (element.Key);
-						print ("[CDangIt] [AlarmManager] Playing Clip");
+						print ("[DangIt] [AlarmManager] Playing Clip");
 						audio.Play ();
 						if (element.Value != 0 && element.Value != 1) {
 							if (element.Key.vessel == FlightGlobals.ActiveVessel) {
@@ -70,7 +71,7 @@ namespace DangIt
 
 		public void RemoveAllAlarmsForModule(FailureModule fm)
 		{
-			print ("[CDangIt] [AlarmManager] Removing alarms...");
+			print ("[DangIt][AlarmManager] Removing alarms...");
 			if (this.loops.Keys.Contains (fm))
 			{
 				fm.AlarmsDoneCallback ();
