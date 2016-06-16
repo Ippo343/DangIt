@@ -37,7 +37,6 @@ namespace DangIt
         public override string MaintenanceString { get { return "Lubricate hinges"; } }
 		public override string ExtraEditorInfo{ get { return "This part's control surfaces can become stuck if it fails"; } }
 
-
         public override bool PartIsActive()
         {
             // Control surfaces are considered active when the ship's in atmosphere
@@ -50,7 +49,6 @@ namespace DangIt
             // The thicker the atmosphere, the higher the chance of failure
             return (float)this.part.vessel.atmDensity;
         }
-
 
         protected override void DI_OnLoad(ConfigNode node)
         {
@@ -66,7 +64,6 @@ namespace DangIt
             node.SetValue("ignoreYaw", this.ignoreYaw.ToString());
         }
 
-
         protected override void DI_Start(StartState state)
         {
             if (HighLogic.LoadedSceneIsFlight)
@@ -74,7 +71,6 @@ namespace DangIt
                 this.controlSurface = this.part.Modules.OfType<ModuleControlSurface>().Single();
             }
         }
-
 
         protected override bool DI_FailBegin()
         {
@@ -108,6 +104,5 @@ namespace DangIt
             this.controlSurface.ignoreRoll = this.ignoreRoll;
             this.controlSurface.ignoreYaw = this.ignoreYaw; 
         }
-
     }
 }
