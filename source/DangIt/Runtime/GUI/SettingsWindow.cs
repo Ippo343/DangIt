@@ -56,13 +56,11 @@ namespace DangIt
             }
         }
 
-
-
         void SettingsWindowFcn(int windowID)
         {
 			if (waitingForConfirm) {
 				GUILayout.BeginVertical ();
-				GUILayout.Label ("WARNING! Changing the state of CDangIt! while ships are in flight is not supported.");
+				GUILayout.Label ("WARNING! Changing the state of DangIt! while ships are in flight is not supported.");
 				GUILayout.Label ("There is no gaurentee that ships will remain in a stable state after toggle, ESPECIALLY if they currently have failed parts.");
 				GUILayout.Label ("It is reccomended that this option is only changed immediatley after the start of a game AND while no ships are in flight");
 				GUILayout.Label ("You currently have " + (FlightGlobals.Vessels.Count-1).ToString () + " vessels in flight. Are you sure you want to proceed?");
@@ -123,7 +121,7 @@ namespace DangIt
 					SoundLoopsString_High = GUILayout.TextField (SoundLoopsString_High);
 					GUILayout.EndHorizontal ();
 				} else {
-					GUILayout.Label ("CDangIt! is disabled");
+					GUILayout.Label ("DangIt! is disabled");
 				}
 
 				// Creates the button and returns true when it is pressed

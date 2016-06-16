@@ -542,7 +542,7 @@ namespace DangIt
                         // At this time the alarms are broken and don't work (no idea why yet).
                         // By ignoring this error I can at least test the rest.
                         // TODO: fix the alarms.
-                        this.Log("Could not set the alarms! " + e.Message);
+                        this.Log("Could not set the alarms! " + e.Message + ", " + e.StackTrace);
                     }
 				}
 
@@ -709,7 +709,7 @@ namespace DangIt
             {
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append("[CDangIt]: ");
+                sb.Append("[DangIt]: ");
                 sb.Append(this.DebugName);
                 sb.Append("[" + this.GetInstanceID() + "]");
                 if (part.vessel != null) sb.Append("[Ship: " + part.vessel.vesselName + "]");

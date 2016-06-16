@@ -1,15 +1,14 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("0.6")]
-[assembly: KSPAssembly("CDangIt", 0, 6)]
+[assembly: KSPAssembly("DangIt", 0, 6)]
 
-[assembly: AssemblyTitle("CDangIt")]
+[assembly: AssemblyTitle("DangIt")]
 [assembly: AssemblyDescription("Random failures mod for KSP")]
 [assembly: AssemblyConfiguration("ALPHA")]
 [assembly: AssemblyCompany("Pota Studios")]
-[assembly: AssemblyProduct("CDangIt")]
+[assembly: AssemblyProduct("DangIt")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
