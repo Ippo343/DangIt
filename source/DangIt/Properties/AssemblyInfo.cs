@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("0.6")]
-[assembly: KSPAssembly("DangIt", 0, 6)]
+[assembly: AssemblyVersion("0.7")]
+[assembly: KSPAssembly("DangIt", 0, 7)]
 
 [assembly: AssemblyTitle("DangIt")]
 [assembly: AssemblyDescription("Random failures mod for KSP")]
